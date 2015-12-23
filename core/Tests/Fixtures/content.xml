@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+                         xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+                         xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+                         xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+                         xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+                         xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/"
+                         xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+                         xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+                         xmlns:ooo="http://openoffice.org/2004/office"
+                         xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2"
+                         xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0"
+                         office:version="1.2">
+    <office:scripts/>
+    <office:font-face-decls>
+        <style:font-face style:name="Arial1" svg:font-family="Arial"/>
+        <style:font-face style:name="Courier" svg:font-family="Courier" style:font-family-generic="modern"
+                         style:font-pitch="fixed"/>
+        <style:font-face style:name="Arial" svg:font-family="Arial" style:font-family-generic="swiss"
+                         style:font-pitch="variable"/>
+        <style:font-face style:name="Arial Unicode MS" svg:font-family="&apos;Arial Unicode MS&apos;"
+                         style:font-family-generic="system" style:font-pitch="variable"/>
+        <style:font-face style:name="SimSun" svg:font-family="SimSun" style:font-family-generic="system"
+                         style:font-pitch="variable"/>
+        <style:font-face style:name="Tahoma" svg:font-family="Tahoma" style:font-family-generic="system"
+                         style:font-pitch="variable"/>
+    </office:font-face-decls>
+    <office:automatic-styles>
+        <style:style style:name="co1" style:family="table-column">
+            <style:table-column-properties fo:break-before="auto" style:column-width="1.539in"/>
+        </style:style>
+        <style:style style:name="co2" style:family="table-column">
+            <style:table-column-properties fo:break-before="auto" style:column-width="1.1311in"/>
+        </style:style>
+        <style:style style:name="co3" style:family="table-column">
+            <style:table-column-properties fo:break-before="auto" style:column-width="0.8528in"/>
+        </style:style>
+        <style:style style:name="co4" style:family="table-column">
+            <style:table-column-properties fo:break-before="auto" style:column-width="0.8925in"/>
+        </style:style>
+        <style:style style:name="co5" style:family="table-column">
+            <style:table-column-properties fo:break-before="auto" style:column-width="0.889in"/>
+        </style:style>
+        <style:style style:name="ro1" style:family="table-row">
+            <style:table-row-properties style:row-height="0.1898in" fo:break-before="auto"
+                                        style:use-optimal-row-height="true"/>
+        </style:style>
+        <style:style style:name="ro2" style:family="table-row">
+            <style:table-row-properties style:row-height="0.1681in" fo:break-before="auto"
+                                        style:use-optimal-row-height="true"/>
+        </style:style>
+        <style:style style:name="ro3" style:family="table-row">
+            <style:table-row-properties style:row-height="0.2484in" fo:break-before="auto"
+                                        style:use-optimal-row-height="false"/>
+        </style:style>
+        <style:style style:name="ta1" style:family="table" style:master-page-name="PageStyle_5f_Feuil1">
+            <style:table-properties table:display="true" style:writing-mode="lr-tb"/>
+        </style:style>
+        <style:style style:name="ce1" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties fo:background-color="#004586" style:cell-protect="protected"
+                                         style:print-content="true" style:text-align-source="value-type"
+                                         style:repeat-content="false" style:vertical-align="middle"/>
+            <style:paragraph-properties fo:margin-left="0in"/>
+            <style:text-properties fo:color="#ffffff" fo:font-weight="bold" style:font-weight-asian="bold"
+                                   style:font-weight-complex="bold"/>
+        </style:style>
+        <style:style style:name="ce2" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties style:cell-protect="protected" style:print-content="true"/>
+        </style:style>
+        <style:style style:name="ce3" style:family="table-cell" style:parent-style-name="Default">
+            <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold"
+                                   style:font-weight-complex="bold"/>
+        </style:style>
+        <style:style style:name="ce4" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties style:cell-protect="protected formula-hidden" style:print-content="true"/>
+        </style:style>
+        <style:style style:name="ce5" style:family="table-cell" style:parent-style-name="Excel_5f_BuiltIn_5f_Comma"
+                     style:data-style-name="N0">
+            <style:table-cell-properties fo:background-color="#ffff99" fo:border="0.99pt solid #000000"/>
+        </style:style>
+        <style:style style:name="ce6" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties style:text-align-source="fix" style:repeat-content="false"/>
+            <style:paragraph-properties fo:text-align="center" fo:margin-left="0in"/>
+        </style:style>
+        <style:style style:name="ce7" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties fo:background-color="#cccccc"/>
+            <style:text-properties style:font-name="Courier" fo:font-weight="bold" style:font-weight-asian="bold"
+                                   style:font-weight-complex="bold"/>
+        </style:style>
+        <style:style style:name="ce8" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties style:cell-protect="protected" style:print-content="true"
+                                         style:diagonal-bl-tr="none" style:diagonal-tl-br="none" fo:border="none"
+                                         style:rotation-align="none"/>
+        </style:style>
+        <style:style style:name="ce9" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties style:text-align-source="fix" style:repeat-content="false"/>
+            <style:paragraph-properties fo:text-align="end" fo:margin-left="0in"/>
+            <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold"
+                                   style:font-weight-complex="bold"/>
+        </style:style>
+        <style:style style:name="ce10" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties style:cell-protect="protected formula-hidden" style:print-content="true"/>
+            <style:text-properties style:font-name="Courier"/>
+        </style:style>
+        <style:style style:name="ce11" style:family="table-cell" style:parent-style-name="Default">
+            <style:table-cell-properties style:cell-protect="protected formula-hidden" style:print-content="true"/>
+            <style:text-properties style:font-name="Courier" fo:language="en" fo:country="US" style:language-asian="en"
+                                   style:country-asian="US" style:language-complex="en" style:country-complex="US"/>
+        </style:style>
+        <style:style style:name="gr1" style:family="graphic">
+            <style:graphic-properties draw:marker-start="Arrowheads_20_1" draw:marker-start-width="0.0787in"
+                                      draw:marker-start-center="false" draw:fill="solid" draw:fill-color="#ffffc0"
+                                      draw:auto-grow-height="true" draw:auto-grow-width="false"
+                                      fo:padding-top="0.0394in" fo:padding-bottom="0.0394in" fo:padding-left="0.0394in"
+                                      fo:padding-right="0.0394in" draw:shadow="hidden" draw:shadow-offset-x="0.0394in"
+                                      draw:shadow-offset-y="0.0394in" draw:caption-escape-direction="auto"/>
+        </style:style>
+        <style:style style:name="P1" style:family="paragraph">
+            <style:paragraph-properties style:text-autospace="none" style:line-break="normal"
+                                        style:writing-mode="page"/>
+            <style:text-properties style:text-outline="false" style:text-line-through-style="none"
+                                   style:font-name="Arial1" fo:font-size="10pt" fo:language="fr" fo:country="FR"
+                                   fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none"
+                                   fo:font-weight="normal" style:text-underline-mode="continuous"
+                                   style:text-overline-mode="continuous" style:text-line-through-mode="continuous"
+                                   style:font-name-asian="SimSun" style:font-size-asian="10pt" style:language-asian="zh"
+                                   style:country-asian="CN" style:font-style-asian="normal"
+                                   style:font-weight-asian="normal" style:font-name-complex="Arial1"
+                                   style:font-size-complex="10pt" style:language-complex="hi" style:country-complex="IN"
+                                   style:font-style-complex="normal" style:font-weight-complex="normal"
+                                   style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none"
+                                   style:text-overline-color="font-color" fo:hyphenate="false"/>
+        </style:style>
+        <style:style style:name="T1" style:family="text">
+            <style:text-properties style:text-outline="false" style:text-line-through-style="none"
+                                   style:font-name="Arial1" fo:font-size="10pt" fo:language="fr" fo:country="FR"
+                                   fo:font-style="normal" fo:text-shadow="none" style:text-underline-style="none"
+                                   fo:font-weight="normal" style:text-underline-mode="continuous"
+                                   style:text-overline-mode="continuous" style:text-line-through-mode="continuous"
+                                   style:font-name-asian="SimSun" style:font-size-asian="10pt" style:language-asian="zh"
+                                   style:country-asian="CN" style:font-style-asian="normal"
+                                   style:font-weight-asian="normal" style:font-name-complex="Arial1"
+                                   style:font-size-complex="10pt" style:language-complex="hi" style:country-complex="IN"
+                                   style:font-style-complex="normal" style:font-weight-complex="normal"
+                                   style:text-emphasize="none" style:font-relief="none" style:text-overline-style="none"
+                                   style:text-overline-color="font-color"/>
+        </style:style>
+        <text:list-style style:name="L1">
+            <text:list-level-style-number text:level="1" style:num-format="A">
+                <style:list-level-properties/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="2" style:num-format="A">
+                <style:list-level-properties text:space-before="0.315in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="3" style:num-format="A">
+                <style:list-level-properties text:space-before="0.6299in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="4" style:num-format="A">
+                <style:list-level-properties text:space-before="0.9449in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="5" style:num-format="A">
+                <style:list-level-properties text:space-before="1.2598in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="6" style:num-format="A">
+                <style:list-level-properties text:space-before="1.5748in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="7" style:num-format="A">
+                <style:list-level-properties text:space-before="1.8898in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="8" style:num-format="A">
+                <style:list-level-properties text:space-before="2.2047in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="9" style:num-format="A">
+                <style:list-level-properties text:space-before="2.5197in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+            <text:list-level-style-number text:level="10" style:num-format="A">
+                <style:list-level-properties text:space-before="2.8346in"/>
+                <style:text-properties fo:color="#000000" fo:font-size="100%"/>
+            </text:list-level-style-number>
+        </text:list-style>
+    </office:automatic-styles>
+    <office:body>
+        <office:spreadsheet>
+            <table:calculation-settings table:case-sensitive="false" table:automatic-find-labels="false"
+                                        table:use-regular-expressions="false"/>
+            <table:content-validations>
+                <table:content-validation table:name="val1"
+                                          table:condition="of:cell-content-is-in-list([$Demo.$A$15:.$A$17])"
+                                          table:allow-empty-cell="true" table:display-list="unsorted"
+                                          table:base-cell-address="Demo.B5">
+                    <table:error-message table:message-type="stop" table:display="true"/>
+                </table:content-validation>
+            </table:content-validations>
+            <table:table table:name="Demo" table:style-name="ta1" table:print="false">
+                <office:forms form:automatic-focus="false" form:apply-design-mode="false">
+                    <form:form form:name="Standard" form:apply-filter="true"
+                               form:control-implementation="ooo:com.sun.star.form.component.Form" office:target-frame=""
+                               xlink:href="" xlink:type="simple">
+                        <form:properties>
+                            <form:property form:property-name="PropertyChangeNotificationEnabled"
+                                           office:value-type="boolean" office:boolean-value="true"/>
+                        </form:properties>
+                    </form:form>
+                </office:forms>
+                <table:table-column table:style-name="co1" table:default-cell-style-name="Default"/>
+                <table:table-column table:style-name="co2" table:default-cell-style-name="Default"/>
+                <table:table-column table:style-name="co3" table:number-columns-repeated="243"
+                                    table:default-cell-style-name="Default"/>
+                <table:table-column table:style-name="co4" table:number-columns-repeated="769"
+                                    table:default-cell-style-name="Default"/>
+                <table:table-column table:style-name="co5" table:number-columns-repeated="4"
+                                    table:default-cell-style-name="Default"/>
+                <table:table-column table:style-name="co4" table:number-columns-repeated="2"
+                                    table:default-cell-style-name="Default"/>
+                <table:table-row table:style-name="ro1">
+                    <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string"
+                                      table:number-columns-spanned="2" table:number-rows-spanned="1">
+                        <text:p>Simple calculations</text:p>
+                    </table:table-cell>
+                    <table:covered-table-cell/>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell/>
+                    <table:table-cell table:style-name="Excel_5f_BuiltIn_5f_Comma"/>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro1">
+                    <table:table-cell office:value-type="string" calcext:value-type="string">
+                        <text:p>Parameter A</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="ce5" office:value-type="float" office:value="2000"
+                                      calcext:value-type="float">
+                        <office:annotation draw:style-name="gr1" draw:text-style-name="P1" svg:width="1.1413in"
+                                           svg:height="0.3902in" svg:x="2.9063in" svg:y="0.0134in"
+                                           draw:caption-point-x="-0.2402in" draw:caption-point-y="0.3398in">
+                            <dc:date>2014-07-07T00:00:00</dc:date>
+                            <text:p text:style-name="P1">
+                                <text:span text:style-name="T1">Je suis ici pour vous aider.</text:span>
+                            </text:p>
+                        </office:annotation>
+                        <text:p>2000</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell/>
+                    <table:table-cell table:style-name="Excel_5f_BuiltIn_5f_Comma"/>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro3">
+                    <table:table-cell office:value-type="string" calcext:value-type="string">
+                        <text:p>Parameter B</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="ce6" table:content-validation-name="val1"
+                                      office:value-type="string" calcext:value-type="string">
+                        <text:p>Option 1</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce2"/>
+                    <table:table-cell table:number-columns-repeated="1019"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce2" office:value-type="string" calcext:value-type="string">
+                        <text:p>B value with VLOOKUP</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="ce7" table:formula="of:=ROUND(VLOOKUP([.B5];[.A15:.B17];2);2)"
+                                      office:value-type="float" office:value="22" calcext:value-type="float">
+                        <text:p>22</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce2"/>
+                    <table:table-cell table:style-name="ce8"/>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce2" office:value-type="string" calcext:value-type="string">
+                        <text:p>Formula : A + B</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="ce7" table:formula="of:=[.B3]+[.B7]" office:value-type="float"
+                                      office:value="2022" calcext:value-type="float">
+                        <text:p>2022</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:number-columns-repeated="1020"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string"
+                                      table:number-columns-spanned="2" table:number-rows-spanned="1">
+                        <text:p>Data</text:p>
+                    </table:table-cell>
+                    <table:covered-table-cell/>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:number-columns-repeated="1020"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce3" office:value-type="string" calcext:value-type="string">
+                        <text:p>Parameter B</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1019"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce3" office:value-type="string" calcext:value-type="string">
+                        <text:p>Display</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+                        <text:p>Value</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+                        <text:p>Option 1</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="ce10" office:value-type="float" office:value="22"
+                                      calcext:value-type="float">
+                        <text:p>22</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+                        <text:p>Option 2</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="ce11" office:value-type="float" office:value="42"
+                                      calcext:value-type="float">
+                        <text:p>42</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+                        <text:p>Option 3</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:style-name="ce11" office:value-type="float" office:value="33"
+                                      calcext:value-type="float">
+                        <text:p>33</text:p>
+                    </table:table-cell>
+                    <table:table-cell table:number-columns-repeated="1018"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2" table:number-rows-repeated="1048558">
+                    <table:table-cell table:number-columns-repeated="1020"/>
+                </table:table-row>
+                <table:table-row table:style-name="ro2">
+                    <table:table-cell table:number-columns-repeated="1020"/>
+                </table:table-row>
+            </table:table>
+            <table:named-expressions>
+                <table:named-range table:name="deb" table:base-cell-address="$Demo.$A$1"
+                                   table:cell-range-address="$Demo.$B$3"/>
+            </table:named-expressions>
+            <table:database-ranges>
+                <table:database-range table:name="__Anonymous_Sheet_DB__0"
+                                      table:target-range-address="Demo.A15:Demo.B17" table:contains-header="false"
+                                      table:orientation="column"/>
+            </table:database-ranges>
+        </office:spreadsheet>
+    </office:body>
+</office:document-content>

@@ -1,0 +1,21 @@
+{
+    "name": "appizy/appizy",
+    "description": "Convert spreadsheet data to beautiful web content",
+    "autoload": {
+        "psr-4": {
+            "Appizy\\" : "core/"
+        }
+    },
+    "require": {
+        "twig/twig": "^1.23",
+        "symfony/css-selector": "^3.0",
+        "symfony/yaml": "2.7.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Hefti",
+            "email": "nicolas@hefti.fr"
+        }
+    ]
+}
