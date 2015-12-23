@@ -20,7 +20,7 @@ $twig = new Twig_Environment(
   )
 );
 
-$xpath = Parser::parse(__DIR__ . '/../demo_appizy.ods');
+$xpath = Parser::parse(__DIR__ . '/Tests/Fixtures/demo-appizy.ods');
 
 foreach ($xpath->query('//table:table') as $node) {
     $name = $node->getAttribute('table:name');
