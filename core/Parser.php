@@ -38,6 +38,6 @@ class Parser
     private function getTmpDir()
     {
 
-        return '.';
+        return './dist';
     }
 }

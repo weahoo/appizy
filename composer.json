@@ -8,7 +8,7 @@
     },
     "require": {
         "twig/twig": "^1.23",
-        "symfony/css-selector": "^3.0",
+        "symfony/console" : "2.3.*",
         "symfony/yaml": "2.7.*"
     },
     "license": "MIT",

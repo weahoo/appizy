@@ -1,2 +1,14 @@
+<html>
+<head>
+
+</head>
+<body>
 Bonjour bonjour, en fait. A propos!
 Hello {{ name }}!
+
+{% set tables = xpath.query('//table:table') %}
+{% for table in tables %}
+    "{{ table.getAttribute('table:name') }}"
+{% endfor %}
+</body>
+</html>
