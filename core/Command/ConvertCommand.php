@@ -2,6 +2,7 @@
 
 namespace Appizy\Command;
 
+use Appizy\ODS;
 use Appizy\Parser;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -55,13 +56,14 @@ class ConvertCommand extends Command
           )
         );
 
-        $xpath = Parser::parse($filePath);
+        $ods = new ODS();
+        $ods->load($filePath);
 
         foreach ($themeConfig['files'] as $file) {
             echo $twig->render(
               $file,
               [
-                'xpath' => $xpath
+                'ods' => $ods
               ]
             );
         }

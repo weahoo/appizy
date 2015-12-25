@@ -1,14 +1,12 @@
 <html>
 <head>
-
 </head>
 <body>
-Bonjour bonjour, en fait. A propos!
-Hello {{ name }}!
-
-{% set tables = xpath.query('//table:table') %}
+{% set tables = ods.getTables() %}
 {% for table in tables %}
-    "{{ table.getAttribute('table:name') }}"
+    <div>
+        <h1>Table "{{ table.getAttribute('table:name') }}"</h1>
+    </div>
 {% endfor %}
 </body>
 </html>
