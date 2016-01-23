@@ -20,7 +20,7 @@ class ODS
     }
 
     /**
-     * @return array
+     * @return \DOMNodeList
      * TODO: put that into a Twig Extension. Does not belong to the ODS Object itself
      */
     public function getTables() {
