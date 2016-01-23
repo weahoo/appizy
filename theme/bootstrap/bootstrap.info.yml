@@ -1,0 +1,7 @@
+name: Bootstrap
+type: theme
+templates:
+  - app.html
+
+includes:
+  - bootstrap.min.css

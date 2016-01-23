@@ -3,3 +3,6 @@ type: theme
 templates:
   - app.html
   - style.css
+includes:
+  - foo.css
+  - bar.js

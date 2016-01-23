@@ -3,7 +3,7 @@
 namespace Appizy\Command;
 
 use Appizy\ODS;
-use Exception;
+use Appizy\Theme;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,7 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
-use ZipArchive;
 
 class ConvertCommand extends Command
 {
@@ -44,25 +43,47 @@ class ConvertCommand extends Command
         $destinationPath = $input->getArgument('destination');
         $themeId = $input->getOption('theme');
 
-        $themeDir = __DIR__ . '/../../theme/default';
+        $themeDir = __DIR__ . '/../../theme/' . $themeId;
         $themeConfig = Yaml::parse(
-          $themeDir . '/default.info.yml'
+          $themeDir . '/' . $themeId . '.info.yml'
         );
 
         $ods = new ODS();
         $ods->load($filePath);
 
-        foreach ($themeConfig['files'] as $file) {
-            $this->renderAndSave($file, $ods, $destinationPath);
+        $theme = new Theme();
+        $themeFile = __DIR__ . '/../../theme/' . $themeId . '/' . $themeId . '.info.yml';
+        $theme->load($themeFile);
+
+        $this->renderAndSave($theme, $ods, $destinationPath);
+
+        $this->copyThemeIncludedFiles($theme, $destinationPath);
+    }
+
+    /**
+     * @param \Appizy\Theme $theme
+     * @param               $path
+     */
+    private function copyThemeIncludedFiles($theme, $path)
+    {
+        $themeDir = $theme->getDirectory();
+        $includedFiles = $theme->getIncludedFiles();
+
+        foreach ($includedFiles as $file) {
+            copy($themeDir . '/' . $file, $path . '/' . $file);
         }
     }
 
     /**
-     *
+     * @param \Appizy\Theme $theme
+     * @param               $data
+     * @param               $path
      */
-    private function renderAndSave($template, $data, $path)
+    private function renderAndSave($theme, $data, $path)
     {
-        $themeDir = __DIR__ . '/../../theme/default';
+        $themeDir = $theme->getDirectory();
+        $templateFiles = $theme->getTemplateFiles();
+
 
         $loader = new Twig_Loader_Filesystem($themeDir);
         $twig = new Twig_Environment(
@@ -70,19 +91,19 @@ class ConvertCommand extends Command
           )
         );
 
-        $renderedTemplate = $twig->render(
-          $template,
-          [
-            'ods' => $data
-          ]
-        );
+        foreach ($templateFiles as $file) {
+            $renderedTemplate = $twig->render(
+              $file,
+              [
+                'ods' => $data
+              ]
+            );
 
-        echo $renderedTemplate;
-        echo $template;
-        $filename = $path . '/' . $template;
+            $filename = $path . '/' . $file;
 
-        $open = fopen($filename, "w");
-        fwrite($open, $renderedTemplate);
-        fclose($open);
+            $open = fopen($filename, "w");
+            fwrite($open, $renderedTemplate);
+            fclose($open);
+        }
     }
 }

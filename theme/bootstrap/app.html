@@ -1,0 +1,14 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="bootstrap.min.css">
+</head>
+<body>
+{% set tables = ods.getTables() %}
+{% for table in tables %}
+<div class="container">
+    <h1>Table "{{ table.getAttribute('table:name') }}"</h1>
+</div>
+{% endfor %}
+</body>
+</html>
