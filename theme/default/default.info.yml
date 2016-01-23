@@ -1,5 +1,5 @@
 name: Default
 type: theme
 files:
-  - appizy.html.twig
-  - appizy.css.twig
+  - app.html
+  - style.css
