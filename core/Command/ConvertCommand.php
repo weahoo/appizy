@@ -2,7 +2,7 @@
 
 namespace Appizy\Command;
 
-use Appizy\ODS;
+use Appizy\ODSReader;
 use Appizy\Theme;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -48,7 +48,7 @@ class ConvertCommand extends Command
           $themeDir . '/' . $themeId . '.info.yml'
         );
 
-        $ods = new ODS();
+        $ods = new ODSReader();
         $ods->load($filePath);
 
         $theme = new Theme();

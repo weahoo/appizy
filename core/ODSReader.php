@@ -4,7 +4,7 @@ namespace Appizy;
 
 use Appizy\Parser;
 
-class ODS
+class ODSReader
 {
     /** @var \DOMXPath */
     private $xpath;
@@ -26,5 +26,23 @@ class ODS
     public function getTables() {
         $xpath = $this->xpath;
         return $xpath->query('//table:table');
+    }
+
+    /**
+     * @param \DOMNode $table
+     * @return \DOMNodeList
+     */
+    public function getRows(\DOMNode $table = null) {
+        $xpath = $this->xpath;
+        return $xpath->query('.//table:table-row', $table);
+    }
+
+    /**
+     * @param \DOMNode $row
+     * @return \DOMNodeList
+     */
+    public function getCells(\DOMNode $row = null){
+        $xpath = $this->xpath;
+        return $xpath->query('.//table:table-cell', $row);
     }
 } 
