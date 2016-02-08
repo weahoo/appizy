@@ -1,24 +1,33 @@
 {
     "name"       : "appizy/appizy",
-    "description": "Convert spreadsheet data to beautiful web content",
-    "autoload"   : {
-        "psr-4": {
-            "Appizy\\": "core/"
-        }
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^4.8"
-    },
-    "require"    : {
-        "twig/twig"      : "^1.23",
-        "symfony/console": "2.3.*",
-        "symfony/yaml"   : "2.7.*"
-    },
+    "type"       : "library",
+    "description": "Convert spreadsheet data into beautiful web content",
+    "keywords"   : [
+        "spreadsheet",
+        "conversion"
+    ],
+    "homepage"   : "https://github.com/appizy/appizy",
     "license"    : "MIT",
     "authors"    : [
         {
             "name" : "Nicolas Hefti",
             "email": "nicolas@hefti.fr"
         }
-    ]
+    ],
+
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    },
+
+    "require": {
+        "twig/twig"      : "^1.23",
+        "symfony/console": "2.3.*",
+        "symfony/yaml"   : "2.7.*"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Appizy\\": "core"
+        }
+    }
 }
