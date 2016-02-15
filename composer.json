@@ -29,5 +29,7 @@
         "psr-4": {
             "Appizy\\": "core"
         }
-    }
+    },
+
+    "bin":  ["bin/appizy"]
 }
