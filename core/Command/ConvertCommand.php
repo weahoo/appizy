@@ -17,24 +17,30 @@ class ConvertCommand extends Command
     protected function configure()
     {
         $this
-          ->setName('appizy')
-          ->setDescription('Convert a spreadsheet to webcontent')
-          ->addArgument(
-            'path',
-            InputArgument::REQUIRED,
-            'Which file do you want to convert?'
-          )->addArgument(
-            'destination',
-            InputArgument::OPTIONAL,
-            'Where?',
-            __DIR__ . '/../../dist'
-          )->addOption(
-            'theme',
-            't',
-            InputArgument::OPTIONAL,
-            'Theme name',
-            'default'
-          );
+            ->setName('appizy')
+            ->setDescription('Convert a spreadsheet to webcontent')
+            ->addArgument(
+                'path',
+                InputArgument::REQUIRED,
+                'Which file do you want to convert?'
+            )->addArgument(
+                'destination',
+                InputArgument::OPTIONAL,
+                'Where?',
+                __DIR__ . '/../../dist'
+            )->addOption(
+                'theme',
+                't',
+                InputArgument::OPTIONAL,
+                'Theme name',
+                'default'
+            )->addOption(
+                'theme-options',
+                'o',
+                InputArgument::OPTIONAL,
+                'Theme options (as JSON object)',
+                '{}'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -42,10 +48,11 @@ class ConvertCommand extends Command
         $filePath = $input->getArgument('path');
         $destinationPath = $input->getArgument('destination');
         $themeId = $input->getOption('theme');
+        $themeOptions = json_decode($input->getOption('theme-options'));
 
         $themeDir = __DIR__ . '/../../theme/' . $themeId;
         $themeConfig = Yaml::parse(
-          $themeDir . '/' . $themeId . '.info.yml'
+            $themeDir . '/' . $themeId . '.info.yml'
         );
 
         $ods = new ODSReader();
@@ -87,16 +94,16 @@ class ConvertCommand extends Command
 
         $loader = new Twig_Loader_Filesystem($themeDir);
         $twig = new Twig_Environment(
-          $loader, array(// 'cache' => __DIR__ . '/../data',
-          )
+            $loader, array(// 'cache' => __DIR__ . '/../data',
+            )
         );
 
         foreach ($templateFiles as $file) {
             $renderedTemplate = $twig->render(
-              $file,
-              [
-                'ods' => $data
-              ]
+                $file,
+                [
+                    'ods' => $data
+                ]
             );
 
             $filename = $path . '/' . $file;
