@@ -1,5 +1,0 @@
-name: Default
-type: theme
-templates:
-  - app.html
-  - style.css

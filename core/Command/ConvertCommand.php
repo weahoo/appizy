@@ -17,7 +17,7 @@ class ConvertCommand extends Command
     protected function configure()
     {
         $this
-          ->setName('appizy')
+          ->setName('convert')
           ->setDescription('Convert a spreadsheet to webcontent')
           ->addArgument(
             'path',
@@ -34,6 +34,12 @@ class ConvertCommand extends Command
             InputArgument::OPTIONAL,
             'Theme name',
             'default'
+          )->addOption(
+            'options',
+            'o',
+            InputArgument::OPTIONAL,
+            'Theme options (as JSON object)',
+            '{}'
           );
     }
 
@@ -55,7 +61,15 @@ class ConvertCommand extends Command
         $themeFile = __DIR__ . '/../../theme/' . $themeId . '/' . $themeId . '.info.yml';
         $theme->load($themeFile);
 
-        $this->renderAndSave($theme, $ods, $destinationPath);
+
+        $this->renderAndSave(
+          $theme,
+          [
+            'ods'     => $ods,
+            'options' => json_decode($input->getOption('options'))
+          ],
+          $destinationPath
+        );
 
         $this->copyThemeIncludedFiles($theme, $destinationPath);
     }
@@ -92,12 +106,7 @@ class ConvertCommand extends Command
         );
 
         foreach ($templateFiles as $file) {
-            $renderedTemplate = $twig->render(
-              $file,
-              [
-                'ods' => $data
-              ]
-            );
+            $renderedTemplate = $twig->render($file, $data);
 
             $filename = $path . '/' . $file;
 

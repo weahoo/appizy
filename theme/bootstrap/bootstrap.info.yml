@@ -1,7 +1,14 @@
-name: Bootstrap
-type: theme
+name: Bootstrap components
+description: Create Bootstrap components: scrollspy navigation,
 templates:
   - app.html
 
 includes:
   - bootstrap.min.css
+
+options:
+  component:
+    title: Component
+    values:
+      table: 'Static reponsive Table'
+      scrollspy: 'Scrollspy'

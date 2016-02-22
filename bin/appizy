@@ -18,8 +18,10 @@ if (is_file($autoload = __DIR__ . '/../vendor/autoload.php')) {
 }
 
 use Appizy\Command\ConvertCommand;
+use Appizy\Command\ThemesCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 $application->add(new ConvertCommand());
+$application->add(new ThemesCommand());
 $application->run();
