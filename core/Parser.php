@@ -10,7 +10,6 @@ class Parser
     public function __construct()
     {
         $this->offset = 0;
-        $this->tempDir = './dist';
     }
 
     /**
@@ -47,8 +46,7 @@ class Parser
      */
     private function getTmpDir()
     {
-
-        return './dist';
+        return sys_get_temp_dir();
     }
 
     /**

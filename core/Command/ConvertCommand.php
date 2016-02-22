@@ -51,7 +51,7 @@ class ConvertCommand extends Command
 
         $themeDir = __DIR__ . '/../../theme/' . $themeId;
         $themeConfig = Yaml::parse(
-          $themeDir . '/' . $themeId . '.info.yml'
+            $themeDir . '/' . $themeId . '.info.yml'
         );
 
         $ods = new ODSReader();
@@ -101,8 +101,8 @@ class ConvertCommand extends Command
 
         $loader = new Twig_Loader_Filesystem($themeDir);
         $twig = new Twig_Environment(
-          $loader, array(// 'cache' => __DIR__ . '/../data',
-          )
+            $loader, array(// 'cache' => __DIR__ . '/../data',
+            )
         );
 
         foreach ($templateFiles as $file) {
