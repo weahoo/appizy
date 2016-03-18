@@ -1,0 +1,70 @@
+#appizy table {
+  table-layout: fixed;
+	border: none;
+	border-collapse: collapse;
+}
+#appizy tbody {
+	border: none;
+}
+
+#appizy td, #appizy th {
+  overflow: hidden;
+}
+
+#appizy tr {
+	font-size:10pt;
+	font-family:arial;
+	min-height:10px;
+}
+
+#appizy td {
+	padding:2px;
+	line-height:normal;
+}
+
+#appizy input {
+	background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+	border: 1px solid #C2C2C2;
+	border-radius: 2px;
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	padding-right: 4px;
+	text-align: inherit;
+	margin:1px;
+	width: 90%;
+}
+
+#appizy input:focus {
+	border: 2px solid #333333;
+	margin:0px;
+}
+
+#appizy input:disabled {
+	border:none !important;
+	color: inherit;
+	-webkit-opacity: 1;
+	-webkit-text-fill-color:inherit;
+}
+
+#appizy select {
+	width:100%; text-align: inherit;
+}
+
+#appizy p {
+	margin: 0 0 0.1em 0;
+}
+
+.in {
+  text-align:right;
+}
+
+.out {
+  text-align:right;
+  padding:5px;
+}
+
+.hidden-cell {
+  display:none;
+}

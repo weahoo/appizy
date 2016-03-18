@@ -1,14 +1,5 @@
-name: Bootstrap components
-description: Create Bootstrap components: scrollspy navigation.
+name: Webapp
+description: Web application reproducing spreadsheet calculation and display.
 templates:
   - app.html
-
-includes:
-  - bootstrap.min.css
-
-options:
-  component:
-    title: Component
-    values:
-      table: 'Static reponsive Table'
-      scrollspy: 'Scrollspy'
+  - script.js
