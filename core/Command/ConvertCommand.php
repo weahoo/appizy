@@ -9,7 +9,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 use ZipArchive;
@@ -22,20 +21,19 @@ class ConvertCommand extends Command
             ->setName('convert')
             ->setDescription('Convert a spreadsheet to webcontent')
             ->addArgument(
-                'path',
+                'source',
                 InputArgument::REQUIRED,
                 'Which file do you want to convert?'
             )->addArgument(
                 'destination',
                 InputArgument::OPTIONAL,
-                'Where?',
-                __DIR__ . '/../../dist'
+                'Set to source directory if empty'
             )->addOption(
                 'theme',
                 't',
                 InputArgument::OPTIONAL,
                 'Theme name',
-                'default'
+                'webapp'
             )->addOption(
                 'options',
                 'o',
@@ -47,14 +45,14 @@ class ConvertCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $filePath = $input->getArgument('path');
-        $destinationPath = $input->getArgument('destination');
-        $themeId = $input->getOption('theme');
+        $filePath = $input->getArgument('source');
 
-        $themeDir = __DIR__ . '/../../theme/' . $themeId;
-        $themeConfig = Yaml::parse(
-            $themeDir . '/' . $themeId . '.info.yml'
-        );
+        $destinationPath = $input->getArgument('destination');
+        if (empty($destinationPath)) {
+            $destinationPath = dirname($filePath);
+        }
+
+        $themeId = $input->getOption('theme');
 
         $theme = new Theme();
         $themeFile = __DIR__ . '/../../theme/' . $themeId . '/' . $themeId . '.info.yml';
@@ -81,9 +79,8 @@ class ConvertCommand extends Command
                 null,
                 1,
                 [
-                    'compact css' => false,
-                    'jquery tab' => false,
-                    /* 'freeze' => $option_freeze,*/
+                    'compact css'  => false,
+                    'jquery tab'   => false,
                     'print header' => true,
                 ]
             );
@@ -91,10 +88,11 @@ class ConvertCommand extends Command
             $this->renderAndSave(
                 $theme,
                 [
-                    'content' => $elements['content'],
-                    'style' => $elements['style'],
-                    'script' => $elements['script'],
-                    'options' => json_decode($input->getOption('options'))
+                    'content'   => $elements['content'],
+                    'style'     => $elements['style'],
+                    'script'    => $elements['script'],
+                    'libraries' => $elements['libraries'],
+                    'options'   => json_decode($input->getOption('options'))
                 ],
                 $destinationPath
             );
@@ -106,7 +104,7 @@ class ConvertCommand extends Command
             $this->renderAndSave(
                 $theme,
                 [
-                    'ods' => $ods,
+                    'ods'     => $ods,
                     'options' => json_decode($input->getOption('options'))
                 ],
                 $destinationPath

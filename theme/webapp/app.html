@@ -10,6 +10,9 @@
     <style>
         {{ style }}
     </style>
+    {% for library in libraries %}
+        {{ library | raw }}
+    {% endfor %}
 </head>
 <body>
     {{ content | raw }}
