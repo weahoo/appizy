@@ -60,6 +60,7 @@ class ConvertCommand extends Command
 
         if ($themeId === 'webapp') {
 
+            $output->writeln("Decompressing file");
             $extractDir = $destinationPath . '/deflated';
             $zip = new ZipArchive;
             $zip->open($filePath);
@@ -72,9 +73,11 @@ class ConvertCommand extends Command
 
             $tool = new Tool(true);
 
+            $output->writeln("Parsing spreadsheet");
             $tool->tool_parse_wb($xml_path);
             $tool->tool_clean();
 
+            $output->writeln("Rendering application");
             $elements = $tool->tool_render(
                 null,
                 1,
@@ -112,6 +115,8 @@ class ConvertCommand extends Command
 
             $this->copyThemeIncludedFiles($theme, $destinationPath);
         }
+
+        self::delTree($destinationPath . '/deflated');
     }
 
     /**
@@ -154,5 +159,17 @@ class ConvertCommand extends Command
             fwrite($open, $renderedTemplate);
             fclose($open);
         }
+    }
+
+    private function delTree($dir)
+    {
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? self::delTree("$dir/$file") : unlink(
+                "$dir/$file"
+            );
+        }
+
+        return rmdir($dir);
     }
 }

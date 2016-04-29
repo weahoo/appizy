@@ -1,9 +1,11 @@
 # Appizy
 
+Convert spreadsheet data to web content
+
 ## Example
 
 ```
-./bin/console appizy examples/demo-appizy.ods
+./bin/appizy convert examples/demo-appizy.ods
 ```
 
 ## Test
