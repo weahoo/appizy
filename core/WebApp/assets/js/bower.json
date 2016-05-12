@@ -1,0 +1,19 @@
+{
+  "name": "appizy-asset",
+  "authors": [
+    "Nicolas Hefti <contact@appizy.com>"
+  ],
+  "main": "",
+  "moduleType": [
+    "amd"
+  ],
+  "homepage": "http://www.appizy.com",
+  "dependencies": {
+    "requirejs": "^2.1.22",
+    "numeral": "~1.5.3",
+    "jquery": "~2.2.3"
+  },
+  "devDependencies": {
+    "Squire.js": "squire#^0.2.0"
+  }
+}

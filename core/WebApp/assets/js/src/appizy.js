@@ -1,13 +1,15 @@
-(function () {
+define([
+    'jquery',
+    'numeral'
+], function ($, numeral) {
+    
+    var Appizy = {};
 
-    /**
-     * Extends jQuery
-     */
     $.fn.exists = function () {
         return this.length !== 0;
     };
 
-    RANGE = function () {
+    Appizy.RANGE = function () {
         if (arguments.length == 1) {
             var value = null;
             var cell_ref = 's' + arguments[0][0] + 'r' + arguments[0][1] + 'c' + arguments[0][2];
@@ -43,7 +45,7 @@
         }
     };
 
-    getInput = function (value, type) {
+    Appizy.getInput = function (value, type) {
 
         if (typeof type === "undefined") type = "string";
 
@@ -67,9 +69,11 @@
     };
 
     /**
-     * Set the value of an output according to it's type and format
+     * @param {string} output_name
+     * @param {string|number} value
+     * @param {string} type
      */
-    setOutput = function (output_name, value, type) {
+    Appizy.setOutput = function (output_name, value, type) {
 
         // Set default type if necessary
         if (typeof type === "undefined") {
@@ -101,4 +105,5 @@
         }
     };
 
-}).call(this);
+    return Appizy;
+});
