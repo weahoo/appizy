@@ -5,6 +5,18 @@ define([
 
     var APY = {};
 
+    window.onload = function () {
+        $('input, select').on('change', function () {
+            $(this).setFormattedValue();
+            run_calc();
+        });
+
+        $('input:enabled').each(function () {
+            $(this).setFormattedValue();
+        });
+        run_calc();
+    };
+
     window.RANGE = function () {
         if (arguments.length == 1) {
             var value = null;
@@ -102,17 +114,34 @@ define([
         }
     };
 
-    window.onload = function () {
-        var inputs = document.getElementsByTagName('input');
-        for (var i = 0; i < inputs.length; i++) {
-            input = inputs.item(i);
+    $.fn.setFormattedValue = function () {
+        var value = $(this).val();
+        var valueType = $(this).attr('data-type');
+        var valueFormat = $(this).attr('data-format');
 
-            var value = APY.getInput(inputs.item(i).value, inputs.item(i).dataset.type);
-            if (!input.disabled) {
-                APY.set(inputs.item(i).name, value, inputs.item(i).dataset.type);
+        var formattedValue = APY.formatValue(value, valueType, valueFormat);
+        this.val(formattedValue);
+    };
+
+    APY.formatValue = function (value, type, formats) {
+        var formattedValue = value;
+
+        if ((type == 'number' || type == 'float' || type == 'percentage' || type == 'currency') &&
+            (typeof formats != "undefined")) {
+
+            var formats_array = formats.toString().split(";", 3);
+            var nb_format = formats_array.length;
+            if (value == 0 && nb_format == 3) {
+                myformat = formats_array[1];
+            } else if (value < 0) {
+                myformat = formats_array[0];
+            } else {
+                myformat = formats_array[nb_format - 1];
             }
+            formattedValue = numeral(value).format(myformat);
         }
-        run_calc();
+
+        return formattedValue;
     };
 
     return APY;

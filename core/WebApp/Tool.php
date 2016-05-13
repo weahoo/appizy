@@ -511,9 +511,7 @@ $('li a').click(function (event) {
         $formulas = "// Cells formulas" . "\n";
         $formulaslist = array();
 
-        // Cr�ation d'un tableau par sheet
         $countsheet = 0;
-        $maxSheet = false;
 
         $htmlTable = '';
 
@@ -548,7 +546,6 @@ $('li a').click(function (event) {
 
                 $htmlTable .= '<tr' . $rowstyle . '>' . "\n";
 
-                // Cr�ation des cellules de chaque ligne
                 foreach ($row->row_get_cells() as $cCI => $tempcell) {
 
                     if ($tempcell->cell_get_validation() != '') {
@@ -615,9 +612,9 @@ $('li a').click(function (event) {
                                     ($option_freeze_string && $value_type == 'string') ||
                                     ($option_freeze_num && $value_type == 'float')
                                 ) ? "disabled " : "";
-                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . $disabled . ' id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '" type="text" value="' . $tempcell->cell_get_value() . '" onchange="APY.set(this.name,this.value,this.dataset.type);run_calc()">';
+                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . $disabled . ' id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '" type="text" value="' . $tempcell->cell_get_value() . '">';
                             } else {
-                                $td .= '<select onchange="run_calc();" id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '">';
+                                $td .= '<select id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '">';
                                 $value_attr = $tempcell->cell_get_value_attr();
                                 foreach ($list_values as $value) {
                                     $selected = ($value == $value_attr) ? " selected" : "";
@@ -864,7 +861,7 @@ $('li a').click(function (event) {
         }
 
         // Impression des steps de calcul, uniquement s'il y a des �tapes de calcul
-        $oninput = "";//' onchange="run_calc()"';
+        $oninput = "";
         if ($currentstep > 0) {
             $run_calc = 'function run_calc(){ ';
             $formulascall = '';
@@ -894,17 +891,19 @@ $('li a').click(function (event) {
 
         // Get external formulas
         if (!empty($formulascall)) {
-            $formulas_ext = "// Calculation functions" . "\n";
-            $formulas_ext .= "(function() {" . "\n";
-            $formulas_ext .= "var root = this;" . "\n";
+            $script .= "(function() {" . "\n";
+
+            $formulas_ext = "var root = this;" . "\n";
             $formulas_ext .= "var Formula = root.Formula = {};" . "\n";
             $formulas_ext .= "var APY = root.APY = {};" . "\n";
 
             $accessFormulas = [
-                'window.RANGE',
+                'window.onload',
+                '$.fn.setFormattedValue',
                 'APY.getInput',
                 'APY.set',
-                'window.onload'
+                'APY.formatValue',
+                'window.RANGE'
             ];
             foreach ($accessFormulas as $formula) {
                 $formulas_ext .= $this->getExtFunction($formula, __DIR__ . "/assets/js/src/appizy.js");
@@ -914,12 +913,12 @@ $('li a').click(function (event) {
                 $formulas_ext .= $this->getExtFunction($ext_formula, __DIR__ . "/assets/js/src/formula.js");
             }
 
-            $formulas_ext .= "}).call();" . "\n";
 
             $script .= $run_calc;
             $script .= $formulascall;
             $script .= $formulas;
             $script .= $formulas_ext;
+            $script .= "}).call();" . "\n";
         }
 
         // D�but du tableau
@@ -998,7 +997,7 @@ $('li a').click(function (event) {
 
             if (preg_match_all($expression, file_get_contents($library_path), $match)) {
                 $function = $match[1][0];
-                $ext_formula = $namu . " = function" . $function . "}" . "\n";
+                $ext_formula = $namu . " = function" . $function . "};" . "\n\n";
             }
 
             $already_loaded[] = $namu;

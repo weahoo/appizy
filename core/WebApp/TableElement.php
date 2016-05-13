@@ -4,9 +4,10 @@ namespace Appizy\WebApp;
 
 class TableElement
 {
-// Index of the TableElement
+    // Index of the TableElement
     var $eid;
-// Array containing styles name of the TableElement
+
+    // Array containing styles name of the TableElement
     var $styles_name = array();
 
     function __construct($element_id)
@@ -17,7 +18,7 @@ class TableElement
 
     function set_id($element_id)
     {
-        $this->eid = (int)$element_id;
+        $this->eid = (int) $element_id;
     }
 
     function tabelmt_error($message)

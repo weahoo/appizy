@@ -22,8 +22,9 @@ class DataStyle
         // Remove euro sign
         $prefix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), "", $prefix);
 
-        if ($prefix != " " && $prefix != "  " && $prefix != "  " && $prefix != "   ")
+        if ($prefix != " " && $prefix != "  " && $prefix != "  " && $prefix != "   ") {
             $this->prefix = $prefix;
+        }
     }
 
     function data_style_set_suffix($suffix)
@@ -31,8 +32,9 @@ class DataStyle
         // Remove euro sign
         $suffix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), "", $suffix);
 
-        if ($suffix != " " && $suffix != "  " && $suffix != "  " && $suffix != "   ")
+        if ($suffix != " " && $suffix != "  " && $suffix != "  " && $suffix != "   ") {
             $this->suffix = $suffix;
+        }
     }
 
     // Returns the format code of the data style
