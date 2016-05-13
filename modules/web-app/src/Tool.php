@@ -906,11 +906,11 @@ $('li a').click(function (event) {
                 'window.RANGE'
             ];
             foreach ($accessFormulas as $formula) {
-                $formulas_ext .= $this->getExtFunction($formula, __DIR__ . "/assets/js/src/appizy.js");
+                $formulas_ext .= $this->getExtFunction($formula, __DIR__ . "/../assets/js/src/appizy.js");
             }
 
             foreach ($ext_formulas as $ext_formula) {
-                $formulas_ext .= $this->getExtFunction($ext_formula, __DIR__ . "/assets/js/src/formula.js");
+                $formulas_ext .= $this->getExtFunction($ext_formula, __DIR__ . "/../assets/js/src/formula.js");
             }
 
 
@@ -963,7 +963,7 @@ $('li a').click(function (event) {
     function tool_get_css($used_styles = array(), $compact_code = true)
     {
 
-        $css_code = file_get_contents(__DIR__ . "/assets/css/style-webapp-default.css");
+        $css_code = file_get_contents(__DIR__ . "/../assets/css/style-webapp-default.css");
 
         $used_styles = array_flip($used_styles);
         // Gets intersection of used and available styles

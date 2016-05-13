@@ -1,9 +1,9 @@
 <?php
 
-namespace Appizy\Command;
+namespace Appizy\Core\Command;
 
-use Appizy\ODSReader;
-use Appizy\Theme;
+use Appizy\Core\ODSReader;
+use Appizy\Core\Theme;
 use Appizy\WebApp\Tool;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -55,7 +55,7 @@ class ConvertCommand extends Command
         $themeId = $input->getOption('theme');
 
         $theme = new Theme();
-        $themeFile = __DIR__ . '/../../theme/' . $themeId . '/' . $themeId . '.info.yml';
+        $themeFile = __DIR__ . '/../../../../theme/' . $themeId . '/' . $themeId . '.info.yml';
         $theme->load($themeFile);
 
         if ($themeId === 'webapp') {
@@ -120,7 +120,7 @@ class ConvertCommand extends Command
     }
 
     /**
-     * @param \Appizy\Theme $theme
+     * @param \Appizy\Core\Theme $theme
      * @param               $path
      */
     private function copyThemeIncludedFiles($theme, $path)
@@ -134,9 +134,9 @@ class ConvertCommand extends Command
     }
 
     /**
-     * @param \Appizy\Theme $theme
-     * @param               $data
-     * @param               $path
+     * @param \Appizy\Core\Theme $theme
+     * @param                    $data
+     * @param                    $path
      */
     private function renderAndSave($theme, $data, $path)
     {

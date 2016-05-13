@@ -1,8 +1,8 @@
 <?php
 
-namespace Appizy;
+namespace Appizy\Core;
 
-use Appizy\Parser;
+use Appizy\Core\Parser;
 
 class ODSReader
 {

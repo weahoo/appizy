@@ -1,6 +1,6 @@
 <?php
 
-namespace Appizy\Command;
+namespace Appizy\Core\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +25,7 @@ class ThemesCommand extends Command
         $finder = new Finder();
 
         $finder->files()
-          ->in(__DIR__ . '/../../theme')
+          ->in(__DIR__ . '/../../../../theme')
           ->depth(1)
           ->name('*.info.yml');
 

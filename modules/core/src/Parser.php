@@ -1,6 +1,6 @@
 <?php
 
-namespace Appizy;
+namespace Appizy\Core;
 
 class Parser
 {
@@ -20,7 +20,8 @@ class Parser
     {
         $tmp = self::getTmpDir();
         copy($file, $tmp . '/' . basename($file));
-        $path = $tmp . '/' . basename($file);
+        $path =
+            $tmp . '/' . basename($file);
         $uid = uniqid();
         $tempDir = $tmp . '/' . $uid;
         mkdir($tempDir);

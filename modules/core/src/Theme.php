@@ -1,6 +1,6 @@
 <?php
 
-namespace Appizy;
+namespace Appizy\Core;
 
 use Symfony\Component\Yaml\Yaml;
 

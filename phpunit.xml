@@ -12,8 +12,8 @@
          bootstrap="vendor/autoload.php"
 >
   <testsuites>
-    <testsuite name="ODS Test Suite">
-      <directory suffix="Test.php" >core/Tests</directory>
+    <testsuite name="Core test suite">
+      <directory suffix="Test.php" >modules/core/tests</directory>
     </testsuite>
   </testsuites>
 </phpunit>
