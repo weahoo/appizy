@@ -222,8 +222,7 @@ class Formula
             $script .= $formula_element;
         }
 
-        // return "function formula_".$formula_name."(){ setOutput('".$formula_name."',".$script.") }";;
-        return "function " . $formula_name . "(){ setOutput('" . $formula_name . "'," . $script . ") }";;
+        return "function " . $formula_name . "(){ APY.set('" . $formula_name . "'," . $script . ") }";
 
     }
 

@@ -2,8 +2,6 @@
 
 namespace Appizy\WebApp;
 
-use Appizy\WebApp\ArrayTrait;
-
 class Tool
 {
     use ArrayTrait;
@@ -498,9 +496,9 @@ $('li a').click(function (event) {
 
         // Default assets for webapplication
         $libraries = [
-            'jquery'   => '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>' . "\n",
+            'jquery' => '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>' . "\n",
             'jqueryui' => '<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>' . "\n",
-            'numeral'  => '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>' . "\n"
+            'numeral' => '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>' . "\n"
         ];
 
 
@@ -617,7 +615,7 @@ $('li a').click(function (event) {
                                     ($option_freeze_string && $value_type == 'string') ||
                                     ($option_freeze_num && $value_type == 'float')
                                 ) ? "disabled " : "";
-                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . $disabled . ' id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '" type="text" value="' . $tempcell->cell_get_value() . '" onchange="setOutput(this.name,this.value,this.dataset.type);run_calc()">';
+                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . $disabled . ' id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '" type="text" value="' . $tempcell->cell_get_value() . '" onchange="APY.set(this.name,this.value,this.dataset.type);run_calc()">';
                             } else {
                                 $td .= '<select onchange="run_calc();" id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '">';
                                 $value_attr = $tempcell->cell_get_value_attr();
@@ -743,7 +741,7 @@ $('li a').click(function (event) {
 
                 $formulas .= $formula->get_script() . "\n";
                 $formulaslist[$formula->get_name()] = array('call' => $formula->get_call(),
-                                                            'dep'  => $dependances,
+                    'dep' => $dependances,
                 );
                 foreach ($formula->get_ext_formula() as $ext_formula) {
                     $ext_formulas[] = $ext_formula;
@@ -900,36 +898,28 @@ $('li a').click(function (event) {
             $formulas_ext .= "(function() {" . "\n";
             $formulas_ext .= "var root = this;" . "\n";
             $formulas_ext .= "var Formula = root.Formula = {};" . "\n";
+            $formulas_ext .= "var APY = root.APY = {};" . "\n";
+
+            $accessFormulas = [
+                'window.RANGE',
+                'APY.getInput',
+                'APY.set',
+                'window.onload'
+            ];
+            foreach ($accessFormulas as $formula) {
+                $formulas_ext .= $this->getExtFunction($formula, __DIR__ . "/assets/js/src/appizy.js");
+            }
 
             foreach ($ext_formulas as $ext_formula) {
-                $formulas_ext .= $this->getExtFunction($ext_formula, __DIR__ . "/assets/js/formula.js");
+                $formulas_ext .= $this->getExtFunction($ext_formula, __DIR__ . "/assets/js/src/formula.js");
             }
 
-            $accessFormulas = array("RANGE", "getInput", "setOutput", "$.fn.exists");
-            foreach ($accessFormulas as $formula) {
-                $formulas_ext .= $this->getExtFunction($formula, __DIR__ . "/assets/js/appizy.js");
-            }
-            $formulas_ext .= "}).call(this);" . "\n";
-
-
-            $onload = "window.onload = function(){
-inputs = document.getElementsByTagName('input');
-for(i=0; i<inputs.length; i++){
-	input = inputs.item(i);
-
-	value = getInput(inputs.item(i).value,  inputs.item(i).dataset.type);
-	if (!input.disabled) setOutput(inputs.item(i).name, value, inputs.item(i).dataset.type);
-}
-run_calc();
-
-};" . "\n";
-
+            $formulas_ext .= "}).call();" . "\n";
 
             $script .= $run_calc;
             $script .= $formulascall;
             $script .= $formulas;
             $script .= $formulas_ext;
-            $script .= $onload;
         }
 
         // D�but du tableau

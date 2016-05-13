@@ -2,21 +2,17 @@ define([
     'jquery',
     'numeral'
 ], function ($, numeral) {
-    
-    var Appizy = {};
 
-    $.fn.exists = function () {
-        return this.length !== 0;
-    };
+    var APY = {};
 
-    Appizy.RANGE = function () {
+    window.RANGE = function () {
         if (arguments.length == 1) {
             var value = null;
             var cell_ref = 's' + arguments[0][0] + 'r' + arguments[0][1] + 'c' + arguments[0][2];
             var item = $('[name=' + cell_ref + ']');
 
-            if (item.exists()) {
-                value = getInput(item.val(), item.data('type'));
+            if (item.length > 0) {
+                value = APY.getInput(item.val(), item.data('type'));
             }
 
             return value;
@@ -33,8 +29,8 @@ define([
 
                     var item = $('[name=' + cell_ref + ']');
 
-                    if (item.exists()) {
-                        row.push(getInput(item.val(), item.data('type')));
+                    if (item.length > 0) {
+                        row.push(APY.getInput(item.val(), item.data('type')));
                     } else {
                         row.push(null);
                     }
@@ -45,7 +41,7 @@ define([
         }
     };
 
-    Appizy.getInput = function (value, type) {
+    APY.getInput = function (value, type) {
 
         if (typeof type === "undefined") type = "string";
 
@@ -73,7 +69,7 @@ define([
      * @param {string|number} value
      * @param {string} type
      */
-    Appizy.setOutput = function (output_name, value, type) {
+    APY.set = function (output_name, value, type) {
 
         // Set default type if necessary
         if (typeof type === "undefined") {
@@ -86,7 +82,8 @@ define([
         element.data('type', type);
 
         // Format allowed for number, float and percentage
-        if ((type == "number" || type == "float" || type == "percentage") && (typeof formats != "undefined")) {
+        if ((type == 'number' || type == 'float' || type == 'percentage' || type == 'currency') &&
+            (typeof formats != "undefined")) {
 
             var formats_array = formats.toString().split(";", 3);
             var nb_format = formats_array.length;
@@ -105,5 +102,18 @@ define([
         }
     };
 
-    return Appizy;
+    window.onload = function () {
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            input = inputs.item(i);
+
+            var value = APY.getInput(inputs.item(i).value, inputs.item(i).dataset.type);
+            if (!input.disabled) {
+                APY.set(inputs.item(i).name, value, inputs.item(i).dataset.type);
+            }
+        }
+        run_calc();
+    };
+
+    return APY;
 });
