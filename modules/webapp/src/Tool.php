@@ -259,12 +259,6 @@ class Tool
         // Pour le script des formules
         $script = "";
 
-        // Default assets for webapplication
-        $libraries = [
-            'jquery'  => '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>',
-            'numeral' => '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>'
-        ];
-
         $formulas = "// Cells formulas" . "\n";
         $formulaslist = array();
 
@@ -682,7 +676,6 @@ class Tool
         $variables['content'] = $htmlTable;
         $variables['style'] = $cssTable;
         $variables['script'] = $script;
-        $variables['libraries'] = $libraries;
 
         return $variables;
     }
