@@ -164,8 +164,6 @@ class OpenDocumentParser
             foreach ($sheet['column'] as $curCOLI => $col) {
                 $this->parser_debug("New col parsed:" . $curCOLI);
                 $tempcol = new Column($curCOLI);
-                //$this->debug = TRUE;
-                //$this->parser_debug("********** NEW COL".$curCOLI);
 
                 if (array_key_exists('attrs', $col)) {
                     // Si la colonne a des attributs
