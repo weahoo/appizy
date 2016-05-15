@@ -15,5 +15,8 @@
     <testsuite name="Core test suite">
       <directory suffix="Test.php" >modules/core/tests</directory>
     </testsuite>
+    <testsuite name="Integration tests">
+      <directory suffix="Test.php" >tests</directory>
+    </testsuite>
   </testsuites>
 </phpunit>
