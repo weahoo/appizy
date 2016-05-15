@@ -10,28 +10,29 @@ class Cell extends TableElement
     var $value_attr; // Valeur de la cellule
     var $value_disp; // Valeur vue (il peut y avoir une diff�rence de mise en forme avec $value_attr)
     var $value_inlist; // Liste de l'ensemble des valeurs de la cellule, si vide valeur libre
-
     var $validation;
-
     var $formula; // Formule associ�e � la cellule. La formule est stock�e en langage javascript
-// Colonnes et lignes fusionn�es
+    /** @var int */
     var $colspan;
+    /** @var int */
     var $rowspan;
-// Nom du style (CSS) associ� � la cellule
     var $styles = array();
-// Comment on the cell
+    // Comment on the cell
     var $annotation;
 
     function __construct($sheet, $row, $col, $options = array())
     {
         $this->set_id($col);
 
-        $this->coord = array('sheet' => $sheet,
-                             'row'   => $row,
-                             'col'   => $col
+        $this->coord = array(
+            'sheet' => $sheet,
+            'row'   => $row,
+            'col'   => $col
         );
 
-        if (isset($options['style'])) $this->add_style_name($options['style']);
+        if (isset($options['style'])) {
+            $this->add_style_name($options['style']);
+        }
 
         $this->value_disp = isset($options['value_disp']) ?
             $options['value_disp'] : "";
@@ -41,9 +42,9 @@ class Cell extends TableElement
             $options['type'] : "text";
         $this->value_type = isset($options['value_type']) ?
             $options['value_type'] : "string";
-        $this->rowspan = isset($options['rowspan']) ?
+        $this->rowspan = (int) isset($options['rowspan']) ?
             $options['rowspan'] : 1;
-        $this->colspan = isset($options['colspan']) ?
+        $this->colspan = (int) isset($options['colspan']) ?
             $options['colspan'] : 1;
         $this->validation = isset($options['validation']) ?
             $options['validation'] : null;
@@ -95,7 +96,7 @@ class Cell extends TableElement
     {
         $annotation = $this->annotation;
 
-// Just gets the content inside p tags.
+        // Just gets the content inside p tags.
         if ($annotation) {
             preg_match('/\>(.*)<\/p>/', $annotation, $matches);
             $annotation = strip_tags($matches[1]);
@@ -116,12 +117,53 @@ class Cell extends TableElement
         return $this->value_type;
     }
 
+    function getDisplayedValue()
+    {
+        return $this->value_disp;
+    }
+
     /**
      * Return cell displayed value
      */
     function cell_get_value_disp()
     {
         return $this->value_disp;
+    }
+
+    /**
+     * Return cell attribute value first or displayed value if not existent
+     */
+    function getValue()
+    {
+        $cell_value = ($value_attr = $this->value_attr) ?
+            $value_attr : $this->value_disp;
+
+        if ($this->type == "in") {
+            $cell_value = strip_tags($cell_value);
+        }
+
+        return $cell_value;
+    }
+    
+    /**
+     * Return cell attribute value first or displayed value if not existent
+     */
+    function cell_get_value()
+    {
+
+        $cell_value = ($value_attr = $this->value_attr) ?
+            $value_attr : $this->value_disp;
+
+        if ($this->type == "in") {
+            $cell_value = strip_tags($cell_value);
+        }
+
+        return $cell_value;
+    }
+
+    function getValueAttr()
+    {
+        return $this->value_attr;
     }
 
     /**
@@ -137,12 +179,12 @@ class Cell extends TableElement
         return $this->value_inlist;
     }
 
-    function cell_get_colspan()
+    function getColSpan()
     {
         return $this->colspan;
     }
 
-    function cell_get_rowspan()
+    function getRowSpan()
     {
         return $this->rowspan;
     }
@@ -206,21 +248,6 @@ class Cell extends TableElement
         );
 
         return $empty;
-    }
-
-    /**
-     * Return cell attribute value first or displayed value if not existent
-     */
-    function cell_get_value()
-    {
-
-        $cell_value = ($value_attr = $this->value_attr) ?
-            $value_attr : $this->value_disp;
-
-        if ($this->type == "in")
-            $cell_value = strip_tags($cell_value);
-
-        return $cell_value;
     }
 
     function cell_get_validation()

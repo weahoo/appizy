@@ -10,7 +10,10 @@ class Row extends TableElement
     var $sheet_ind;
     var $row_ind;
     var $cells;
+
     var $collapse;
+    /** @var array  */
+    var $cell;
 
     function __construct($sheet_ind, $row_ind, $options)
     {
@@ -26,6 +29,9 @@ class Row extends TableElement
         if (isset($options['style'])) $this->add_style_name($options['style']);
     }
 
+    /**
+     * @param Cell $newCell
+     */
     function addCell(Cell $newCell)
     {
         $cell_id = $newCell->get_id();
@@ -35,6 +41,13 @@ class Row extends TableElement
     function getCells()
     {
         return $this->cell;
+    }
+
+    /**
+     * @return bool
+     */
+    function isHidden() {
+        return $this->collapse === true;
     }
 
     function row_get_cells()

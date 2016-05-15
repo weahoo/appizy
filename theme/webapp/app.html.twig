@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Appizy">
+    <title>Appizy</title>
+    <style>
+        {{ style }}
+    </style>
+    {% for library in libraries %}
+        {{ library | raw }}
+    {% endfor %}
+</head>
+<body>
+<div id="appizy">
+    <form>
+        <ul>
+            {% for sheet in spreadSheet.getSheets() %}
+                <li>
+                    <a href="#sheet{{ loop.index }}">{{ sheet.getName() }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% for sheet in spreadSheet.getSheets() %}
+            <div id="sheet{{ loop.index }}">
+                <table>
+                    {% for row in sheet.getRows() %}
+                        <tr class="{{ row.getName() }} {{ row.getStyles()|join(' ') }}">
+                            {% for cell in row.getCells() %}
+                                {% if (cell.getColSpan() > 1) %}
+                                    {% set col_span = ' colspan="' ~ cell.getColSpan() ~ '"' %}
+                                {% endif %}
+                                {% if (cell.getRowSpan() > 1) %}
+                                    {% set row_span = ' rowspan="' ~ cell.getRowSpan() ~ '"' %}
+                                {% endif %}
+                                {% set cellType = cell.getType() %}
+                                {% set cellStyle = cell.getStyles()|join(' ') %}
+                                <td class="{{ cell.getName() }} {{ cellType }} {{ cellStyle }}" {{ col_span | raw }}{{ row_span | raw }}>
+                                    {% if cellType == 'in' %}
+                                        {% set values = cell.getValueList() %}
+                                        {% if values is empty %}
+                                        <input id="{{ cell.getName() }}" name="{{ cell.getName() }}" data-type="{{ cellType }}" value="{{ cell.getValue() }}">
+                                        {% else %}
+                                        <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
+                                            {% for value in values %}
+                                                <option value="{{ value }}">{{ value }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {%  endif %}
+                                    {% elseif cellType == 'out' %}
+                                        <input disabled="disabled" name="{{ cell.getName() }}" value="{{ cell.getValueAttr() }}" data-type="{{ cellType }}">
+                                    {% else %}
+                                        {{ cell.getDisplayedValue() | raw }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+    </form>
+</div>
+{% if script %}
+    <script type="application/javascript" src="script.js"></script>
+{% endif %}
+</body>
+</html>

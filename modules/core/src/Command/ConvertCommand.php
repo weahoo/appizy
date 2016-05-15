@@ -91,11 +91,12 @@ class ConvertCommand extends Command
             $this->renderAndSave(
                 $theme,
                 [
-                    'content'   => $elements['content'],
-                    'style'     => $elements['style'],
-                    'script'    => $elements['script'],
-                    'libraries' => $elements['libraries'],
-                    'options'   => json_decode($input->getOption('options'))
+                    'spreadSheet' => $tool,
+                    'content'     => $elements['content'],
+                    'style'       => $elements['style'],
+                    'script'      => $elements['script'],
+                    'libraries'   => $elements['libraries'],
+                    'options'     => json_decode($input->getOption('options'))
                 ],
                 $destinationPath
             );
@@ -121,7 +122,7 @@ class ConvertCommand extends Command
 
     /**
      * @param \Appizy\Core\Theme $theme
-     * @param               $path
+     * @param                    $path
      */
     private function copyThemeIncludedFiles($theme, $path)
     {
@@ -150,10 +151,11 @@ class ConvertCommand extends Command
             )
         );
 
-        foreach ($templateFiles as $file) {
-            $renderedTemplate = $twig->render($file, $data);
+        foreach ($templateFiles as $fileName) {
+            $renderedTemplate = $twig->render($fileName, $data);
 
-            $filename = $path . '/' . $file;
+            $fileName = str_replace('.twig', '', $fileName);
+            $filename = $path . '/' . $fileName;
 
             $open = fopen($filename, "w");
             fwrite($open, $renderedTemplate);

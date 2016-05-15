@@ -7,13 +7,13 @@ class TableElement
     // Index of the TableElement
     var $eid;
 
-    // Array containing styles name of the TableElement
+    /** @var array */
     var $styles_name = array();
 
     function __construct($element_id)
     {
         $this->set_id($element_id);
-        $this->styles_name = array();
+        $this->styles_name = [];
     }
 
     function set_id($element_id)
@@ -54,6 +54,13 @@ class TableElement
         }
 
         return $styles_name;
+    }
+
+    /**
+     * @return array
+     */
+    function getStyles() {
+        return $this->styles_name;
     }
 
     function get_styles()

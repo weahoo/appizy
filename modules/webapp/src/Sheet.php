@@ -11,6 +11,7 @@ class Sheet extends TableElement
     var $name;
     var $style;
     var $col;
+    /** @var Row[] */
     var $row;
 
     function __construct($sheet_id, $sheet_name)

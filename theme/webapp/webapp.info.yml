@@ -1,5 +1,5 @@
 name: Webapp
 description: Web application reproducing spreadsheet calculation and display.
 templates:
-  - app.html
+  - app.html.twig
   - script.js

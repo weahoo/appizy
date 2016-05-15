@@ -78,13 +78,15 @@ class Tool
                     $tempcell = $this->tool_get_cell($dep[0], $dep[1], $dep[2]);
                     if ($tempcell) {
                         // If cell exists
-                        if ($tempcell->getType() != 'out')
-                            // Si elle n'est pas une formule alors est devient "in"
+                        if ($tempcell->getType() != 'out') // Si elle n'est pas une formule alors est devient "in"
+                        {
                             $tempcell->cell_set_type('in');
+                        }
                     } else {
                         // If cell doesn't exists
                         // Happens when formula's ranges are on empty cells
-                        $new_cell = new cell($dep[0], $dep[1], $dep[2], array("type" => 'in'));
+                        $new_cell = new cell($dep[0], $dep[1], $dep[2],
+                            array("type" => 'in'));
                         //$this->tool_get_row($dep[0],$dep[1]);
                     }
                 }
@@ -110,7 +112,8 @@ class Tool
         $validation = $this->validations[$id];
 
         if (array_key_exists('TABLE:CONDITION', $validation['attrs'])) {
-            $temp_validation = str_replace('$', '', $validation['attrs']['TABLE:CONDITION']);
+            $temp_validation = str_replace('$', '',
+                $validation['attrs']['TABLE:CONDITION']);
             $temp_validation_pieces = explode(":", $temp_validation, 2);
             $temp_validation = $temp_validation_pieces[1];
         } else {
@@ -120,7 +123,8 @@ class Tool
         if (preg_match('/cell-content-is-in-list/', $temp_validation)) {
             // si validation de type "list de valeurs"
 
-            preg_match_all("/cell-content-is-in-list\((.*)\)/", $temp_validation, $matches);
+            preg_match_all("/cell-content-is-in-list\((.*)\)/",
+                $temp_validation, $matches);
             $values = $matches[1][0];
 
             //$this->tool_debug("Validation: ".$values."");
@@ -146,9 +150,12 @@ class Tool
                         $tmp_rI = $head[1] + $i;
                         $tmp_cI = $head[2] + $j;
 
-                        $tempcell = $this->tool_get_cell($tmp_sI, $tmp_rI, $tmp_cI);
+                        $tempcell = $this->tool_get_cell($tmp_sI, $tmp_rI,
+                            $tmp_cI);
 
-                        if ($tempcell) $values[] = $tempcell->cell_get_value();
+                        if ($tempcell) {
+                            $values[] = $tempcell->cell_get_value();
+                        }
                     }
                 }
             } else {
@@ -168,7 +175,8 @@ class Tool
                 $tmp_rI = $address[1];
                 $tmp_cI = $address[2];
             } else {
-                $head = string2coord($validation['attrs']['TABLE:BASE-CELL-ADDRESS'], 0, $sheets_name);
+                $head = string2coord($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
+                    0, $sheets_name);
                 $tmp_sI = $head[0];
                 $tmp_rI = $head[1];
                 $tmp_cI = $head[2];
@@ -176,6 +184,11 @@ class Tool
             $tempcell = $this->sheets[$tmp_sI]->row[$tmp_rI]->cell[$tmp_cI];
             $tempcell->setValueInList($values);
         }
+    }
+
+    function getSheets()
+    {
+        return $this->sheets;
     }
 
     function tool_get_sheet($sheet_index)
@@ -209,7 +222,8 @@ class Tool
      */
     function tool_error($message)
     {
-        trigger_error(__CLASS__ . '-' . __FUNCTION__ . ': ' . $message, E_USER_WARNING);
+        trigger_error(__CLASS__ . '-' . __FUNCTION__ . ': ' . $message,
+            E_USER_WARNING);
         //$this->error = $message;
     }
 
@@ -245,7 +259,9 @@ class Tool
 
         }
         // On supprime les $offset premi�res $sheet vides
-        if ($offset > 0) $sheets_reverse = array_slice($sheets_reverse, $offset);
+        if ($offset > 0) {
+            $sheets_reverse = array_slice($sheets_reverse, $offset);
+        }
         // On inverse a nouveau et on affecte les sheets du tableau
         $sheets = array_reverse($sheets_reverse, true);
         $this->sheets = $sheets;
@@ -374,7 +390,9 @@ $('.navbar a').click(function (event) {
                     // Ajout du style de la cellule
                     $cell_class = '';
                     $cell_style = $cell->get_styles_name();
-                    if ($cell_style != '') $cell_class .= " " . $cell_style;
+                    if ($cell_style != '') {
+                        $cell_class .= " " . $cell_style;
+                    }
 
                     $html .= '<div class="col-md-' . ($cell_size * $col_size) . $cell_class . $row_class . '"><p>' . $cell_value . '</p></div>' . $nl;
                 }
@@ -473,32 +491,23 @@ $('li a').click(function (event) {
      */
     function tool_render($pathfile = null, $level = 0, $options = array())
     {
-
-        // Debug
-        $option_print_header = array_key_exists("print header", $options) ?
-            $options['print header'] == true : false;
         $option_comptact_css = array_key_exists("compact css", $options) ?
             $options['compact css'] == true : false;
         $option_jquery_tab = array_key_exists("jquery tab", $options) ?
             $options['jquery tab'] == true : false;
         $option_freeze = array_key_exists("freeze", $options) ?
             $options['freeze'] : array();
-
-        $option_freeze_string = in_array("string", $option_freeze, true);
-        $option_freeze_num = in_array("num", $option_freeze, true);
-
+        
         $text = "";
 
         // Pour le script des formules
         $script = "";
-        $libraries = [];
-        $stylesheets = [];
 
         // Default assets for webapplication
         $libraries = [
-            'jquery' => '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>' . "\n",
+            'jquery'   => '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>' . "\n",
             'jqueryui' => '<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>' . "\n",
-            'numeral' => '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>' . "\n"
+            'numeral'  => '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>' . "\n"
         ];
 
 
@@ -519,10 +528,6 @@ $('li a').click(function (event) {
         $used_styles = array(); // Contains styles used by the table elements.
 
         foreach ($this->sheets as $key => $sheet) {
-
-            // For each sheet in the table
-            $sheet_row_number = count($sheet->row);
-
             $sheet_id = "sheet-" . $countsheet;
             $sheet_name = $sheet->getName();
 
@@ -534,29 +539,26 @@ $('li a').click(function (event) {
                 '<tbody>' . "\n";
 
             foreach ($sheet->row as $row_index => $row) {
-                $row_cell_number = $row->row_nbcell();
-
-
-                $rowstyle = "";
                 $rowstyle = ' class="' . $row->getName() . ' ' . $row->get_styles_name() . '"';
 
                 $used_styles[] = $row->get_styles_name();
 
-                if ($row->collapse) $rowstyle .= ' style="visibility:collapse"';
+                if ($row->collapse) {
+                    $rowstyle .= ' style="visibility:collapse"';
+                }
 
                 $htmlTable .= '<tr' . $rowstyle . '>' . "\n";
 
                 foreach ($row->row_get_cells() as $cCI => $tempcell) {
 
                     if ($tempcell->cell_get_validation() != '') {
-                        $this->render_validation($tempcell->cell_get_validation(), array($key, $row_index, $cCI));
+                        $this->render_validation($tempcell->cell_get_validation(),
+                            array($key, $row_index, $cCI));
                         $tempcell->cell_set_type("in");
                     }
 
                     $td = "";
 
-                    // Ajout du style de la cellule
-                    $tempstyle = '';
                     $tempstyle = $tempcell->get_styles_name();
 
                     $used_styles[] = $tempstyle;
@@ -565,7 +567,8 @@ $('li a').click(function (event) {
 
                     if ($tempstyle != '' && $tempstyle != 'Default') {
 
-                        $data_style = self::array_attribute($this->styles, $tempstyle);
+                        $data_style = self::array_attribute($this->styles,
+                            $tempstyle);
 
                         if ($data_style != '') {
 
@@ -579,7 +582,8 @@ $('li a').click(function (event) {
 
                             if ($data_style_name != '') {
 
-                                $main_data_format = self::array_attribute($this->formats, $data_style_name);
+                                $main_data_format = self::array_attribute($this->formats,
+                                    $data_style_name);
 
                                 if ($main_data_format != '' && $main_data_format != 'N0') {
 
@@ -588,8 +592,11 @@ $('li a').click(function (event) {
                                     if (!empty($main_data_format->maps)) {
                                         foreach ($main_data_format->maps as $condition => $map) {
                                             if ($condition == 'value()>=0') {
-                                                if ($map_format = self::array_attribute($this->formats, $map))
+                                                if ($map_format = self::array_attribute($this->formats,
+                                                    $map)
+                                                ) {
                                                     $data_format .= ';' . $map_format->format_code();
+                                                }
                                             }
                                         }
                                     }
@@ -607,11 +614,7 @@ $('li a').click(function (event) {
                             $class = "in";
                             $list_values = $tempcell->getValueList();
                             if (empty($list_values)) {
-                                $disabled = (
-                                    ($option_freeze_string && $value_type == 'string') ||
-                                    ($option_freeze_num && $value_type == 'float')
-                                ) ? "disabled " : "";
-                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . $disabled . ' id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '" type="text" value="' . $tempcell->cell_get_value() . '">';
+                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . ' id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '" type="text" value="' . $tempcell->cell_get_value() . '">';
                             } else {
                                 $td .= '<select id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '">';
                                 $value_attr = $tempcell->cell_get_value_attr();
@@ -633,7 +636,9 @@ $('li a').click(function (event) {
                     }
 
                     // Adds current cel style
-                    if ($tempstyle != '') $class .= " " . $tempstyle;
+                    if ($tempstyle != '') {
+                        $class .= " " . $tempstyle;
+                    }
 
                     // Adds current col style (if exists)
                     $temp_curcol_style = '';
@@ -642,31 +647,18 @@ $('li a').click(function (event) {
 
                     if ($temp_curcol) {
                         $temp_curcol_style = $temp_curcol->get_styles_name();
-                        if ($temp_curcol_style != '') $class .= " " . $temp_curcol_style;
+                        if ($temp_curcol_style != '') {
+                            $class .= " " . $temp_curcol_style;
+                        }
                         $used_styles[] = $temp_curcol_style;
 
                         // Hidde cell if col is collapsed
-                        if ($temp_curcol->get_collapsed() == true) $class .= " hidden-cell";
+                        if ($temp_curcol->get_collapsed() == true) {
+                            $class .= " hidden-cell";
+                        }
                     }
-                    // Gestion du Colspan
-                    $colspan = $tempcell->cell_get_colspan();
-                    $htmlcolspan = '';
-                    if ($colspan > 1) $htmlcolspan = ' colspan="' . $colspan . '"';
-
-                    // Gestion du Rowspan
-                    $rowspan = $tempcell->cell_get_rowspan();
-                    $htmlrowspan = '';
-                    if ($rowspan > 1) $htmlrowspan = ' rowspan="' . $rowspan . '"';
-
-                    // Gestion des annotations
-                    $annotation = $tempcell->cell_get_annotation();
-                    if ($annotation != '') $annotation = ' title="' . $annotation . '"';
-
-                    // Ajout de la cellule g�n�r�e dans le tableau
-                    $htmlTable .= '  <td' . $htmlcolspan . $htmlrowspan . $annotation . ' class="' . $class . '">' . $td . '</td>' . "\n";
-                } // End foreach cell
-
-                // Close current row tag
+                    $htmlTable .= '  <td class="' . $class . '">' . $td . '</td>' . "\n";
+                }
                 $htmlTable .= "</tr>" . "\n";
             }
 
@@ -676,7 +668,8 @@ $('li a').click(function (event) {
             $htmlTable .= '</div><!-- /#' . $sheet_id . '-->' . "\n";
 
             $countsheet++;
-        } // End foreach sheet
+        }
+
         $htmlTable .= "</div><!-- /#sheets -->" . "\n";
 
         // Create the list of links to the sheet (jQuery compatible)
@@ -736,8 +729,9 @@ $('li a').click(function (event) {
                 }
 
                 $formulas .= $formula->get_script() . "\n";
-                $formulaslist[$formula->get_name()] = array('call' => $formula->get_call(),
-                    'dep' => $dependances,
+                $formulaslist[$formula->get_name()] = array(
+                    'call' => $formula->get_call(),
+                    'dep'  => $dependances,
                 );
                 foreach ($formula->get_ext_formula() as $ext_formula) {
                     $ext_formulas[] = $ext_formula;
@@ -793,7 +787,8 @@ $('li a').click(function (event) {
                          *
                          */
 
-                        array_splice($formulaslist_copy[$formcell]['dep'], $offsetdep, 1);
+                        array_splice($formulaslist_copy[$formcell]['dep'],
+                            $offsetdep, 1);
                         // appizy_logapp("Dep calculee $value");
                     } else {
                         /*
@@ -818,7 +813,8 @@ $('li a').click(function (event) {
                     // S'il n'y a plus de cellule non calcul�e dont d�pend la formule
                     // elle entre dans la step de calcul
                     // on la retire de la liste de cellule
-                    array_push($steps[$currentstep]['formulas'], $temp_formula['call']);
+                    array_push($steps[$currentstep]['formulas'],
+                        $temp_formula['call']);
 
                     foreach ($formulaslist[$formula_index]['dep'] as $temp_dep) {
                         // On charge grace � l'original de la liste des formules
@@ -854,9 +850,10 @@ $('li a').click(function (event) {
         // L'Array des d�pendances est applanit avant d'�tre utilis� par la suite
         foreach ($steps as $currentstep) {
             $flat_stepdep = array();
-            array_walk_recursive($currentstep['dep'], function ($a) use (&$flat_stepdep) {
-                $flat_stepdep[] = $a;
-            });
+            array_walk_recursive($currentstep['dep'],
+                function ($a) use (&$flat_stepdep) {
+                    $flat_stepdep[] = $a;
+                });
         }
 
         // Impression des steps de calcul, uniquement s'il y a des �tapes de calcul
@@ -905,11 +902,13 @@ $('li a').click(function (event) {
                 'window.RANGE'
             ];
             foreach ($accessFormulas as $formula) {
-                $formulas_ext .= $this->getExtFunction($formula, __DIR__ . "/../assets/js/src/appizy.js");
+                $formulas_ext .= $this->getExtFunction($formula,
+                    __DIR__ . "/../assets/js/src/appizy.js");
             }
 
             foreach ($ext_formulas as $ext_formula) {
-                $formulas_ext .= $this->getExtFunction($ext_formula, __DIR__ . "/../assets/js/src/formula.js");
+                $formulas_ext .= $this->getExtFunction($ext_formula,
+                    __DIR__ . "/../assets/js/src/formula.js");
             }
 
 
@@ -933,15 +932,8 @@ $('li a').click(function (event) {
 
         $used_styles = array_unique($used_styles);
 
-        /*
-        $cssTable = "\n".'<style type="text/css">'."\n"
-                                .$this->tool_get_css($used_styles, $option_comptact_css)
-                                .'</style>'."\n";
-                                */
-        $cssTable = $this->tool_get_css($used_styles, $option_comptact_css);
 
-        // *** R�union des diff�rents morceaux
-        // $htmlTable = $cssTable.$htmlTable;
+        $cssTable = $this->tool_get_css($used_styles, $option_comptact_css);
 
         //$variables['style'] = $style;
         $variables['content'] = $htmlTable;
@@ -950,7 +942,6 @@ $('li a').click(function (event) {
         $variables['libraries'] = $libraries;
 
         return $variables;
-
     }
 
     /**
@@ -968,9 +959,13 @@ $('li a').click(function (event) {
         // Gets intersection of used and available styles
         $used_styles = array_intersect_key($this->styles, $used_styles);
 
-        foreach ($used_styles as $key => $value) $css_code .= $value->style_print();
+        foreach ($used_styles as $key => $value) {
+            $css_code .= $value->style_print();
+        }
 
-        if ($compact_code) $css_code = compact_code($css_code);
+        if ($compact_code) {
+            $css_code = compact_code($css_code);
+        }
 
         return $css_code . "\n";
     }
@@ -980,7 +975,7 @@ $('li a').click(function (event) {
      *
      * @param string $function_name
      * @param string $library_path
-     * @param array $already_loaded
+     * @param array  $already_loaded
      * @return string
      */
     function getExtFunction($function_name, $library_path, $already_loaded = [])
@@ -994,7 +989,8 @@ $('li a').click(function (event) {
 
         if (!in_array($function_name, $already_loaded)) {
 
-            if (preg_match_all($expression, file_get_contents($library_path), $match)) {
+            if (preg_match_all($expression, file_get_contents($library_path),
+                $match)) {
                 $function = $match[1][0];
                 $ext_formula = $namu . " = function" . $function . "};" . "\n\n";
             }
@@ -1010,8 +1006,10 @@ $('li a').click(function (event) {
 
                     $dep_name = "Formula." . $dep_name;
 
-                    if (!in_array($dep_name, $already_loaded))
-                        $ext_formula .= $this->getExtFunction($dep_name, $library_path, $already_loaded);
+                    if (!in_array($dep_name, $already_loaded)) {
+                        $ext_formula .= $this->getExtFunction($dep_name,
+                            $library_path, $already_loaded);
+                    }
                 }
             }
         }
