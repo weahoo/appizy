@@ -584,7 +584,6 @@ $('li a').click(function (event) {
                                 if ($main_data_format != '' && $main_data_format != 'N0') {
 
                                     $data_format = $main_data_format->format_code();
-                                    //if ($data_format == "0.00   ") dpm($main_data_format);
 
                                     if (!empty($main_data_format->maps)) {
                                         foreach ($main_data_format->maps as $condition => $map) {

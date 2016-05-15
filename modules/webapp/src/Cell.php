@@ -25,7 +25,7 @@ class Cell extends TableElement
     function __construct($sheet, $row, $col, $options = array())
     {
         $this->set_id($col);
-//
+
         $this->coord = array('sheet' => $sheet,
                              'row'   => $row,
                              'col'   => $col
