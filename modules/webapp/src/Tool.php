@@ -11,8 +11,6 @@ class Tool
     var $formulas = array();
     var $validations = array();
     var $formats = array();
-
-    // Temporary fix
     var $used_styles = array();
 
     private $debug;
@@ -23,9 +21,6 @@ class Tool
         $this->debug = $debug;
     }
 
-    /**
-     * Parses an XML workbook into tool object
-     */
     function tool_parse_wb($xml_path)
     {
 
@@ -41,6 +36,7 @@ class Tool
 
         // Set formulas dep as "in"
         $this->formula_dep_setin();
+
         /**
          * Styles cleaning
          */
@@ -59,9 +55,6 @@ class Tool
         }
     }
 
-    /**
-     * Sets all formula dependancies as type "input"
-     */
     function formula_dep_setin()
     {
 
@@ -97,7 +90,7 @@ class Tool
 
     function sheets_name()
     {
-        $names = array();
+        $names = [];
         foreach ($this->sheets as $sheet) {
             $names[] = $sheet->getName();
         }
@@ -217,9 +210,6 @@ class Tool
         return $cell;
     }
 
-    /**
-     * Sets error message for the class (used in case a function returns FALSE)
-     */
     function tool_error($message)
     {
         trigger_error(__CLASS__ . '-' . __FUNCTION__ . ': ' . $message,
@@ -227,15 +217,11 @@ class Tool
         //$this->error = $message;
     }
 
-    /**
-     * Trigger an error message in host log
-     */
     function tool_debug($message)
     {
         trigger_error(__CLASS__ . ': ' . $message);
     }
 
-    // Nettoie un tableau des feuilles, lignes et colonnes vides
     function tool_clean()
     {
         $is_first_filled = false;
@@ -268,254 +254,16 @@ class Tool
 
     }
 
-    function tool_render_bs_mono()
-    {
-
-        $sections = array();
-        $index = 0;
-        $is_first = true;
-        foreach ($this->sheets as $sheet) {
-
-            if ($is_first) {
-                $elements['front_page'] = $sheet->get_id();
-                $elements['title'] = $sheet->get_sheet_name();
-                $sections[$sheet->get_id()] = "Home";
-            } else {
-                $sections[$sheet->get_id()] = $sheet->get_sheet_name();
-            }
-            $is_first = false;
-            $index++;
-        }
-
-        // Navigation construction
-        $elements['sections'] = $sections;
-        $elements['navid'] = "affix-nav";
-
-        $html = appizy_render('bs-navigation.tpl.php', $elements);
-
-
-        $is_first = true;
-        foreach ($this->sheets as $sheet) {
-            $html .= bs_grid($sheet, $is_first);
-
-            $is_first = false;
-
-            // Detects column common styles names
-            $cols = $sheet->sheet_get_cols();
-
-            $is_first_col = true;
-            foreach ($cols as $col) {
-                $tmp_styles = $col->col_get_default_cell_style();
-
-                if ($is_first_col) {
-                    $common_styles = $tmp_styles;
-                } else {
-                    $common_styles = ($tmp_styles == $common_styles) ? $tmp_styles : '';
-                }
-            }
-            if ($common_styles != '' && $common_styles != "Default") {
-
-                $section_style = new style('appizy-section-' . $sheet->get_id());
-                $section_style->styles = $this->styles[$common_styles]->styles;
-
-                $this->styles[] = $section_style;
-            }
-        }
-
-        // CSS construction
-        $css = "";
-        foreach ($this->styles as $style) {
-            $css .= $style->style_print(array('width', 'height'));
-        }
-
-        $css .= ".appizy-section-first,
-.appizy-section { padding: 100px 0;}" . "\n";
-        $css .= ".appizy-section { border-bottom: 1px solid #E5E5E5; }";
-        $css .= ".appizy-section h1{ padding: 10px 0 20px; font-weight:200; text-align:center;}" . "\n";
-
-        $script = "var navOffset = parseInt($('body').css('padding-top'));
-$('body').scrollspy({ target: '#affix-nav', offset: navOffset+10 });
-$('.navbar a').click(function (event) {
-  var scrollPos = jQuery('body').find($(this).attr('href')).offset().top - navOffset;
-  $('body,html').animate({ scrollTop: scrollPos}, 500, function () {});
-  return false;
-});" . "\n";
-
-
-        $variables['style'] = $css;
-        $variables['content'] = $html;
-        $variables['script'] = $script;
-
-
-        return $variables;
-    }
-
-    /**
-     * Renders Tool as Affix JS
-     */
-    function tool_render_bs_grid()
-    {
-        $html = '';
-        $nl = "\n";
-        $variables = array();
-
-
-        foreach ($this->sheets as $sheet) {
-
-            $max_length = 0;
-
-            $html .= '<h1>' . $sheet->get_sheet_name() . '</h1>';
-
-            foreach ($sheet->row as $row) {
-                // First loop, check the longest row
-                $row_length = $row->row_length();
-                $max_length = $row_length > $max_length ? $row_length : $max_length;
-            }
-
-            // Calculates the size of column in the Bootstrap grid
-            $col_size = floor(12 / $max_length);
-
-            foreach ($sheet->row as $row) {
-                $row_class = '';
-                $row_style = $row->get_styles_name();
-                // if($row_style != '') $row_class .= " ".$row_style;
-
-                $html .= '<div class="row">';
-                // Second loop, construct HTML table
-                $cells = $row->row_get_cells();
-                foreach ($cells as $cell) {
-                    $cell_size = $cell->cell_get_colspan();
-                    $cell_value = $cell->cell_get_value();
-
-                    // Ajout du style de la cellule
-                    $cell_class = '';
-                    $cell_style = $cell->get_styles_name();
-                    if ($cell_style != '') {
-                        $cell_class .= " " . $cell_style;
-                    }
-
-                    $html .= '<div class="col-md-' . ($cell_size * $col_size) . $cell_class . $row_class . '"><p>' . $cell_value . '</p></div>' . $nl;
-                }
-                $html .= '</div>';
-            }
-        }
-
-        $css = "";
-        foreach ($this->styles as $style) {
-            $css .= $style->style_print(array('width'));
-        }
-        //$css .= '.row > div { height:inherit; }'.$nl;
-
-        $variables['style'] = $css;
-        $variables['content'] = $html;
-
-        //$variables['script'] = $script;
-
-        return $variables;
-    }
-
-    /**
-     * Renders Tool as Affix JS
-     */
-    function tool_render_bs_affix()
-    {
-        $html = '';
-        $nl = "\n";
-
-        $affix_index = 0;
-        $affix_nav = array();
-        $affix_content = array();
-
-        foreach ($this->sheets as $sheet) {
-            foreach ($sheet->row as $row) {
-                $temp_nav_cell = $row->row_get_cell(0);
-                if ($temp_nav_cell && $temp_nav_cell->cell_get_value() != '') {
-                    $affix_nav[$affix_index] = $temp_nav_cell->cell_get_value();
-
-                    // Search for content if only we have an nav value
-                    $temp_content_cell = $row->row_get_cell(1);
-
-                    $affix_content[$affix_index] = $temp_content_cell ?
-                        $temp_content_cell->cell_get_value() : '';
-
-                    $affix_index++;
-                }
-            }
-        }
-
-        // CSS
-        $style = '.sidenav > .active > a { border-left: 2px solid;}' . $nl;
-        // Javascript
-        //$script = "jQuery('body').scrollspy({ target: '#affix-nav' });".$nl;
-        $script = "var navOffset = parseInt($('body').css('padding-top'));
-$('body').scrollspy({ target: '#affix-nav', offset: navOffset+10 });
-$('li a').click(function (event) {
-  var scrollPos = jQuery('body').find($(this).attr('href')).offset().top - navOffset;
-  $('body,html').animate({ scrollTop: scrollPos}, 500, function () {});
-  return false;
-});" . "\n";
-        // HTML prefix
-        $html .= '<div class="row">' . $nl;
-
-        // Renders navigation
-        $html .= '<div id="affix-nav" class="sidebar col-md-4">' . $nl;
-        $html .= '<ul class="nav sidenav" data-spy="affix">' . $nl;
-        foreach ($affix_nav as $nav_index => $nav) {
-            $html .= '  <li><a href="#affix-section-' . $nav_index . '" >' . $nav . '</a></li>' . $nl;
-        }
-        $html .= '</ul>' . $nl;
-        $html .= '</div>' . $nl;
-
-        // Renders content
-        $html .= '<div id="content" class="col-md-8">' . $nl;
-        foreach ($affix_content as $content_index => $content) {
-            $html .= '<div id="affix-section-' . $content_index . '">' . $nl;
-            $html .= '<h1>' . $affix_nav[$content_index] . '</h1>' . $nl;
-            $html .= $content . $nl;
-            $html .= '</div>' . $nl;
-        }
-        $html .= '</div>' . $nl;
-
-        // HTML suffix
-        $html .= '</div><!-- end of row -->' . $nl;
-
-        $variables['style'] = $style;
-        $variables['content'] = $html;
-        $variables['script'] = $script;
-
-        return $variables;
-    }
-
-    /**
-     * Renders HTML of a tool
-     */
     function tool_render($pathfile = null, $level = 0, $options = array())
     {
-        $option_comptact_css = array_key_exists("compact css", $options) ?
-            $options['compact css'] == true : false;
-        $option_jquery_tab = array_key_exists("jquery tab", $options) ?
-            $options['jquery tab'] == true : false;
-        $option_freeze = array_key_exists("freeze", $options) ?
-            $options['freeze'] : array();
-        
-        $text = "";
-
         // Pour le script des formules
         $script = "";
 
         // Default assets for webapplication
         $libraries = [
-            'jquery'   => '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>' . "\n",
-            'jqueryui' => '<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>' . "\n",
-            'numeral'  => '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>' . "\n"
+            'jquery'  => '<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>',
+            'numeral' => '<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>'
         ];
-
-
-        if ($option_jquery_tab) {
-            $libraries['jqueryui-theme-smoothness'] = '<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">' . "\n";
-            $script .= 'jQuery( "#sheets" ).tabs();' . "\n";
-            $script .= 'jQuery( "#sheets" ).tooltip();' . "\n";
-        }
 
         $formulas = "// Cells formulas" . "\n";
         $formulaslist = array();
@@ -750,10 +498,6 @@ $('li a').click(function (event) {
 
         $fomulas_unclassified_laststep = 0; // Variable de sortie de la boucle while. Si jamais la boucle n'�limine pas de formule � la step...
 
-        // Pour le log
-
-        // appizy_logapp("");
-        // appizy_logapp("Number of formulas:".$fomulas_unclassified);
 
         while (($fomulas_unclassified > 0) && ($fomulas_unclassified_laststep != $fomulas_unclassified)) {
             // Pour �viter que la boucle ne tourne dans le vide
@@ -872,7 +616,6 @@ $('li a').click(function (event) {
                 $run_calc .= 'step' . $currentstep_index . '()';
 
                 $formulascall .= 'function step' . $currentstep_index . '() {' . "\n" . "  ";
-                //'function step'.$currentstep_index.'('.$stepdep.')'."\n".'{'."\n";
 
                 foreach ($currentstep['formulas'] as $formula) {
                     $formulascall .= $formula;
@@ -933,7 +676,7 @@ $('li a').click(function (event) {
         $used_styles = array_unique($used_styles);
 
 
-        $cssTable = $this->tool_get_css($used_styles, $option_comptact_css);
+        $cssTable = $this->tool_get_css($used_styles);
 
         //$variables['style'] = $style;
         $variables['content'] = $htmlTable;
@@ -944,15 +687,8 @@ $('li a').click(function (event) {
         return $variables;
     }
 
-    /**
-     * Return CSS code of the $used_styles in the tool + default CSS code
-     *
-     * Note: a tool might have more styles that come from the parsed XML, but are
-     * not used into by the element of it.
-     */
-    function tool_get_css($used_styles = array(), $compact_code = true)
+    function tool_get_css($used_styles = array())
     {
-
         $css_code = file_get_contents(__DIR__ . "/../assets/css/style-webapp-default.css");
 
         $used_styles = array_flip($used_styles);
@@ -963,21 +699,9 @@ $('li a').click(function (event) {
             $css_code .= $value->style_print();
         }
 
-        if ($compact_code) {
-            $css_code = compact_code($css_code);
-        }
-
         return $css_code . "\n";
     }
 
-    /**
-     * Gets functions out of external library
-     *
-     * @param string $function_name
-     * @param string $library_path
-     * @param array  $already_loaded
-     * @return string
-     */
     function getExtFunction($function_name, $library_path, $already_loaded = [])
     {
         $namu = $function_name;

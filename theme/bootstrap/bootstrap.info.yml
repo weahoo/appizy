@@ -1,10 +1,7 @@
 name: Bootstrap components
 description: Create Bootstrap components: scrollspy navigation.
 templates:
-  - app.html.twig
-
-includes:
-  - bootstrap.min.css
+  - index.html.twig
 
 options:
   component:

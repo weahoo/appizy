@@ -2,7 +2,6 @@
 
 namespace Appizy\Core\Command;
 
-use Appizy\Core\ODSReader;
 use Appizy\Core\Theme;
 use Appizy\WebApp\Tool;
 use Symfony\Component\Console\Command\Command;
@@ -58,64 +57,50 @@ class ConvertCommand extends Command
         $themeFile = __DIR__ . '/../../../../theme/' . $themeId . '/' . $themeId . '.info.yml';
         $theme->load($themeFile);
 
-        if ($themeId === 'webapp') {
 
-            $output->writeln("Decompressing file");
-            $extractDir = $destinationPath . '/deflated';
-            $zip = new ZipArchive;
-            $zip->open($filePath);
-            $zip->extractTo($extractDir);
-            $zip->close();
+        $output->writeln("Decompressing file");
+        $extractDir = $destinationPath . '/deflated';
+        $zip = new ZipArchive;
+        $zip->open($filePath);
+        $zip->extractTo($extractDir);
+        $zip->close();
 
-            $xml_path[] = $extractDir . "/styles.xml";
-            $xml_path[] = $extractDir . "/content.xml";
+        $xml_path[] = $extractDir . "/styles.xml";
+        $xml_path[] = $extractDir . "/content.xml";
 
 
-            $tool = new Tool(true);
+        $tool = new Tool(true);
 
-            $output->writeln("Parsing spreadsheet");
-            $tool->tool_parse_wb($xml_path);
-            $tool->tool_clean();
+        $output->writeln("Parsing spreadsheet");
+        $tool->tool_parse_wb($xml_path);
+        $tool->tool_clean();
 
-            $output->writeln("Rendering application");
-            $elements = $tool->tool_render(
-                null,
-                1,
-                [
-                    'compact css'  => false,
-                    'jquery tab'   => false,
-                    'print header' => true,
-                ]
-            );
+        $output->writeln("Rendering application");
+        $elements = $tool->tool_render(
+            null,
+            1,
+            [
+                'compact css'  => false,
+                'jquery tab'   => false,
+                'print header' => true,
+            ]
+        );
 
-            $this->renderAndSave(
-                $theme,
-                [
-                    'spreadSheet' => $tool,
-                    'content'     => $elements['content'],
-                    'style'       => $elements['style'],
-                    'script'      => $elements['script'],
-                    'libraries'   => $elements['libraries'],
-                    'options'     => json_decode($input->getOption('options'))
-                ],
-                $destinationPath
-            );
+        $this->renderAndSave(
+            $theme,
+            [
+                'spreadSheet' => $tool,
+                'content'     => $elements['content'],
+                'style'       => $elements['style'],
+                'script'      => $elements['script'],
+                'libraries'   => $elements['libraries'],
+                'options'     => json_decode($input->getOption('options'))
+            ],
+            $destinationPath
+        );
+        
+        $this->copyThemeIncludedFiles($theme, $destinationPath);
 
-        } else {
-            $ods = new ODSReader();
-            $ods->load($filePath);
-
-            $this->renderAndSave(
-                $theme,
-                [
-                    'ods'     => $ods,
-                    'options' => json_decode($input->getOption('options'))
-                ],
-                $destinationPath
-            );
-
-            $this->copyThemeIncludedFiles($theme, $destinationPath);
-        }
 
         self::delTree($destinationPath . '/deflated');
     }

@@ -13,6 +13,10 @@
     {% for library in libraries %}
         {{ library | raw }}
     {% endfor %}
+    {% if option.jqueryui %}
+        <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    {% endif %}
 </head>
 <body>
 <div id="appizy">
@@ -33,6 +37,7 @@
                                 {% if (cell.getColSpan() > 1) %}
                                     {% set col_span = ' colspan="' ~ cell.getColSpan() ~ '"' %}
                                 {% endif %}
+
                                 {% if (cell.getRowSpan() > 1) %}
                                     {% set row_span = ' rowspan="' ~ cell.getRowSpan() ~ '"' %}
                                 {% endif %}
@@ -42,16 +47,18 @@
                                     {% if cellType == 'in' %}
                                         {% set values = cell.getValueList() %}
                                         {% if values is empty %}
-                                        <input id="{{ cell.getName() }}" name="{{ cell.getName() }}" data-type="{{ cellType }}" value="{{ cell.getValue() }}">
+                                            <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
+                                                   data-type="{{ cellType }}" value="{{ cell.getValue() }}">
                                         {% else %}
-                                        <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
-                                            {% for value in values %}
-                                                <option value="{{ value }}">{{ value }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        {%  endif %}
+                                            <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
+                                                {% for value in values %}
+                                                    <option value="{{ value }}">{{ value }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {% endif %}
                                     {% elseif cellType == 'out' %}
-                                        <input disabled="disabled" name="{{ cell.getName() }}" value="{{ cell.getValueAttr() }}" data-type="{{ cellType }}">
+                                        <input disabled="disabled" name="{{ cell.getName() }}"
+                                               value="{{ cell.getValueAttr() }}" data-type="{{ cellType }}">
                                     {% else %}
                                         {{ cell.getDisplayedValue() | raw }}
                                     {% endif %}
@@ -64,6 +71,13 @@
         {% endfor %}
     </form>
 </div>
+{% if option.jqueryui %}
+    <script>
+        (function ($) {
+            $("#appizy").tabs().tooltip();
+        })(jQuery);
+    </script>
+{% endif %}
 {% if script %}
     <script type="application/javascript" src="script.js"></script>
 {% endif %}
