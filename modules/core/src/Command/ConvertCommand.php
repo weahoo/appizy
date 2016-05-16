@@ -107,7 +107,7 @@ class ConvertCommand extends Command
 
     /**
      * @param \Appizy\Core\Theme $theme
-     * @param                    $path
+     * @param string             $path
      */
     private function copyThemeIncludedFiles($theme, $path)
     {
@@ -121,8 +121,8 @@ class ConvertCommand extends Command
 
     /**
      * @param \Appizy\Core\Theme $theme
-     * @param                    $data
-     * @param                    $path
+     * @param array              $data
+     * @param string             $path
      */
     private function renderAndSave($theme, $data, $path)
     {
@@ -148,6 +148,10 @@ class ConvertCommand extends Command
         }
     }
 
+    /**
+     * @param string $dir
+     * @return mixed
+     */
     private function delTree($dir)
     {
         $files = array_diff(scandir($dir), array('.', '..'));
@@ -160,6 +164,10 @@ class ConvertCommand extends Command
         return rmdir($dir);
     }
 
+    /**
+     * @param string $html
+     * @return string
+     */
     private function formatHTML($html)
     {
         $config = [
@@ -171,6 +179,7 @@ class ConvertCommand extends Command
         $tidy = new tidy();
         $tidy->parseString($html, $config, 'utf8');
         $tidy->cleanRepair();
+
         return tidy_get_output($tidy);
     }
 }
