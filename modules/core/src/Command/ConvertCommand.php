@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use tidy;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 use ZipArchive;
@@ -97,7 +98,7 @@ class ConvertCommand extends Command
             ],
             $destinationPath
         );
-        
+
         $this->copyThemeIncludedFiles($theme, $destinationPath);
 
 
@@ -142,7 +143,7 @@ class ConvertCommand extends Command
             $filename = $path . '/' . $fileName;
 
             $open = fopen($filename, "w");
-            fwrite($open, $renderedTemplate);
+            fwrite($open, $this->formatHTML($renderedTemplate));
             fclose($open);
         }
     }
@@ -157,5 +158,19 @@ class ConvertCommand extends Command
         }
 
         return rmdir($dir);
+    }
+
+    private function formatHTML($html)
+    {
+        $config = [
+            'indent'      => true,
+            'output-html' => true,
+            'wrap'        => '1000'
+        ];
+
+        $tidy = new tidy();
+        $tidy->parseString($html, $config, 'utf8');
+        $tidy->cleanRepair();
+        return tidy_get_output($tidy);
     }
 }
