@@ -2,8 +2,6 @@
 
 namespace Appizy\WebApp;
 
-use Appizy\WebApp\TableElement;
-
 class Row extends TableElement
 {
     var $name;
@@ -12,7 +10,7 @@ class Row extends TableElement
     var $cells;
 
     var $collapse;
-    /** @var array  */
+    /** @var array */
     var $cell;
 
     function __construct($sheet_ind, $row_ind, $options)
@@ -25,8 +23,12 @@ class Row extends TableElement
 
         $this->cell = [];
 
-        if (isset($options['collapse'])) $this->collapse = $options['collapse'];
-        if (isset($options['style'])) $this->add_style_name($options['style']);
+        if (isset($options['collapse'])) {
+            $this->collapse = $options['collapse'];
+        }
+        if (isset($options['style'])) {
+            $this->add_style_name($options['style']);
+        }
     }
 
     /**
@@ -46,8 +48,22 @@ class Row extends TableElement
     /**
      * @return bool
      */
-    function isHidden() {
+    function isHidden()
+    {
         return $this->collapse === true;
+    }
+
+    /**
+     * @return array
+     */
+    function getStyles()
+    {
+        $styles = parent::getStyles();
+        if ($this->isHidden()) {
+            $styles[] = 'hidden-row';
+        }
+
+        return $styles;
     }
 
     function row_get_cells()
@@ -134,7 +150,9 @@ class Row extends TableElement
             endif;
         }
         // On supprime les $offset premi�res $sheet vides
-        if ($offset > 0) $cells_reverse = array_slice($cells_reverse, $offset);
+        if ($offset > 0) {
+            $cells_reverse = array_slice($cells_reverse, $offset);
+        }
         // On inverse a nouveau et on affecte les sheets du tableau
         $cells = array_reverse($cells_reverse, true);
         $this->row_set_cell($cells);

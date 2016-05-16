@@ -670,7 +670,7 @@ class Tool
         $used_styles = array_unique($used_styles);
 
 
-        $cssTable = $this->tool_get_css($used_styles);
+        $cssTable = $this->getCss($used_styles);
 
         //$variables['style'] = $style;
         $variables['content'] = $htmlTable;
@@ -680,9 +680,13 @@ class Tool
         return $variables;
     }
 
-    function tool_get_css($used_styles = array())
+    /**
+     * @param array $used_styles
+     * @return string
+     */
+    function getCss($used_styles)
     {
-        $css_code = file_get_contents(__DIR__ . "/../assets/css/style-webapp-default.css");
+        $css_code = '';
 
         $used_styles = array_flip($used_styles);
         // Gets intersection of used and available styles
@@ -692,7 +696,7 @@ class Tool
             $css_code .= $value->style_print();
         }
 
-        return $css_code . "\n";
+        return $css_code;
     }
 
     function getExtFunction($function_name, $library_path, $already_loaded = [])

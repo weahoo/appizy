@@ -8,6 +8,7 @@
     <meta name="author" content="Appizy">
     <title>Appizy</title>
     <style>
+        {% include 'partial/default-style.css' %}
         {{ style }}
     </style>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -33,8 +34,10 @@
             <div id="sheet{{ loop.index }}">
                 <table>
                     {% for row in sheet.getRows() %}
-                        <tr class="{{ row.getName() }} {{ row.getStyles()|join(' ') }}">
+                        <tr class="{{ row.getName() }} {{ row.getStyles()|join(' ') }}"{{ hiddenRowStyle }}>
                             {% for cell in row.getCells() %}
+                                {% set col_span = '' %}
+                                {% set row_span = '' %}
                                 {% if (cell.getColSpan() > 1) %}
                                     {% set col_span = ' colspan="' ~ cell.getColSpan() ~ '"' %}
                                 {% endif %}

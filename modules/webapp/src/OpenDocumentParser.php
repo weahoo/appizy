@@ -2,15 +2,6 @@
 
 namespace Appizy\WebApp;
 
-use Appizy\WebApp\DataStyle;
-use Appizy\WebApp\Style;
-use Appizy\WebApp\Sheet;
-use Appizy\WebApp\Column;
-use Appizy\WebApp\Cell;
-use Appizy\WebApp\Row;
-use Appizy\WebApp\ArrayTrait;
-use Appizy\WebApp\Formula;
-
 $globaldata = "";
 
 class OpenDocumentParser
@@ -104,7 +95,8 @@ class OpenDocumentParser
         $sheet->addRow($new_row);
     }
 
-    function addCell($sheet_ind, $row_ind, $col_ind, $options) {
+    function addCell($sheet_ind, $row_ind, $col_ind, $options)
+    {
         $new_cell = new Cell($sheet_ind, $row_ind, $col_ind, $options);
         // Get selected row in the selected sheet
         /** @var Sheet $sheet */
@@ -120,23 +112,10 @@ class OpenDocumentParser
         $this->formulas[] = $new_formula;
     }
 
-    function addCol($sheet_ind, column $new_col)
+    function addCol($sheet_ind, $new_col)
     {
         $sheet = $this->sheets[$sheet_ind];
         $sheet->addCol($new_col);
-    }
-
-    /**
-     * Trigger an error message in host log
-     */
-    function parser_error($message)
-    {
-        trigger_error(__CLASS__ . ': ' . $message, E_USER_WARNING);
-    }
-
-    function parser_debug($message)
-    {
-        if ($this->debug) trigger_error(__CLASS__ . ': ' . $message);
     }
 
     /**
@@ -150,7 +129,9 @@ class OpenDocumentParser
             /**
              * Sheet name with just a dot
              */
-            if ($name == '.') $name = "'" . $name . "'";
+            if ($name == '.') {
+                $name = "'" . $name . "'";
+            }
             $sheets_name[] = $name;
         }
 
@@ -159,21 +140,25 @@ class OpenDocumentParser
          */
         foreach ($this->sheets as $cS => $sheet) {
 
-            $this->addSheet($cS, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
+            $this->addSheet($cS,
+                htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
 
             foreach ($sheet['column'] as $curCOLI => $col) {
-                $this->parser_debug("New col parsed:" . $curCOLI);
                 $tempcol = new Column($curCOLI);
 
                 if (array_key_exists('attrs', $col)) {
-                    // Si la colonne a des attributs
                     if (array_key_exists('TABLE:STYLE-NAME', $col['attrs'])) {
                         $tempcol->add_style_name($col['attrs']['TABLE:STYLE-NAME']);
                     }
+
                     if (array_key_exists('TABLE:VISIBILITY', $col['attrs'])) {
-                        if ($col['attrs']['TABLE:VISIBILITY'] == 'collapse') $tempcol->col_collapse();
+                        if ($col['attrs']['TABLE:VISIBILITY'] == 'collapse') {
+                            $tempcol->col_collapse();
+                        }
                     }
-                    if (array_key_exists('TABLE:DEFAULT-CELL-STYLE-NAME', $col['attrs'])) {
+
+                    if (array_key_exists('TABLE:DEFAULT-CELL-STYLE-NAME',
+                        $col['attrs'])) {
                         $tempcol->col_set_default_cell_style($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
                     }
                 }
@@ -185,13 +170,17 @@ class OpenDocumentParser
                 $row_options = array();
                 if (array_key_exists('attrs', $row)) {
                     if (array_key_exists('TABLE:STYLE-NAME', $row['attrs'])) {
-                        $row_options['style'] = htmlentities($row['attrs']['TABLE:STYLE-NAME'], ENT_QUOTES, "UTF-8");
+                        $row_options['style'] = htmlentities($row['attrs']['TABLE:STYLE-NAME'],
+                            ENT_QUOTES, "UTF-8");
                     }
+
                     if (array_key_exists('TABLE:VISIBILITY', $row['attrs'])) {
                         $row_options['collapse'] = ($row['attrs']['TABLE:VISIBILITY'] == 'collapse');
                     }
-                    if (array_key_exists('TABLE:STYLE-NAME', $row['attrs']))
+
+                    if (array_key_exists('TABLE:STYLE-NAME', $row['attrs'])) {
                         $row_options['style'] = $row['attrs']['TABLE:STYLE-NAME'];
+                    }
                 }
                 $this->addRow($cS, $cR, $row_options);
 
@@ -202,57 +191,79 @@ class OpenDocumentParser
                         $cell_options = array();
 
                         if (array_key_exists('attrs', $cell)) {
-
-                            if (array_key_exists('TABLE:NUMBER-ROWS-SPANNED', $cell['attrs']))
+                            if (array_key_exists('TABLE:NUMBER-ROWS-SPANNED',
+                                $cell['attrs'])) {
                                 $cell_options['rowspan'] = $cell['attrs']['TABLE:NUMBER-ROWS-SPANNED'];
-                            if (array_key_exists('TABLE:NUMBER-COLUMNS-SPANNED', $cell['attrs']))
+                            }
+
+                            if (array_key_exists('TABLE:NUMBER-COLUMNS-SPANNED',
+                                $cell['attrs'])) {
                                 $cell_options['colspan'] = $cell['attrs']['TABLE:NUMBER-COLUMNS-SPANNED'];
-                            if (array_key_exists('TABLE:STYLE-NAME', $cell['attrs'])) {
+                            }
+
+                            if (array_key_exists('TABLE:STYLE-NAME',
+                                $cell['attrs'])) {
                                 $cell_options['style'] = strtolower($cell['attrs']['TABLE:STYLE-NAME']);
                             } else {
-
-                                if ($default_style = $this->getColDefaultCellStyle($cS, $cC)) {
+                                if ($default_style = $this->getColDefaultCellStyle($cS,
+                                    $cC)
+                                ) {
                                     $cell_options['style'] = strtolower($default_style);
                                 }
 
-
                             }
-                            if (array_key_exists('OFFICE:VALUE', $cell['attrs']))
-                                $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'], ENT_QUOTES, "UTF-8");
-                            // Warning !
-                            if (array_key_exists('OFFICE:BOOLEAN-VALUE', $cell['attrs']))
-                                $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:BOOLEAN-VALUE'], ENT_QUOTES, "UTF-8");
-                            if (array_key_exists("OFFICE:VALUE-TYPE", $cell['attrs']))
+                            if (array_key_exists('OFFICE:VALUE',
+                                $cell['attrs'])) {
+                                $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'],
+                                    ENT_QUOTES, "UTF-8");
+                            }
+
+                            if (array_key_exists('OFFICE:BOOLEAN-VALUE',
+                                $cell['attrs'])) {
+                                $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:BOOLEAN-VALUE'],
+                                    ENT_QUOTES, "UTF-8");
+                            }
+
+                            if (array_key_exists("OFFICE:VALUE-TYPE",
+                                $cell['attrs'])) {
                                 $cell_options['value_type'] = $cell['attrs']['OFFICE:VALUE-TYPE'];
-                            if (array_key_exists("TABLE:CONTENT-VALIDATION-NAME", $cell['attrs']))
+                            }
+
+                            if (array_key_exists("TABLE:CONTENT-VALIDATION-NAME",
+                                $cell['attrs'])) {
                                 $cell_options['validation'] = $cell['attrs']["TABLE:CONTENT-VALIDATION-NAME"];
-                            if (array_key_exists("TABLE:FORMULA", $cell['attrs'])) {
+                            }
+
+                            if (array_key_exists("TABLE:FORMULA",
+                                $cell['attrs'])) {
                                 $crude_formula = $cell['attrs']['TABLE:FORMULA'];
 
-                                $cell_formula = new Formula(array($cS, $cR, $cC), $crude_formula, $cS, $sheets_name);
+                                $cell_formula = new Formula(array(
+                                    $cS,
+                                    $cR,
+                                    $cC
+                                ), $crude_formula, $cS, $sheets_name);
 
                                 if ($cell_formula->formula_isprintable()) {
                                     // If formula is printable
                                     $this->addFormula($cell_formula);
 
                                 }
-                                // Even if not printable, cell still considered as "output"
+
                                 $cell_options['type'] = "out";
                             }
-
                         } else {
                             // Cells doesn't have attributes
-                            // $this->parser_error("Cell S$cS R$cR C$cC do not have attrs.");
                         }
 
                         if (array_key_exists('value', $cell)) {
 
                             $cell_options['value_disp'] = $cell['value'];
                         }
+
                         if (array_key_exists('annotation', $cell)) {
                             $cell_options['annotation'] = $cell['annotation'];
                         }
-
                         $this->addCell($cS, $cR, $cC, $cell_options);
                     }
                 }
@@ -268,7 +279,6 @@ class OpenDocumentParser
         xml_set_character_data_handler($xml_parser, "characterData");
         xml_parser_set_option($xml_parser, XML_OPTION_TARGET_ENCODING, "UTF-8");
         xml_parse($xml_parser, $data, strlen($data));
-
         xml_parser_free($xml_parser);
     }
 
@@ -276,20 +286,18 @@ class OpenDocumentParser
     {
         $cTagName = strtolower($tagName);
 
-
         if ($cTagName == 'style:font-face') {
             $this->fonts[$attrs['STYLE:NAME']] = $attrs;
-            /**
-             * XML styles
-             */
         } elseif ($cTagName == 'style:style') {
             $this->lastElement = $cTagName;
 
             $id = self::array_attribute($attrs, 'STYLE:NAME');
 
             $new_style = new Style(strtolower($id));
-            $new_style->data_style_name = self::array_attribute($attrs, 'STYLE:DATA-STYLE-NAME');
-            $new_style->parent_style_name = strtolower(self::array_attribute($attrs, 'STYLE:PARENT-STYLE-NAME'));
+            $new_style->data_style_name = self::array_attribute($attrs,
+                'STYLE:DATA-STYLE-NAME');
+            $new_style->parent_style_name = strtolower(self::array_attribute($attrs,
+                'STYLE:PARENT-STYLE-NAME'));
 
             $this->currentStyle = $new_style;
 
@@ -315,7 +323,9 @@ class OpenDocumentParser
             $this->lastElement = $cTagName;
 
             $cov_cell_repeated = 1;
-            if (isset($attrs['TABLE:NUMBER-COLUMNS-REPEATED'])) $cov_cell_repeated = intval($attrs['TABLE:NUMBER-COLUMNS-REPEATED']);
+            if (isset($attrs['TABLE:NUMBER-COLUMNS-REPEATED'])) {
+                $cov_cell_repeated = intval($attrs['TABLE:NUMBER-COLUMNS-REPEATED']);
+            }
 
             $this->currentCell += $cov_cell_repeated;
             /**
@@ -333,7 +343,9 @@ class OpenDocumentParser
             $this->contenttag_stack[] = $cTagName;
 
             $cell_repeated = 1; // Nombre de répétition d'une cellule, par défaut = 1
-            if (isset($attrs['TABLE:NUMBER-COLUMNS-REPEATED'])) $cell_repeated = intval($attrs['TABLE:NUMBER-COLUMNS-REPEATED']);
+            if (isset($attrs['TABLE:NUMBER-COLUMNS-REPEATED'])) {
+                $cell_repeated = intval($attrs['TABLE:NUMBER-COLUMNS-REPEATED']);
+            }
 
             $this->repeatCell = $cell_repeated;
 
@@ -350,10 +362,9 @@ class OpenDocumentParser
                 $this->currentCell += $cell_repeated - 1;
             }
         } elseif ($cTagName == 'office:annotation') {
-            // Si le tag est une annotation
             $this->lastElement = $cTagName;
-
             $this->contenttag_stack[] = $cTagName;
+
         } elseif ($cTagName == 'draw:frame') {
             $this->lastElement = $cTagName;
             $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['frame'][$this->currentFrame]['attrs'] = $attrs;
@@ -370,7 +381,9 @@ class OpenDocumentParser
             $this->lastElement = $cTagName;
 
             $row_repeated = 1; // Nombre de répétitions de la ligne, par défaut = 1
-            if (isset($attrs['TABLE:NUMBER-ROWS-REPEATED'])) $row_repeated = intval($attrs['TABLE:NUMBER-ROWS-REPEATED']);
+            if (isset($attrs['TABLE:NUMBER-ROWS-REPEATED'])) {
+                $row_repeated = intval($attrs['TABLE:NUMBER-ROWS-REPEATED']);
+            }
 
             if ($row_repeated < 100) {
                 // Si la ligne est répétée moins de 100 fois
@@ -385,13 +398,8 @@ class OpenDocumentParser
                 $this->repeatRow = $row_repeated;
             }
         } elseif ($cTagName == 'table:table') {
-            // Si le tag est un onglet
             $this->lastElement = $cTagName;
-
             $this->sheets[$this->currentSheet] = $attrs;
-            /*
-      $this->addSheet(  $attrs['TABLE:NAME'] );
-      */
 
         } elseif ($cTagName == 'table:content-validation') {
             $this->lastElement = $cTagName;
@@ -400,9 +408,11 @@ class OpenDocumentParser
 
         } elseif ($cTagName == 'table:table-column') {
             $this->lastElement = $cTagName;
-
             $col_repeated = 1;
-            if (isset($attrs['TABLE:NUMBER-COLUMNS-REPEATED'])) $col_repeated = intval($attrs['TABLE:NUMBER-COLUMNS-REPEATED']);
+
+            if (isset($attrs['TABLE:NUMBER-COLUMNS-REPEATED'])) {
+                $col_repeated = intval($attrs['TABLE:NUMBER-COLUMNS-REPEATED']);
+            }
 
             if ($col_repeated < 100) {
                 for ($i = 0; $i < $col_repeated; $i++) {
@@ -416,9 +426,8 @@ class OpenDocumentParser
             }
             $this->currentColumn += $col_repeated - 1;
 
-        } /**
-         * Text tags
-         */
+        }
+
         elseif ($cTagName == 'text:tab') {
 
             global $globaldata;
@@ -430,7 +439,9 @@ class OpenDocumentParser
             global $globaldata;
 
             $class = "";
-            if ($style_name = strtolower(self::array_attribute($attrs, 'TEXT:STYLE-NAME'))) {
+            if ($style_name = strtolower(self::array_attribute($attrs,
+                'TEXT:STYLE-NAME'))
+            ) {
 
                 $class = ' class="' . $style_name . '" ';
                 $this->used_styles[] = $style_name;
@@ -443,7 +454,9 @@ class OpenDocumentParser
 
             global $globaldata;
 
-            if ($style_name = strtolower(self::array_attribute($attrs, 'TEXT:STYLE-NAME'))) {
+            if ($style_name = strtolower(self::array_attribute($attrs,
+                'TEXT:STYLE-NAME'))
+            ) {
 
                 $class = ' class="' . strtolower($style_name) . '" ';
                 $this->used_styles[] = $style_name;
@@ -451,9 +464,8 @@ class OpenDocumentParser
             }
 
             $globaldata .= "<span$class>";
-        } /**
-         * Number formats
-         */
+        }
+
         elseif ($cTagName == 'number:number-style' || $cTagName == 'number:currency-style' ||
             $cTagName == 'number:percentage-style'
         ) {
@@ -476,8 +488,10 @@ class OpenDocumentParser
                 // Format of the number itself
                 $data_style = $this->currentDataStyle;
 
-                $data_style->min_int_digit = intval(self::array_attribute($attrs, 'NUMBER:MIN-INTEGER-DIGITS'));
-                $data_style->decimal_places = intval(self::array_attribute($attrs, 'NUMBER:DECIMAL-PLACES'));
+                $data_style->min_int_digit = intval(self::array_attribute($attrs,
+                    'NUMBER:MIN-INTEGER-DIGITS'));
+                $data_style->decimal_places = intval(self::array_attribute($attrs,
+                    'NUMBER:DECIMAL-PLACES'));
 
                 $this->currentDataStyle = $data_style;
 
@@ -487,7 +501,8 @@ class OpenDocumentParser
             } elseif ($cTagName == 'style:map') {
                 // Mapping of the DataStyle
                 $condition = self::array_attribute($attrs, 'STYLE:CONDITION');
-                $apply_style_name = self::array_attribute($attrs, 'STYLE:APPLY-STYLE-NAME');
+                $apply_style_name = self::array_attribute($attrs,
+                    'STYLE:APPLY-STYLE-NAME');
 
                 $data_style = $this->currentDataStyle;
 
@@ -502,7 +517,6 @@ class OpenDocumentParser
 
     function endElement($parser, $tagName)
     {
-
         global $globaldata;
 
         $cTagName = strtolower($tagName);
@@ -554,13 +568,11 @@ class OpenDocumentParser
             // Pop 2 times (prefix & suffix)
             array_pop($this->contenttag_stack);
             array_pop($this->contenttag_stack);
-        } // Closes text tags
+        }
         elseif ($cTagName == 'text:p') {
-
             $this->characterData($parser, '</p>');
 
         } elseif ($cTagName == 'text:span') {
-
             $this->characterData($parser, '</span>');
 
         }
@@ -650,8 +662,4 @@ class OpenDocumentParser
     {
         return end($array);
     }
-
 }
-
-
-

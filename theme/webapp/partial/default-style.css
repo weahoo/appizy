@@ -70,3 +70,7 @@
 .hidden-cell {
     display: none;
 }
+
+.hidden-row {
+    display: none;
+}

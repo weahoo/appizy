@@ -142,8 +142,12 @@ class ConvertCommand extends Command
             $fileName = str_replace('.twig', '', $fileName);
             $filename = $path . '/' . $fileName;
 
+            if (preg_match('/\.html/', $fileName)) {
+                $renderedTemplate = $this->formatHTML($renderedTemplate);
+            }
+
             $open = fopen($filename, "w");
-            fwrite($open, $this->formatHTML($renderedTemplate));
+            fwrite($open, $renderedTemplate);
             fclose($open);
         }
     }
@@ -162,7 +166,7 @@ class ConvertCommand extends Command
                 unlink("$dir/$file");
             }
         }
-        
+
         return rmdir($dir);
     }
 
