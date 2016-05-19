@@ -177,6 +177,12 @@ class Style
                         $propValue = "underline";
                     }
                     break;
+                case "TABLE:DISPLAY":
+                    if ($value === "false") {
+                        $propValue = "display";
+                        $propName = "none";
+                    }
+                    break;
             }
             if ($propName != '') $cssStyles[$propName] = $propValue;
             $i++;

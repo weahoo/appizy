@@ -2,26 +2,23 @@
 
 namespace Appizy\WebApp;
 
-use Appizy\WebApp\Row;
-use Appizy\WebApp\Column;
-use Appizy\WebApp\Cell;
-
 class Sheet extends TableElement
 {
     var $name;
     var $style;
+    /** @var Column[] */
     var $col;
     /** @var Row[] */
     var $row;
 
     function __construct($sheet_id, $sheet_name)
     {
-        $this->set_id($sheet_id);
-        //
+        parent::__construct($sheet_id);
+
         $this->name = $sheet_name;
         $this->style = "";
-        $this->col = array();
-        $this->row = array();
+        $this->col = [];
+        $this->row = [];
     }
 
     function addCol(Column $newCol)

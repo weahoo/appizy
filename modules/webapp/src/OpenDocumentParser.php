@@ -118,9 +118,6 @@ class OpenDocumentParser
         $sheet->addCol($new_col);
     }
 
-    /**
-     * Order parsed data
-     */
     function order_data()
     {
         $sheets_name = array();
@@ -135,13 +132,9 @@ class OpenDocumentParser
             $sheets_name[] = $name;
         }
 
-        /**
-         * Sheet
-         */
         foreach ($this->sheets as $cS => $sheet) {
 
-            $this->addSheet($cS,
-                htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
+            $this->addSheet($cS, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
 
             foreach ($sheet['column'] as $curCOLI => $col) {
                 $tempcol = new Column($curCOLI);
@@ -205,9 +198,7 @@ class OpenDocumentParser
                                 $cell['attrs'])) {
                                 $cell_options['style'] = strtolower($cell['attrs']['TABLE:STYLE-NAME']);
                             } else {
-                                if ($default_style = $this->getColDefaultCellStyle($cS,
-                                    $cC)
-                                ) {
+                                if ($default_style = $this->getColDefaultCellStyle($cS, $cC)) {
                                     $cell_options['style'] = strtolower($default_style);
                                 }
 
@@ -426,9 +417,7 @@ class OpenDocumentParser
             }
             $this->currentColumn += $col_repeated - 1;
 
-        }
-
-        elseif ($cTagName == 'text:tab') {
+        } elseif ($cTagName == 'text:tab') {
 
             global $globaldata;
 
@@ -464,9 +453,7 @@ class OpenDocumentParser
             }
 
             $globaldata .= "<span$class>";
-        }
-
-        elseif ($cTagName == 'number:number-style' || $cTagName == 'number:currency-style' ||
+        } elseif ($cTagName == 'number:number-style' || $cTagName == 'number:currency-style' ||
             $cTagName == 'number:percentage-style'
         ) {
 
@@ -568,8 +555,7 @@ class OpenDocumentParser
             // Pop 2 times (prefix & suffix)
             array_pop($this->contenttag_stack);
             array_pop($this->contenttag_stack);
-        }
-        elseif ($cTagName == 'text:p') {
+        } elseif ($cTagName == 'text:p') {
             $this->characterData($parser, '</p>');
 
         } elseif ($cTagName == 'text:span') {
