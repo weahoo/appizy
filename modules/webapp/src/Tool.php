@@ -8,6 +8,7 @@ class Tool
 
     var $sheets = array();
     var $styles = array();
+    /** @var array Formula[] */
     var $formulas = array();
     var $validations = array();
     var $formats = array();
@@ -34,45 +35,22 @@ class Tool
 
         $this->used_styles = $extracted_ods->used_styles;
 
-        // Set formulas dep as "in"
-        $this->formula_dep_setin();
+        $this->setFormulaDependenciesAsInputCells();
 
-        /**
-         * Styles cleaning
-         */
-        foreach ($this->styles as $id => $style) {
-
-            $parent_style_name = $style->parent_style_name;
-
-            if ($parent_style_name != '') {
-
-                $parent_style = $this->styles[$parent_style_name];
-
-                $style->style_merge($parent_style);
-
-                $this->styles[$id] = $style;
-            }
-        }
+        $this->cleanStyles();
     }
 
-    function formula_dep_setin()
+    function setFormulaDependenciesAsInputCells()
     {
-
-        $index = 0;
+        /** @var Formula $formula */
         foreach ($this->formulas as $formula) {
-
-
             if ($formula->formula_isprintable()) {
-
                 $dependances = $formula->get_dependances();
 
                 foreach ($dependances as $dep) {
-
                     $tempcell = $this->tool_get_cell($dep[0], $dep[1], $dep[2]);
                     if ($tempcell) {
-                        // If cell exists
-                        if ($tempcell->getType() != 'out') // Si elle n'est pas une formule alors est devient "in"
-                        {
+                        if ($tempcell->getType() != 'out') {
                             $tempcell->cell_set_type('in');
                         }
                     } else {
@@ -84,7 +62,6 @@ class Tool
                     }
                 }
             }
-            // $index++;
         }
     }
 
@@ -473,7 +450,7 @@ class Tool
                 $formulas .= $formula->get_script() . "\n";
                 $formulaslist[$formula->get_name()] = array(
                     'call' => $formula->get_call(),
-                    'dep'  => $dependances,
+                    'dep' => $dependances,
                 );
                 foreach ($formula->get_ext_formula() as $ext_formula) {
                     $ext_formulas[] = $ext_formula;
@@ -736,5 +713,18 @@ class Tool
         }
 
         return $ext_formula;
+    }
+
+    private function cleanStyles()
+    {
+        foreach ($this->styles as $id => $style) {
+            $parent_style_name = $style->parent_style_name;
+
+            if ($parent_style_name != '') {
+                $parent_style = $this->styles[$parent_style_name];
+                $style->style_merge($parent_style);
+                $this->styles[$id] = $style;
+            }
+        }
     }
 }
