@@ -144,7 +144,7 @@ class Cell extends TableElement
 
         return $cell_value;
     }
-    
+
     /**
      * Return cell attribute value first or displayed value if not existent
      */
@@ -236,6 +236,11 @@ class Cell extends TableElement
     function getType()
     {
         return $this->type;
+    }
+
+    function getValueType()
+    {
+        return $this->value_type;
     }
 
     function cell_isempty()

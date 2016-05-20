@@ -16,48 +16,44 @@ class Formula
 
         $broken_ref = "#REF!";
         if (stripos($ods_formula, $broken_ref) === false) {
-            $this->formula_crude2elements($ods_formula, $current_sheet, $sheets_name);
+            $this->crudeToElements($ods_formula, $current_sheet, $sheets_name);
             $this->error[] = "Broken cell reference in the formula";
         }
     }
 
-    function formula_crude2elements($ods_formula = '', $current_sheet = 0, $sheets_name = [])
+    function crudeToElements($ods_formula = '', $current_sheet = 0, $sheets_name = [])
     {
-        // Step 1 - clean crude ODS formula
-        $temp_formula = explode("=", $ods_formula, 2); // remove "=" sign at the beginning
-        $temp_formula = $temp_formula[1];
-
-        $temp_formula = str_replace('$', '', $temp_formula); // remove all "$"
+        $temp_formula = $this->cleanOdsFormula($ods_formula);
 
         // Step 2 - lexion preparation
         // ****** 2.1 - Mathematical chars
-        $formula_lexicon = array('+'  => '+',
-                                 '-'  => '-',
-                                 '/'  => '/',
-                                 '*'  => '*',
-                                 '('  => '(',
-                                 ')'  => ')',
-                                 ';'  => ',',
-                                 ','  => ',',
-                                 '<>' => '!=',
-                                 '<=' => '<=',
-                                 '>=' => '>=',
-                                 '<'  => '<',
-                                 '>'  => '>',
-                                 '='  => '==',
-                                 '&'  => '+',
+        $formula_lexicon = ['+' => '+',
+            '-' => '-',
+            '/' => '/',
+            '*' => '*',
+            '(' => '(',
+            ')' => ')',
+            ';' => ',',
+            ',' => ',',
+            '<>' => '!=',
+            '<=' => '<=',
+            '>=' => '>=',
+            '<' => '<',
+            '>' => '>',
+            '=' => '==',
+            '&' => '+',
             /**
              * CORRECTORS:
              * - Remove additional spaces in formula
              * - Removes "++" accepted by Excel/OO
              *
              */
-                                 ' '  => '',
-                                 '++' => '+',
-        );
+            ' ' => '',
+            '++' => '+',
+        ];
 
         // ****** 2.2 - External formulas available
-        $ext_formulas_available = array(
+        $ext_formulas_available = [
             /* Mathematical */
             'SUM', 'SUMIF', 'SUMPRODUCT',
             'COS', 'ACOS', 'SIN', 'ASIN', 'TAN', 'ATAN', 'PI', 'POWER', 'SQRT',
@@ -80,7 +76,7 @@ class Formula
             /* SEARCH */
             'VLOOKUP', 'LOOKUP', 'COUNTIF'
             /* TIME */
-        );
+        ];
 
         // Create the array that associate Ods formula name and Formula.js name
         $ext_formulas = array();
@@ -102,8 +98,21 @@ class Formula
             $lexicon = array_merge($strings_lex, $lexicon);
         }
 
+        // Search REF and add it to lexicon
+        preg_match_all('|\[.+\]|U', $temp_formula, $out, PREG_PATTERN_ORDER);
+
+        if (!empty($out[0])) {
+            $strings_lex = [];
+            foreach ($out[0] as $string_informula) {
+                $strings_lex[$string_informula] = $string_informula;
+            }
+            $lexicon = array_merge($strings_lex, $lexicon);
+        }
+
         // ****** 2.5 - Sort Lexicon by string lenght to avoid inclusion issues
-        uksort($lexicon, function ($a, $b) {  return strlen($b) - strlen($a); });
+        uksort($lexicon, function ($a, $b) {
+            return strlen($b) - strlen($a);
+        });
 
         // ****** 2.6 - Lexicon decomposistion
         $temp_formula = lexer($temp_formula, $lexicon);
@@ -112,18 +121,17 @@ class Formula
         $this->ext_formula_dependances = array_intersect($temp_formula, $ext_formulas);
 
         // ****** 2.8 - Range detection and modification
-        $this->formula_convert_cellranges($temp_formula, $current_sheet, $sheets_name);
+        $this->ConvertCellRanges($temp_formula, $current_sheet, $sheets_name);
     }
 
-    function formula_convert_cellranges($array_formula = array(), $current_sheet = 0, $sheets_name = array())
+    function ConvertCellRanges($array_formula = [], $current_sheet = 0, $sheets_name = [])
     {
-
-        $celldependancies = array();
+        $celldependancies = [];
         $offset = 0;
 
         foreach ($array_formula as $key => $formula_element) {
-            // Pour chaque �l�ment de la formule
-            $temp = str_split($formula_element); // A remplacer par expression r�guli�re
+
+            $temp = str_split($formula_element);
 
             if ($temp[0] == "[") {
                 // If element starts with an "[" it's a range reference
@@ -137,8 +145,8 @@ class Formula
 
                     if (count($range_element) == 2) {
                         // If RANGE of dimension 2 (more than 1 cell)
-                        $head = string2coord($range_element[0], $current_sheet, $sheets_name);
-                        $tail = string2coord($range_element[1], $current_sheet, $sheets_name);
+                        $head = referenceToCoordinates($range_element[0], $current_sheet, $sheets_name);
+                        $tail = referenceToCoordinates($range_element[1], $current_sheet, $sheets_name);
 
                         $range_token = "[" . implode(',', $head) . "],[" . implode(',', $tail) . "]";
 
@@ -155,7 +163,7 @@ class Formula
 
                     } else {
                         // Simple RANGE, i.e one cell
-                        $element = string2coord($range_element[0], $current_sheet, $sheets_name);
+                        $element = referenceToCoordinates($range_element[0], $current_sheet, $sheets_name);
                         $dep_sheet = intval($element[0]);
                         $dep_row = intval($element[1]);
                         $dep_col = intval($element[2]);
@@ -180,11 +188,8 @@ class Formula
                     $this->error[] = "External references not supported";
                     // Delete the formula content
                 }
-
-            } // End if element is a RANGE
-
-        } // End foreach formula element
-
+            }
+        }
         // $celldependancies = array_unique($celldependancies); // Chaque d�pendance est unique
 
         $this->dependances = $celldependancies;
@@ -205,7 +210,6 @@ class Formula
 
     function get_dependances()
     {
-        // trigger_error("Get dep of:".$this->get_name(), E_USER_WARNING);
         return $this->dependances;
     }
 
@@ -230,6 +234,18 @@ class Formula
     {
         return $this->error;
     }
+
+    /**
+     * @param string $odsFormula
+     * @return string
+     */
+    private function cleanOdsFormula($odsFormula)
+    {
+        $formulaParts = explode("=", $odsFormula, 2);
+        $formula = $formulaParts[1];
+
+        return str_replace('$', '', $formula);
+    }
 }
 
 class Validation
@@ -248,9 +264,8 @@ class Validation
 function lexer($formula, $lexicon)
 {
     $index = 0;
-    $lexedformula = array();
+    $lexedformula = [];
 
-    // Longeur du lexique
     $size = count($lexicon);
 
     if ($size > 0) {
@@ -279,42 +294,48 @@ function lexer($formula, $lexicon)
         // Avant de renvoyer on aplanit le tableau
         $flat_formula = array();
         array_walk_recursive($lexedformula, function ($a) use (&$flat_formula) {
-                $flat_formula[] = $a;
-            });
+            $flat_formula[] = $a;
+        });
 
         return $flat_formula;
     } else {
-        // sinon on renvoie la formule pass� en param�tre
+
         return $formula;
     }
 }
 
 
 /**
- * Transforme des coordon�es de cellule ODS en coordonn�es cart�siennes
+ * @param string $reference cell coordinate as string
+ * @param integer $referenceSheetIndex sheet index where the reference is
+ * @param array $sheetsNames
+ * @return array|bool
  */
-function string2coord($string, $currentsheet, $sheetname)
+function referenceToCoordinates($reference, $referenceSheetIndex, $sheetsNames)
 {
-
     // Sorts sheets' name by length to avoid inclusion issue
-    uasort($sheetname, function ($a, $b) {  return strlen($b) - strlen($a); });
+    uasort($sheetsNames, function ($a, $b) {
+        return strlen($b) - strlen($a);
+    });
 
-    $sheet_name = array_values($sheetname);
-    $sheet_index = array_keys($sheetname);
+    $sheet_name = array_values($sheetsNames);
+    $sheet_index = array_keys($sheetsNames);
 
     // Replaces sheet name in $string by it's index
-    $coord_in_string = str_replace($sheet_name, $sheet_index, $string);
+    $coord_in_string = str_replace($sheet_name, $sheet_index, $reference);
 
     // Removes additional '' and "" that can be around sheet's name
-    $coord_in_string = str_replace(array('"', "'"), "", $coord_in_string);
+    $coord_in_string = str_replace(['"', "'"], "", $coord_in_string);
 
 
-    if (preg_match("/^\./", $string)) $coord_in_string = $currentsheet . $coord_in_string;
+    if (preg_match("/^\./", $reference)) {
+        $coord_in_string = $referenceSheetIndex . $coord_in_string;
+    }
 
     // 2. Remplacement des lettres de colonnes
     preg_match_all('/[A-Z]/', $coord_in_string, $matches);
     $col_alpha = implode($matches[0]);
-    $col_num = alpha2num(implode($matches[0]));
+    $col_num = alphaToNumeric(implode($matches[0]));
 
     $coord_in_string = str_replace($col_alpha, $col_num . ",", $coord_in_string);
 
@@ -323,12 +344,10 @@ function string2coord($string, $currentsheet, $sheetname)
     $coord = explode(',', $coord_in_string);
 
     if (count($coord) == 3) {
-        // If $coord has the correct number to value
-
         return array(intval($coord[0]), intval($coord[2]) - 1, intval($coord[1]));
 
     } else {
-        trigger_error("Unable to get coord out of: $string ");
+        trigger_error("Unable to get coord out of: $reference ");
 
         return false;
     }
@@ -340,13 +359,19 @@ function sortBylength($a, $b)
     return strlen($b) - strlen($a);
 }
 
-// Transforme une cha�ne alpha en num, base 26
-function alpha2num($a)
+/**
+ * Convert a string (base 26) to integer (base 10)
+ * Example: 'A' => 0, 'AA' => 26, 'AAA' => 702
+ * @param $a
+ * @return int
+ */
+function alphaToNumeric($a)
 {
     $l = strlen($a);
     $n = 0;
-    for ($i = 0; $i < $l; $i++)
+    for ($i = 0; $i < $l; $i++) {
         $n = $n * 26 + ord($a[$i]) - 0x40;
+    }
 
     return $n - 1;
 }

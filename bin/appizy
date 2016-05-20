@@ -21,6 +21,8 @@ use Appizy\Core\Command\ConvertCommand;
 use Appizy\Core\Command\ThemesCommand;
 use Symfony\Component\Console\Application;
 
+define('APPIZY_BASE_DIR', __DIR__ . '/..');
+
 $application = new Application();
 $application->add(new ConvertCommand());
 $application->add(new ThemesCommand());

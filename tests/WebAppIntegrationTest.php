@@ -10,8 +10,10 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     /** @var  Crawler */
     protected $crawler;
 
-    protected function setUp()
+    public static function setUpBeforeClass()
     {
+        define('APPIZY_BASE_DIR', __DIR__ . '/..');
+
         $application = new Application();
         $application->add(new ConvertCommand());
 
@@ -19,9 +21,12 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            'source'  => 'tests/fixtures/demo-appizy.ods'
+            'source' => 'tests/fixtures/demo-appizy.ods'
         ));
+    }
 
+    protected function setUp()
+    {
         $generatedHtml = file_get_contents('tests/fixtures/app.html');
         $this->crawler = new Crawler($generatedHtml);
     }
@@ -32,18 +37,20 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(count($this->crawler->filter('#appizy')), 1);
     }
 
-    public function testRowSpan(){
+    public function testRowSpan()
+    {
         $this->assertEquals($this->crawler->filter('.s2r0c0')->attr('rowspan'), 2);
         $this->assertEquals($this->crawler->filter('.s2r0c1')->attr('rowspan'), null);
         $this->assertEquals($this->crawler->filter('.s2r0c3')->attr('rowspan'), 2);
     }
-    
-    public function testColSpan(){
+
+    public function testColSpan()
+    {
         $this->assertEquals($this->crawler->filter('.s2r0c0')->attr('colspan'), null);
         $this->assertEquals($this->crawler->filter('.s2r0c1')->attr('colspan'), 2);
         $this->assertEquals($this->crawler->filter('.s2r0c3')->attr('colspan'), 2);
     }
-    
+
     public function testHiddenRowShouldHaveCSSClass()
     {
         $this->assertContains('hidden-row',
@@ -53,6 +60,11 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         parent::tearDown();
+    }
+
+    public static function tearDownAfterClass()
+    {
+        parent::tearDownAfterClass();
         exec('rm tests/fixtures/*.html');
         exec('rm tests/fixtures/*.js');
     }

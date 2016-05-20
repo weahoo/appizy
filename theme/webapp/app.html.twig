@@ -52,7 +52,7 @@
                                         {% set values = cell.getValueList() %}
                                         {% if values is empty %}
                                             <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
-                                                   data-type="{{ cellType }}" value="{{ cell.getValue() }}">
+                                                   data-value-type="{{ cell.getValueType() }}" value="{{ cell.getValue() }}">
                                         {% else %}
                                             <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
                                                 {% for value in values %}
@@ -62,7 +62,7 @@
                                         {% endif %}
                                     {% elseif cellType == 'out' %}
                                         <input disabled="disabled" name="{{ cell.getName() }}"
-                                               value="{{ cell.getValueAttr() }}" data-type="{{ cellType }}">
+                                               value="{{ cell.getValueAttr() }}" data-value-type="{{ cell.getValueType() }}">
                                     {% else %}
                                         {{ cell.getDisplayedValue() | raw }}
                                     {% endif %}

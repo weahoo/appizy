@@ -108,9 +108,9 @@ class Tool
                 $values = str_replace(array('[', ']'), '', $values);
                 $values = explode(":", $values, 2);
 
-                $head = string2coord($values[0], 0, $sheets_name);
+                $head = referenceToCoordinates($values[0], 0, $sheets_name);
 
-                $tail = string2coord($values[1], $head[0], $sheets_name);
+                $tail = referenceToCoordinates($values[1], $head[0], $sheets_name);
 
                 $values = array();
                 for ($i = 0; $i <= $tail[1] - $head[1]; $i++) {
@@ -145,7 +145,7 @@ class Tool
                 $tmp_rI = $address[1];
                 $tmp_cI = $address[2];
             } else {
-                $head = string2coord($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
+                $head = referenceToCoordinates($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
                     0, $sheets_name);
                 $tmp_sI = $head[0];
                 $tmp_rI = $head[1];

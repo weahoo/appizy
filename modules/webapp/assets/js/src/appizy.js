@@ -24,7 +24,7 @@ define([
             var item = $('[name=' + cell_ref + ']');
 
             if (item.length > 0) {
-                value = APY.getInput(item.val(), item.data('type'));
+                value = APY.getInput(item.val(), item.attr('data-value-type'));
             }
 
             return value;
@@ -42,7 +42,7 @@ define([
                     var item = $('[name=' + cell_ref + ']');
 
                     if (item.length > 0) {
-                        row.push(APY.getInput(item.val(), item.data('type')));
+                        row.push(APY.getInput(item.val(), item.attr('data-value-type')));
                     } else {
                         row.push(null);
                     }
@@ -91,7 +91,7 @@ define([
         var element = $('[name=' + output_name + ']');
         var formats = $(element).data('format');
 
-        element.data('type', type);
+        element.attr('data-value-type', type);
 
         // Format allowed for number, float and percentage
         if ((type == 'number' || type == 'float' || type == 'percentage' || type == 'currency') &&
@@ -116,7 +116,7 @@ define([
 
     $.fn.setFormattedValue = function () {
         var value = $(this).val();
-        var valueType = $(this).attr('data-type');
+        var valueType = $(this).attr('data-value-type');
         var valueFormat = $(this).attr('data-format');
 
         var formattedValue = APY.formatValue(value, valueType, valueFormat);

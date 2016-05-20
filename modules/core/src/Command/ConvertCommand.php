@@ -60,7 +60,8 @@ class ConvertCommand extends Command
 
 
         $output->writeln("Decompressing file");
-        $extractDir = $destinationPath . '/deflated';
+        $extractDir = APPIZY_BASE_DIR . DIRECTORY_SEPARATOR . $destinationPath . '/deflated';
+        $filePath = APPIZY_BASE_DIR . DIRECTORY_SEPARATOR . $filePath;
         $zip = new ZipArchive;
         $zip->open($filePath);
         $zip->extractTo($extractDir);
@@ -102,7 +103,7 @@ class ConvertCommand extends Command
         $this->copyThemeIncludedFiles($theme, $destinationPath);
 
 
-        self::delTree($destinationPath . '/deflated');
+//        self::delTree($destinationPath . '/deflated');
     }
 
     /**
@@ -140,10 +141,10 @@ class ConvertCommand extends Command
             $renderedTemplate = $twig->render($fileName, $data);
 
             $fileName = str_replace('.twig', '', $fileName);
-            $filename = $path . '/' . $fileName;
+            $filename = APPIZY_BASE_DIR . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $fileName;
 
             if (preg_match('/\.html/', $fileName)) {
-                $renderedTemplate = $this->formatHTML($renderedTemplate);
+//                $renderedTemplate = $this->formatHTML($renderedTemplate);
             }
 
             $open = fopen($filename, "w");
