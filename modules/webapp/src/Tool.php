@@ -262,11 +262,11 @@ class Tool
 
                 foreach ($row->row_get_cells() as $cCI => $tempcell) {
 
-                    if ($tempcell->cell_get_validation() != '') {
-                        $this->render_validation($tempcell->cell_get_validation(),
-                            array($key, $row_index, $cCI));
-                        $tempcell->cell_set_type("in");
-                    }
+//                    if ($tempcell->cell_get_validation() != '') {
+//                        $this->render_validation($tempcell->cell_get_validation(),
+//                            array($key, $row_index, $cCI));
+//                        $tempcell->cell_set_type("in");
+//                    }
 
                     $td = "";
 
