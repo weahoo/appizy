@@ -1,3 +1,4 @@
+{% import 'partial/macro.twig' as macro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,7 +53,10 @@
                                         {% set values = cell.getValueList() %}
                                         {% if values is empty %}
                                             <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
-                                                   data-value-type="{{ cell.getValueType() }}" value="{{ cell.getValue() }}">
+                                                   data-value-type="{{ cell.getValueType() }}"
+                                                   value="{{ cell.getValue() }}"
+                                                    {{ macro.dataFormat(cell, spreadSheet) }}
+                                            >
                                         {% else %}
                                             <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
                                                 {% for value in values %}
@@ -62,7 +66,10 @@
                                         {% endif %}
                                     {% elseif cellType == 'out' %}
                                         <input disabled="disabled" name="{{ cell.getName() }}"
-                                               value="{{ cell.getValueAttr() }}" data-value-type="{{ cell.getValueType() }}">
+                                               value="{{ cell.getValueAttr() }}"
+                                               data-value-type="{{ cell.getValueType() }}"
+                                                {{ macro.dataFormat(cell, spreadSheet) }}
+                                        >
                                     {% else %}
                                         {{ cell.getDisplayedValue() | raw }}
                                     {% endif %}

@@ -56,10 +56,20 @@ class TableElement
         return $styles_name;
     }
 
+
+    /**
+     * @return mixed
+     */
+    function getStyleName()
+    {
+        return array_shift($this->styles_name);
+    }
+
     /**
      * @return array
      */
-    function getStyles() {
+    function getStyles()
+    {
         return $this->styles_name;
     }
 

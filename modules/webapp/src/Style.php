@@ -19,6 +19,10 @@ class Style
         $this->styles = array();
     }
 
+    function getDataStyleName() {
+        return $this->data_style_name;
+    }
+    
     /**
      * Merges the another style into the style. Option: overriding existing properties
      */
@@ -99,11 +103,7 @@ class Style
 
         return $style_code;
     }
-
-    /*
-     Ajoute des styles � un objet d�j� existant
-    */
-
+    
     function addOdsStyles($myOdsStyles)
     {
         $i = 0;
@@ -189,11 +189,7 @@ class Style
         }
         if (isset($cssStyles)) $this->addStyles($cssStyles);
     }
-
-    /*
-     Ajoute des styles ODS � un objet
-    */
-
+    
     function addStyles($newStyles)
     {
         $i = count($this->styles);

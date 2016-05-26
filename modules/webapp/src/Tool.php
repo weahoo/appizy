@@ -110,7 +110,8 @@ class Tool
 
                 $head = referenceToCoordinates($values[0], 0, $sheets_name);
 
-                $tail = referenceToCoordinates($values[1], $head[0], $sheets_name);
+                $tail = referenceToCoordinates($values[1], $head[0],
+                    $sheets_name);
 
                 $values = array();
                 for ($i = 0; $i <= $tail[1] - $head[1]; $i++) {
@@ -159,6 +160,16 @@ class Tool
     function getSheets()
     {
         return $this->sheets;
+    }
+
+    function getStyle($styleName)
+    {
+        return self::array_attribute($this->styles, $styleName);
+    }
+
+    function getDataStyle($dataStyleName = '')
+    {
+        return self::array_attribute($this->formats, $dataStyleName);
     }
 
     function tool_get_sheet($sheet_index)
@@ -231,15 +242,12 @@ class Tool
 
     }
 
-    function tool_render($pathfile = null, $level = 0, $options = array())
+    function tool_render()
     {
-        // Pour le script des formules
         $script = "";
 
         $formulas = "// Cells formulas" . "\n";
         $formulaslist = array();
-
-        $countsheet = 0;
 
         $htmlTable = '';
 
@@ -247,26 +255,10 @@ class Tool
         $used_styles = array(); // Contains styles used by the table elements.
 
         foreach ($this->sheets as $key => $sheet) {
-            $sheet_id = "sheet-" . $countsheet;
-            $sheet_name = $sheet->getName();
-
-            // Creates the link to the anchor
-            $sheets_link[] = '<a href="#' . $sheet_id . '">' . $sheet_name . '</a>';
-
-            $htmlTable .= '<div id="' . $sheet_id . '">' . "\n" .
-                '<table>' . "\n" .
-                '<tbody>' . "\n";
-
             foreach ($sheet->row as $row_index => $row) {
                 $rowstyle = ' class="' . $row->getName() . ' ' . $row->get_styles_name() . '"';
 
                 $used_styles[] = $row->get_styles_name();
-
-                if ($row->collapse) {
-                    $rowstyle .= ' style="visibility:collapse"';
-                }
-
-                $htmlTable .= '<tr' . $rowstyle . '>' . "\n";
 
                 foreach ($row->row_get_cells() as $cCI => $tempcell) {
 
@@ -284,48 +276,6 @@ class Tool
 
                     $data_format = "";
 
-                    if ($tempstyle != '' && $tempstyle != 'Default') {
-
-                        $data_style = self::array_attribute($this->styles,
-                            $tempstyle);
-
-                        if ($data_style != '') {
-
-                            $data_style_name = $data_style->data_style_name;
-
-                            $parent_style_name = $data_style->parent_style_name;
-                            $parent_style_data_style_name = '';
-
-                            $data_style_name = ($data_style_name != "") ?
-                                $data_style_name : $parent_style_data_style_name;
-
-                            if ($data_style_name != '') {
-
-                                $main_data_format = self::array_attribute($this->formats,
-                                    $data_style_name);
-
-                                if ($main_data_format != '' && $main_data_format != 'N0') {
-
-                                    $data_format = $main_data_format->format_code();
-
-                                    if (!empty($main_data_format->maps)) {
-                                        foreach ($main_data_format->maps as $condition => $map) {
-                                            if ($condition == 'value()>=0') {
-                                                if ($map_format = self::array_attribute($this->formats,
-                                                    $map)
-                                                ) {
-                                                    $data_format .= ';' . $map_format->format_code();
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    $data_format = 'data-format="' . $data_format . '" ';
-                                }
-                            }
-                        }
-
-                    }
                     $value_type = $tempcell->cell_value_type();
 
                     switch ($tempcell->getType()) {
@@ -378,29 +328,8 @@ class Tool
                     }
                     $htmlTable .= '  <td class="' . $class . '">' . $td . '</td>' . "\n";
                 }
-                $htmlTable .= "</tr>" . "\n";
             }
-
-            // Close current sheet tags
-            $htmlTable .= '</tbody>' . "\n";
-            $htmlTable .= '</table>' . "\n";
-            $htmlTable .= '</div><!-- /#' . $sheet_id . '-->' . "\n";
-
-            $countsheet++;
         }
-
-        $htmlTable .= "</div><!-- /#sheets -->" . "\n";
-
-        // Create the list of links to the sheet (jQuery compatible)
-        $list_link = "<ul>" . "\n";
-        foreach ($sheets_link as $link) {
-            $list_link .= "  <li>" . $link . "</li>" . "\n";
-        }
-        $list_link .= "</ul>" . "\n";
-
-        $htmlTable = $list_link . $htmlTable;
-        $htmlTable = '<div id="sheets">' . $htmlTable;
-
 
         /*
          * Cr�ation du script de calcul
@@ -432,32 +361,23 @@ class Tool
          *  dans le bon ordre. C'est l'objet de cette premi�re boucle "while"
          *
         */
-        $steps = array(); // Array des steps de calcul
-
-        // Variables uniquement pour la boucle while qui suit :
-        $ext_formulas = array();
-
-        $count_formula = 0;
-        $count_nonprintedformula = 0;
+        $steps = [];
+        $ext_formulas = [];
 
         foreach ($this->formulas as $formula) {
-            if ($level == 1) {
-                $dependances = array();
-                foreach ($formula->get_dependances() as $dependance) {
-                    $dependances[] = 's' . $dependance[0] . 'r' . $dependance[1] . 'c' . $dependance[2];
-                }
+            $dependances = array();
+            foreach ($formula->get_dependances() as $dependance) {
+                $dependances[] = 's' . $dependance[0] . 'r' . $dependance[1] . 'c' . $dependance[2];
+            }
 
-                $formulas .= $formula->get_script() . "\n";
-                $formulaslist[$formula->get_name()] = array(
-                    'call' => $formula->get_call(),
-                    'dep' => $dependances,
-                );
-                foreach ($formula->get_ext_formula() as $ext_formula) {
-                    $ext_formulas[] = $ext_formula;
-                }
-                $count_formula++;
-            } else {
-                $count_nonprintedformula++;
+            $formulas .= $formula->get_script() . "\n";
+            $formulaslist[$formula->get_name()] = array(
+                'call' => $formula->get_call(),
+                'dep'  => $dependances,
+            );
+
+            foreach ($formula->get_ext_formula() as $ext_formula) {
+                $ext_formulas[] = $ext_formula;
             }
         }
         $ext_formulas = array_unique($ext_formulas);
@@ -681,9 +601,9 @@ class Tool
         $namu = $function_name;
         $function_name = preg_quote($function_name);
 
-        $ext_formula = ""; // Default returned value
+        $ext_formula = ''; // Default returned value
 
-        $expression = "/" . $function_name . " = function(.*?)\};/is";
+        $expression = '/' . $function_name . ' = function(.*?)\};/is';
 
         if (!in_array($function_name, $already_loaded)) {
 
@@ -695,8 +615,7 @@ class Tool
 
             $already_loaded[] = $namu;
 
-            // Chargement des d�pendances de la fonction
-            if (preg_match_all("/Formula.(.*?)\(/is", $function, $match)) {
+            if (preg_match_all('/Formula.(.*?)\(/is', $function, $match)) {
                 // Si la fonction a des d�pendances
                 $match = array_unique($match[1]); // Chaque d�pendance n'est imprim�e qu'une fois
                 //$match = array_diff($already_loaded,$match);
