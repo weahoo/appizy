@@ -87,7 +87,8 @@ class ConvertCommand extends Command
                 'content'     => $elements['content'],
                 'style'       => $elements['style'],
                 'script'      => $elements['script'],
-                'options'     => json_decode($input->getOption('options'))
+                'options'     => json_decode($input->getOption('options')),
+                'libraries'   => $elements['libraries']
             ],
             $destinationPath
         );

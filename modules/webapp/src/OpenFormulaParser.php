@@ -226,15 +226,18 @@ class OpenFormulaParser
     }
 
     /**
-     * @param string $odsFormula
+     * @param string $openFormula
      * @return string
      */
-    private static function cleanOdsFormula($odsFormula)
+    private static function cleanOdsFormula($openFormula)
     {
-        $formulaParts = explode("=", $odsFormula, 2);
+        $formulaParts = explode("=", $openFormula, 2);
         $formula = $formulaParts[1];
 
-        return str_replace('$', '', $formula);
+        // Remove '$' sign, not more necessary
+        $formula = str_replace('$', '', $formula);
+
+        return $formula;
     }
 
     /**

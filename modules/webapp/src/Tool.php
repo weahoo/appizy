@@ -16,6 +16,8 @@ class Tool
     var $validations;
     /** @var DataStyle[] */
     var $formats;
+    /** @var string[] */
+    var $libraries;
 
     private $debug;
     private $error;
@@ -25,6 +27,7 @@ class Tool
         $this->sheets = [];
         $this->styles = [];
         $this->formulas = [];
+        $this->libraries = [];
         $this->validations = [];
         $this->formats = [];
         $this->debug = $debug;
@@ -579,6 +582,7 @@ class Tool
         $variables['content'] = $htmlTable;
         $variables['style'] = $cssTable;
         $variables['script'] = $script;
+        $variables['libraries'] = $this->libraries;
 
         return $variables;
     }
@@ -634,6 +638,10 @@ class Tool
                             $library_path, $already_loaded);
                     }
                 }
+            }
+
+            if (preg_match_all('/jStat.(.*?)\(/is', $function, $match)) {
+                $this->libraries[] = 'jStat';
             }
         }
 

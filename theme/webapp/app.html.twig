@@ -8,18 +8,20 @@
     <meta name="description" content="">
     <meta name="author" content="Appizy">
     <title>Appizy</title>
-    <style>
-        {% include 'partial/default-style.css' %}
-        {{ style }}
-    </style>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     {% for library in libraries %}
-        {{ library | raw }}
+        {% if library == 'jStat' %}
+            <script src="http://code.jquery.com/jStat.min.js"></script>
+        {% endif %}
     {% endfor %}
     {% if options.jqueryui %}
         <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
         <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
     {% endif %}
+    <style>
+        {% include 'partial/default-style.css' %}
+        {{ style }}
+    </style>
 </head>
 <body>
 <div id="appizy">

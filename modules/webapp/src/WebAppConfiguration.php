@@ -50,6 +50,7 @@ class WebAppConfiguration
             'MAX'         => 'Formula.MAX',
             'MIN'         => 'Formula.MIN',
             'AVERAGE'     => 'Formula.AVERAGE',
+            'AVEDEV'      => 'Formula.AVEDEV',
             'RADIANS'     => 'Formula.RADIANS',
             'DEGREES'     => 'Formula.DEGREES',
             'ROUND'       => 'Formula.ROUND',
