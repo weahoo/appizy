@@ -13,6 +13,7 @@ class Formula
     function __construct()
     {
         $this->error = [];
+        $this->formula_elements = [];
     }
 
     function getCall()
@@ -20,6 +21,21 @@ class Formula
         return $this->getName() . '();';
     }
 
+    function getElements()
+    {
+        return $this->formula_elements;
+    }
+
+    /**
+     * @param string[] $elements
+     */
+    function setElements($elements){
+        $this->formula_elements = $elements;
+    }
+
+    /**
+     * @return string
+     */
     function getName()
     {
         $coord = $this->cell_coord;
@@ -39,13 +55,10 @@ class Formula
 
     function getScript()
     {
-        $formula_name = $this->getName();
-        $script = "";
-        foreach ($this->formula_elements as $formula_element) {
-            $script .= $formula_element;
-        }
+        $name = $this->getName();
+        $script = join('',$this->getElements());
 
-        return "function " . $formula_name . "(){ APY.set('" . $formula_name . "'," . $script . ") }";
+        return "function " . $name . "(){ APY.set('" . $name . "'," . $script . ") }";
     }
 
     /**

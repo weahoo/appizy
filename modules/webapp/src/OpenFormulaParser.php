@@ -90,7 +90,7 @@ class OpenFormulaParser
             }
         }
 
-        $formula->formula_elements = $formulaElements;
+        $formula->setElements($formulaElements);
 //        $formula->dependances = array_unique($cellDependencies);
         $formula->dependances = $cellDependencies;
         $formula->ext_formula_dependances = array_intersect(

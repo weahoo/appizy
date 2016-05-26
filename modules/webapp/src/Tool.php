@@ -6,25 +6,32 @@ class Tool
 {
     use ArrayTrait;
 
-    var $sheets = array();
-    var $styles = array();
-    /** @var array Formula[] */
-    var $formulas = array();
-    var $validations = array();
-    var $formats = array();
-    var $used_styles = array();
+    /** @var Sheet[] */
+    var $sheets;
+    /** @var Style[] */
+    var $style;
+    /** @var Formula[] */
+    var $formulas;
+    /** @var Validation[] */
+    var $validations;
+    /** @var DataStyle[] */
+    var $formats;
 
     private $debug;
     private $error;
 
     function __construct($debug = false)
     {
+        $this->sheets = [];
+        $this->styles = [];
+        $this->formulas = [];
+        $this->validations = [];
+        $this->formats = [];
         $this->debug = $debug;
     }
 
     function tool_parse_wb($xml_path)
     {
-
         $extracted_ods = new OpenDocumentParser($xml_path, $this->debug);
 
         $this->sheets = $extracted_ods->sheets;
