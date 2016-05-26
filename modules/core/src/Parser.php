@@ -45,7 +45,7 @@ class Parser
     /**
      * @return string
      */
-    private function getTmpDir()
+    static function getTmpDir()
     {
         return sys_get_temp_dir();
     }
