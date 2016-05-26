@@ -78,15 +78,7 @@ class ConvertCommand extends Command
         $tool->tool_clean();
 
         $output->writeln("Rendering application");
-        $elements = $tool->tool_render(
-            null,
-            1,
-            [
-                'compact css'  => false,
-                'jquery tab'   => false,
-                'print header' => true,
-            ]
-        );
+        $elements = $tool->tool_render();
 
         $this->renderAndSave(
             $theme,
@@ -132,10 +124,9 @@ class ConvertCommand extends Command
 
 
         $loader = new Twig_Loader_Filesystem($themeDir);
-        $twig = new Twig_Environment(
-            $loader, array(// 'cache' => __DIR__ . '/../data',
-            )
-        );
+        $twig = new Twig_Environment($loader, [
+            // 'cache' => __DIR__ . '/../data',
+        ]);
 
         foreach ($templateFiles as $fileName) {
             $renderedTemplate = $twig->render($fileName, $data);
@@ -144,7 +135,7 @@ class ConvertCommand extends Command
             $filename = APPIZY_BASE_DIR . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $fileName;
 
             if (preg_match('/\.html/', $fileName)) {
-//                $renderedTemplate = $this->formatHTML($renderedTemplate);
+                $renderedTemplate = $this->formatHTML($renderedTemplate);
             }
 
             $open = fopen($filename, "w");
