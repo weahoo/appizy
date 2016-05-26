@@ -120,8 +120,8 @@ class OpenDocumentParser
 
     function order_data()
     {
-        $sheets_name = array();
-        foreach ($this->sheets as $cS => $sheet) {
+        $sheetsNames = array();
+        foreach ($this->sheets as $currentSheetIndex => $sheet) {
             $name = $sheet['TABLE:NAME'];
             /**
              * Sheet name with just a dot
@@ -129,12 +129,12 @@ class OpenDocumentParser
             if ($name == '.') {
                 $name = "'" . $name . "'";
             }
-            $sheets_name[] = $name;
+            $sheetsNames[] = $name;
         }
 
-        foreach ($this->sheets as $cS => $sheet) {
+        foreach ($this->sheets as $currentSheetIndex => $sheet) {
 
-            $this->addSheet($cS, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
+            $this->addSheet($currentSheetIndex, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
 
             foreach ($sheet['column'] as $curCOLI => $col) {
                 $tempcol = new Column($curCOLI);
@@ -155,7 +155,7 @@ class OpenDocumentParser
                         $tempcol->col_set_default_cell_style($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
                     }
                 }
-                $this->addCol($cS, $tempcol);
+                $this->addCol($currentSheetIndex, $tempcol);
             }
 
             foreach ($sheet['rows'] as $cR => $row) {
@@ -175,7 +175,7 @@ class OpenDocumentParser
                         $row_options['style'] = $row['attrs']['TABLE:STYLE-NAME'];
                     }
                 }
-                $this->addRow($cS, $cR, $row_options);
+                $this->addRow($currentSheetIndex, $cR, $row_options);
 
                 if (array_key_exists('cells', $row)) {
                     // If there are cells in the row
@@ -184,78 +184,62 @@ class OpenDocumentParser
                         $cell_options = array();
 
                         if (array_key_exists('attrs', $cell)) {
-                            if (array_key_exists('TABLE:NUMBER-ROWS-SPANNED',
-                                $cell['attrs'])) {
+                            if (array_key_exists('TABLE:NUMBER-ROWS-SPANNED', $cell['attrs'])) {
                                 $cell_options['rowspan'] = $cell['attrs']['TABLE:NUMBER-ROWS-SPANNED'];
                             }
 
-                            if (array_key_exists('TABLE:NUMBER-COLUMNS-SPANNED',
-                                $cell['attrs'])) {
+                            if (array_key_exists('TABLE:NUMBER-COLUMNS-SPANNED', $cell['attrs'])) {
                                 $cell_options['colspan'] = $cell['attrs']['TABLE:NUMBER-COLUMNS-SPANNED'];
                             }
 
-                            if (array_key_exists('TABLE:STYLE-NAME',
-                                $cell['attrs'])) {
+                            if (array_key_exists('TABLE:STYLE-NAME', $cell['attrs'])) {
                                 $cell_options['style'] = strtolower($cell['attrs']['TABLE:STYLE-NAME']);
                             } else {
-                                if ($default_style = $this->getColDefaultCellStyle($cS, $cC)) {
+                                if ($default_style = $this->getColDefaultCellStyle($currentSheetIndex, $cC)) {
                                     $cell_options['style'] = strtolower($default_style);
                                 }
 
                             }
-                            if (array_key_exists('OFFICE:VALUE',
-                                $cell['attrs'])) {
+                            if (array_key_exists('OFFICE:VALUE', $cell['attrs'])) {
                                 $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'],
                                     ENT_QUOTES, "UTF-8");
                             }
 
-                            if (array_key_exists('OFFICE:BOOLEAN-VALUE',
-                                $cell['attrs'])) {
+                            if (array_key_exists('OFFICE:BOOLEAN-VALUE', $cell['attrs'])) {
                                 $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:BOOLEAN-VALUE'],
                                     ENT_QUOTES, "UTF-8");
                             }
 
-                            if (array_key_exists("OFFICE:VALUE-TYPE",
-                                $cell['attrs'])) {
+                            if (array_key_exists("OFFICE:VALUE-TYPE", $cell['attrs'])) {
                                 $cell_options['value_type'] = $cell['attrs']['OFFICE:VALUE-TYPE'];
                             }
 
-                            if (array_key_exists("TABLE:CONTENT-VALIDATION-NAME",
-                                $cell['attrs'])) {
+                            if (array_key_exists("TABLE:CONTENT-VALIDATION-NAME", $cell['attrs'])) {
                                 $cell_options['validation'] = $cell['attrs']["TABLE:CONTENT-VALIDATION-NAME"];
                             }
 
-                            if (array_key_exists("TABLE:FORMULA",
-                                $cell['attrs'])) {
-                                $crude_formula = $cell['attrs']['TABLE:FORMULA'];
+                            if (array_key_exists("TABLE:FORMULA", $cell['attrs'])) {
+                                $openFormula = $cell['attrs']['TABLE:FORMULA'];
+                                $cellCoordinates = [$currentSheetIndex, $cR, $cC];
+                                $formula = OpenFormulaParser::parse($openFormula, $currentSheetIndex, $sheetsNames,
+                                    $cellCoordinates);
 
-                                $cell_formula = new Formula(array(
-                                    $cS,
-                                    $cR,
-                                    $cC
-                                ), $crude_formula, $cS, $sheets_name);
-
-                                if ($cell_formula->formula_isprintable()) {
-                                    // If formula is printable
-                                    $this->addFormula($cell_formula);
-
+                                if ($formula->isPrintable()) {
+                                    $this->addFormula($formula);
                                 }
 
                                 $cell_options['type'] = "out";
                             }
-                        } else {
-                            // Cells doesn't have attributes
                         }
 
                         if (array_key_exists('value', $cell)) {
-
                             $cell_options['value_disp'] = $cell['value'];
                         }
 
                         if (array_key_exists('annotation', $cell)) {
                             $cell_options['annotation'] = $cell['annotation'];
                         }
-                        $this->addCell($cS, $cR, $cC, $cell_options);
+                        $this->addCell($currentSheetIndex, $cR, $cC, $cell_options);
                     }
                 }
             }

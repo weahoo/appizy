@@ -44,8 +44,8 @@ class Tool
     {
         /** @var Formula $formula */
         foreach ($this->formulas as $formula) {
-            if ($formula->formula_isprintable()) {
-                $dependances = $formula->get_dependances();
+            if ($formula->isPrintable()) {
+                $dependances = $formula->getDependencies();
 
                 foreach ($dependances as $dep) {
                     $tempcell = $this->tool_get_cell($dep[0], $dep[1], $dep[2]);
@@ -262,11 +262,11 @@ class Tool
 
                 foreach ($row->row_get_cells() as $cCI => $tempcell) {
 
-                    if ($tempcell->cell_get_validation() != '') {
-                        $this->render_validation($tempcell->cell_get_validation(),
-                            array($key, $row_index, $cCI));
-                        $tempcell->cell_set_type("in");
-                    }
+//                    if ($tempcell->cell_get_validation() != '') {
+//                        $this->render_validation($tempcell->cell_get_validation(),
+//                            array($key, $row_index, $cCI));
+//                        $tempcell->cell_set_type("in");
+//                    }
 
                     $td = "";
 
@@ -364,24 +364,24 @@ class Tool
         $steps = [];
         $ext_formulas = [];
 
+        /** @var Formula $formula */
         foreach ($this->formulas as $formula) {
             $dependances = array();
-            foreach ($formula->get_dependances() as $dependance) {
+            foreach ($formula->getDependencies() as $dependance) {
                 $dependances[] = 's' . $dependance[0] . 'r' . $dependance[1] . 'c' . $dependance[2];
             }
 
-            $formulas .= $formula->get_script() . "\n";
-            $formulaslist[$formula->get_name()] = array(
-                'call' => $formula->get_call(),
+            $formulas .= $formula->getScript() . "\n";
+            $formulaslist[$formula->getName()] = [
+                'call' => $formula->getCall(),
                 'dep'  => $dependances,
-            );
+            ];
 
-            foreach ($formula->get_ext_formula() as $ext_formula) {
+            foreach ($formula->getExternalFormulas() as $ext_formula) {
                 $ext_formulas[] = $ext_formula;
             }
         }
         $ext_formulas = array_unique($ext_formulas);
-
 
         $formulaslist_copy = $formulaslist; // $formulalist est copi� car nous allons avoir besoin de triturer cet Array
         $currentstep = 0; // Step de calcul en cours
@@ -432,7 +432,6 @@ class Tool
                          */
                         //echo $formcell."Offsetdep:".$offsetdep."-Maxdep:".$nbdep."<br>";
                         $offsetdep++;
-                        // appizy_logapp("Dep pas calculee $value");
                     }
                 }
             }
@@ -517,7 +516,7 @@ class Tool
             $run_calc = "";
             $formulascall = "";
         }
-        $run_calc .= "};" . "\n";
+        $run_calc .= "}" . "\n";
 
         // Get external formulas
         if (!empty($formulascall)) {
