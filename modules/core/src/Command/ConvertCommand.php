@@ -135,7 +135,7 @@ class ConvertCommand extends Command
             $filename = $path . DIRECTORY_SEPARATOR . $fileName;
 
             if (preg_match('/\.html/', $fileName)) {
-//                $renderedTemplate = $this->formatHTML($renderedTemplate);
+                $renderedTemplate = $this->formatHTML($renderedTemplate);
             }
 
             $open = fopen($filename, "w");
