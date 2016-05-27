@@ -132,7 +132,7 @@ class ConvertCommand extends Command
             $renderedTemplate = $twig->render($fileName, $data);
 
             $fileName = str_replace('.twig', '', $fileName);
-            $filename = APPIZY_BASE_DIR . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $fileName;
+            $filename = $path . DIRECTORY_SEPARATOR . $fileName;
 
             if (preg_match('/\.html/', $fileName)) {
 //                $renderedTemplate = $this->formatHTML($renderedTemplate);
