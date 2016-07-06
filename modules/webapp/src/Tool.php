@@ -9,7 +9,7 @@ class Tool
     /** @var Sheet[] */
     var $sheets;
     /** @var Style[] */
-    var $style;
+    var $styles;
     /** @var Formula[] */
     var $formulas;
     /** @var Validation[] */
@@ -107,20 +107,16 @@ class Tool
                 $temp_validation, $matches);
             $values = $matches[1][0];
 
-            //$this->tool_debug("Validation: ".$values."");
-
             $temp_car = str_split($values);
 
             if ($temp_car[0] == '[') {
                 // Range de valeurs
-
-
                 $values = str_replace(array('[', ']'), '', $values);
                 $values = explode(":", $values, 2);
 
-                $head = referenceToCoordinates($values[0], 0, $sheets_name);
+                $head = OpenFormulaParser::referenceToCoordinates($values[0], 0, $sheets_name);
 
-                $tail = referenceToCoordinates($values[1], $head[0],
+                $tail = OpenFormulaParser::referenceToCoordinates($values[1], $head[0],
                     $sheets_name);
 
                 $values = array();
@@ -156,7 +152,7 @@ class Tool
                 $tmp_rI = $address[1];
                 $tmp_cI = $address[2];
             } else {
-                $head = referenceToCoordinates($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
+                $head = OpenFormulaParser::referenceToCoordinates($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
                     0, $sheets_name);
                 $tmp_sI = $head[0];
                 $tmp_rI = $head[1];
@@ -272,11 +268,11 @@ class Tool
 
                 foreach ($row->row_get_cells() as $cCI => $tempcell) {
 
-//                    if ($tempcell->cell_get_validation() != '') {
-//                        $this->render_validation($tempcell->cell_get_validation(),
-//                            array($key, $row_index, $cCI));
-//                        $tempcell->cell_set_type("in");
-//                    }
+                    if ($tempcell->cell_get_validation() != '') {
+                        $this->render_validation($tempcell->cell_get_validation(),
+                            array($key, $row_index, $cCI));
+                        $tempcell->cell_set_type("in");
+                    }
 
                     $td = "";
 
@@ -544,6 +540,7 @@ class Tool
                 'APY.formatValue',
                 'window.RANGE'
             ];
+
             foreach ($accessFormulas as $formula) {
                 $formulas_ext .= $this->getExtFunction($formula,
                     __DIR__ . "/../assets/js/src/appizy.js");
@@ -579,10 +576,12 @@ class Tool
         $cssTable = $this->getCss($used_styles);
 
         //$variables['style'] = $style;
-        $variables['content'] = $htmlTable;
-        $variables['style'] = $cssTable;
-        $variables['script'] = $script;
-        $variables['libraries'] = $this->libraries;
+        $variables = [
+            'content'   => $htmlTable,
+            'style'     => $cssTable,
+            'script'    => $script,
+            'libraries' => array_unique($this->libraries)
+        ];
 
         return $variables;
     }
@@ -606,46 +605,51 @@ class Tool
         return $css_code;
     }
 
+    /**
+     * @param string $function_name
+     * @param string $library_path
+     * @param array  $already_loaded
+     * @return string
+     */
     function getExtFunction($function_name, $library_path, $already_loaded = [])
     {
+        $externalFormulaScript = '';
         $namu = $function_name;
         $function_name = preg_quote($function_name);
 
-        $ext_formula = ''; // Default returned value
-
-        $expression = '/' . $function_name . ' = function(.*?)\};/is';
+        $formulaRegex = '/' . $function_name . ' = function(.*?)\};/is';
 
         if (!in_array($function_name, $already_loaded)) {
 
-            if (preg_match_all($expression, file_get_contents($library_path),
-                $match)) {
+            if (preg_match_all($formulaRegex, file_get_contents($library_path), $match)) {
                 $function = $match[1][0];
-                $ext_formula = $namu . " = function" . $function . "};" . "\n\n";
-            }
+                $externalFormulaScript = $namu . " = function" . $function . "};" . "\n\n";
 
-            $already_loaded[] = $namu;
 
-            if (preg_match_all('/Formula.(.*?)\(/is', $function, $match)) {
-                // Si la fonction a des d�pendances
-                $match = array_unique($match[1]); // Chaque d�pendance n'est imprim�e qu'une fois
-                //$match = array_diff($already_loaded,$match);
-                foreach ($match as $dep_name) {
+                $already_loaded[] = $namu;
 
-                    $dep_name = "Formula." . $dep_name;
+                if (preg_match_all('/Formula.(.*?)\(/is', $function, $match)) {
+                    // The current function depends on other function (having the form 'Formula.XYZ')
+                    $match = array_unique($match[1]);
+                    $match = array_diff($match, $already_loaded);
+                    foreach ($match as $dep_name) {
 
-                    if (!in_array($dep_name, $already_loaded)) {
-                        $ext_formula .= $this->getExtFunction($dep_name,
-                            $library_path, $already_loaded);
+                        $dep_name = "Formula." . $dep_name;
+
+                        if (!in_array($dep_name, $already_loaded)) {
+                            $externalFormulaScript .= $this->getExtFunction($dep_name,
+                                $library_path, $already_loaded);
+                        }
                     }
                 }
-            }
 
-            if (preg_match_all('/jStat.(.*?)\(/is', $function, $match)) {
-                $this->libraries[] = 'jStat';
+                if (preg_match_all('/jStat.(.*?)\(/is', $function, $match)) {
+                    $this->libraries[] = 'jStat';
+                }
             }
         }
 
-        return $ext_formula;
+        return $externalFormulaScript;
     }
 
     private function cleanStyles()

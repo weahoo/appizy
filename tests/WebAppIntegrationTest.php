@@ -9,6 +9,10 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
 {
     /** @var  Crawler */
     protected $crawler;
+    /** @var  String */
+    protected $generatedHtml;
+    /** @var  String */
+    protected $generatedScript;
 
     public static function setUpBeforeClass()
     {
@@ -21,14 +25,15 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            'source' => 'tests/fixtures/demo-appizy.ods'
+            'source'  => 'tests/fixtures/demo-appizy.ods'
         ));
     }
 
     protected function setUp()
     {
-        $generatedHtml = file_get_contents('tests/fixtures/app.html');
-        $this->crawler = new Crawler($generatedHtml);
+        $this->generatedHtml = file_get_contents('tests/fixtures/app.html');
+        $this->generatedScript = file_get_contents('tests/fixtures/script.js');
+        $this->crawler = new Crawler($this->generatedHtml);
     }
 
     public function testBasicDOMComponents()
@@ -57,8 +62,21 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
             $this->crawler->filter('.s2r3')->attr('class'));
     }
 
-    public function testValidationListAsSelectTag(){
+    public function testValidationListAsSelectTag()
+    {
         $this->assertEquals($this->crawler->filter('#s0r4c1')->nodeName(), 'select');
+    }
+
+    public function testFormulaUniqueness()
+    {
+        preg_match_all('|Formula.AVERAGE = function|', $this->generatedScript, $out);
+        $this->assertCount(1, $out[0]);
+    }
+
+    public function testFormulaDependenciesPresence()
+    {
+        preg_match_all('|Formula.ARGSTOARRAY = function|', $this->generatedScript, $out);
+        $this->assertCount(1, $out[0]);
     }
 
     protected function tearDown()

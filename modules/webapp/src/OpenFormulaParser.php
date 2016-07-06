@@ -158,7 +158,7 @@ class OpenFormulaParser
      * @param array   $sheetsNames
      * @return array|bool
      */
-    private static function referenceToCoordinates(
+    public static function referenceToCoordinates(
         $reference,
         $referenceSheetIndex,
         $sheetsNames
