@@ -57,6 +57,10 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
             $this->crawler->filter('.s2r3')->attr('class'));
     }
 
+    public function testValidationListAsSelectTag(){
+        $this->assertEquals($this->crawler->filter('#s0r4c1')->nodeName(), 'select');
+    }
+
     protected function tearDown()
     {
         parent::tearDown();
