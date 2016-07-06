@@ -86,7 +86,11 @@ class WebAppConfiguration
             'HYPERLINK'   => 'Formula.HYPERLINK',
             'VLOOKUP'     => 'Formula.VLOOKUP',
             'LOOKUP'      => 'Formula.LOOKUP',
-            'COUNTIF'     => 'Formula.COUNTIF'
+            'COUNTIF'     => 'Formula.COUNTIF',
+            'STDEV'       => 'Formula.STDEVS',
+            'TINV'        => 'Formula.TINV',
+            'FINV'        => 'Formula.FINV',
+            'TDIST'       => 'Formula.TDIST'
         ];
     }
 }

@@ -3911,10 +3911,19 @@
     };
 
     Formula.COUNTIF = function (range, criteria) {
+        if (!/[<>=!]/.test(criteria)) {
+            criteria = '=="' + criteria + '"';
+        }
         var matches = 0;
         for (var i = 0; i < range.length; i++) {
-            if (range[i].match(new RegExp(criteria))) {
-                matches++;
+            if (typeof range[i] !== 'string') {
+                if (eval(range[i] + criteria)) { // jshint ignore:line
+                    matches++;
+                }
+            } else {
+                if (eval('"' + range[i] + '"' + criteria)) { // jshint ignore:line
+                    matches++;
+                }
             }
         }
         return matches;
