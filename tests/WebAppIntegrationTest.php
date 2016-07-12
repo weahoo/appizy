@@ -66,7 +66,13 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals($this->crawler->filter('#s0r4c1')->nodeName(), 'select');
     }
-
+    
+    public function testJsStatPresence()
+    {
+        preg_match_all('|jstat\.min\.js|', $this->generatedHtml, $out);
+        $this->assertCount(1, $out[0]);
+    }
+    
     public function testFormulaUniqueness()
     {
         preg_match_all('|Formula.AVERAGE = function|', $this->generatedScript, $out);
