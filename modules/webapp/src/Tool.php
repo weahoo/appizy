@@ -6,25 +6,34 @@ class Tool
 {
     use ArrayTrait;
 
-    var $sheets = array();
-    var $styles = array();
-    /** @var array Formula[] */
-    var $formulas = array();
-    var $validations = array();
-    var $formats = array();
-    var $used_styles = array();
+    /** @var Sheet[] */
+    var $sheets;
+    /** @var Style[] */
+    var $styles;
+    /** @var Formula[] */
+    var $formulas;
+    /** @var Validation[] */
+    var $validations;
+    /** @var DataStyle[] */
+    var $formats;
+    /** @var string[] */
+    var $libraries;
 
     private $debug;
     private $error;
 
     function __construct($debug = false)
     {
+        $this->sheets = [];
+        $this->styles = [];
+        $this->formulas = [];
+        $this->validations = [];
+        $this->formats = [];
         $this->debug = $debug;
     }
 
     function tool_parse_wb($xml_path)
     {
-
         $extracted_ods = new OpenDocumentParser($xml_path, $this->debug);
 
         $this->sheets = $extracted_ods->sheets;
@@ -44,8 +53,8 @@ class Tool
     {
         /** @var Formula $formula */
         foreach ($this->formulas as $formula) {
-            if ($formula->formula_isprintable()) {
-                $dependances = $formula->get_dependances();
+            if ($formula->isPrintable()) {
+                $dependances = $formula->getDependencies();
 
                 foreach ($dependances as $dep) {
                     $tempcell = $this->tool_get_cell($dep[0], $dep[1], $dep[2]);
@@ -97,20 +106,16 @@ class Tool
                 $temp_validation, $matches);
             $values = $matches[1][0];
 
-            //$this->tool_debug("Validation: ".$values."");
-
             $temp_car = str_split($values);
 
             if ($temp_car[0] == '[') {
                 // Range de valeurs
-
-
                 $values = str_replace(array('[', ']'), '', $values);
                 $values = explode(":", $values, 2);
 
-                $head = referenceToCoordinates($values[0], 0, $sheets_name);
+                $head = OpenFormulaParser::referenceToCoordinates($values[0], 0, $sheets_name);
 
-                $tail = referenceToCoordinates($values[1], $head[0],
+                $tail = OpenFormulaParser::referenceToCoordinates($values[1], $head[0],
                     $sheets_name);
 
                 $values = array();
@@ -146,7 +151,7 @@ class Tool
                 $tmp_rI = $address[1];
                 $tmp_cI = $address[2];
             } else {
-                $head = referenceToCoordinates($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
+                $head = OpenFormulaParser::referenceToCoordinates($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
                     0, $sheets_name);
                 $tmp_sI = $head[0];
                 $tmp_rI = $head[1];
@@ -244,11 +249,6 @@ class Tool
 
     function tool_render()
     {
-        $script = "";
-
-        $formulas = "// Cells formulas" . "\n";
-        $formulaslist = array();
-
         $htmlTable = '';
 
         $sheets_link = array(); // Array containing link to sheet anchors
@@ -331,235 +331,9 @@ class Tool
             }
         }
 
-        /*
-         * Cr�ation du script de calcul
-         * ============================
-         *
-         * Javascipt plac� en oninput pour appeller les formules de calcul
-         * Javascrip plac� apr�s le tableau dans le formulaire
-         *
-         * Etapes :
-         * = Tri des formules, i.e cr�ation de l'arbre de calcul
-         * = Cr�ation du oninput
-         *
-        */
-
-
-        /*
-         *  = Tri des formules
-         *  ==================
-         *
-         *  Pour le moment nous avons l'ensemble des formules dans l'Array
-         *  $formulalist. Nous allons dans un premier temps organiser les
-         *  formules en "step" de calcul.
-         *
-         *  Une step correspond � un ensemble de formules calcul�e en m�me temps.
-         *  Le fonctionnement en step permet de mettre � jour toutes les formules
-         *  � chaque modification d'un param�tre (commen dans un tableur) en une
-         *  seule passe, c.a.d en calculant chaque formule une seule fois. Il
-         *  faut d�terminer dans les interd�pendances des formules et calculer
-         *  dans le bon ordre. C'est l'objet de cette premi�re boucle "while"
-         *
-        */
-        $steps = [];
-        $ext_formulas = [];
-
-        foreach ($this->formulas as $formula) {
-            $dependances = array();
-            foreach ($formula->get_dependances() as $dependance) {
-                $dependances[] = 's' . $dependance[0] . 'r' . $dependance[1] . 'c' . $dependance[2];
-            }
-
-            $formulas .= $formula->get_script() . "\n";
-            $formulaslist[$formula->get_name()] = array(
-                'call' => $formula->get_call(),
-                'dep'  => $dependances,
-            );
-
-            foreach ($formula->get_ext_formula() as $ext_formula) {
-                $ext_formulas[] = $ext_formula;
-            }
-        }
-        $ext_formulas = array_unique($ext_formulas);
-
-
-        $formulaslist_copy = $formulaslist; // $formulalist est copi� car nous allons avoir besoin de triturer cet Array
-        $currentstep = 0; // Step de calcul en cours
-        $fomulas_unclassified = count($formulaslist); // D�compte de formules qu'il reste � classer
-
-        $fomulas_unclassified_laststep = 0; // Variable de sortie de la boucle while. Si jamais la boucle n'�limine pas de formule � la step...
-
-
-        while (($fomulas_unclassified > 0) && ($fomulas_unclassified_laststep != $fomulas_unclassified)) {
-            // Pour �viter que la boucle ne tourne dans le vide
-            $fomulas_unclassified_laststep = $fomulas_unclassified;
-
-            // Tant qu'il reste des formules � classer
-
-            $steps[$currentstep]['formulas'] = array();
-            $steps[$currentstep]['dep'] = array();
-
-            // 1�re �tape - supprimer les d�pendances "r�solues"
-            //
-            // Les d�pendances de chaque formule sont pass�s en revue
-            // Si la d�pendance n'est pas dans la liste des formules, cad :
-            //     - la d�pendance est soit une formule d�j� calcul�e (elle a �t� supprim�e dans une boucle pr�c�dente)
-            //     - la d�pendance est un input qui n'a jamais appartenu � la liste des formules
-            // Alors la d�pendance est supprim�e de l'Array
-
-            foreach ($formulaslist_copy as $formcell => $forminfo) {
-                // Pour chaque formule dans la liste temporaire $formulalist_copy
-
-                $offsetdep = 0; // Variable locale; index de la d�pendance � enlever au besoin !
-
-                $nbdep = count($forminfo['dep']);
-                // appizy_logapp("J'ai $nbdep dep");
-                foreach ($forminfo['dep'] as $value) {
-                    // Pour chaque d�pendance de la formule
-                    if (!array_key_exists($value, $formulaslist_copy)) {
-                        /*
-                         *
-                         *
-                         */
-
-                        array_splice($formulaslist_copy[$formcell]['dep'],
-                            $offsetdep, 1);
-                        // appizy_logapp("Dep calculee $value");
-                    } else {
-                        /*
-                         * La formule d�pend d'une cellule qui fait partie de la liste des formules � calculer
-                         * On incr�mente alors l'offset de d�pendance. La formule sera calcul�e � l'�tape n+1
-                         */
-                        //echo $formcell."Offsetdep:".$offsetdep."-Maxdep:".$nbdep."<br>";
-                        $offsetdep++;
-                        // appizy_logapp("Dep pas calculee $value");
-                    }
-                }
-            }
-
-            $offsetform = 0; // Variable locale, index de la formule � enlever du tableau au besoin
-
-            // 2�me �tape - ajouter les formules sans d�pendance � la step de calcul en cours
-
-            foreach ($formulaslist_copy as $formula_index => $temp_formula) {
-                // Pour chaque formule dans la liste temporaire $formulalist_copy
-
-                if (count($temp_formula['dep']) == 0) {
-                    // S'il n'y a plus de cellule non calcul�e dont d�pend la formule
-                    // elle entre dans la step de calcul
-                    // on la retire de la liste de cellule
-                    array_push($steps[$currentstep]['formulas'],
-                        $temp_formula['call']);
-
-                    foreach ($formulaslist[$formula_index]['dep'] as $temp_dep) {
-                        // On charge grace � l'original de la liste des formules
-                        // l'ensemble des d�pendances de la formule "libre"
-                        array_push($steps[$currentstep]['dep'], $temp_dep);
-                    }
-
-                    // La formule "libre" de tout d�pendance est supprim�e de la copie
-                    array_splice($formulaslist_copy, $offsetform, 1);
-
-                } else {
-
-                    $offsetform++;
-                }
-            }
-
-            // 3�me �tape - pr�parer la suite de l'algo
-            // Le nombre de formule � classer est mis � jour
-            // L'�tape en cours est incr�ment�e
-
-            $fomulas_unclassified = count($formulaslist_copy);
-
-            $currentstep++;
-
-            // appizy_logapp("Number of formulas left:".$fomulas_unclassified." - step:".($currentstep-1)); // On loggue avant la mise � jour.
-            foreach ($steps[$currentstep - 1]['formulas'] as $temp_formula) {
-                // appizy_logapp($temp_formula) ;
-            }
-
-        }
-
-
-        // L'Array des d�pendances est applanit avant d'�tre utilis� par la suite
-        foreach ($steps as $currentstep) {
-            $flat_stepdep = array();
-            array_walk_recursive($currentstep['dep'],
-                function ($a) use (&$flat_stepdep) {
-                    $flat_stepdep[] = $a;
-                });
-        }
-
-        // Impression des steps de calcul, uniquement s'il y a des �tapes de calcul
-        $oninput = "";
-        if ($currentstep > 0) {
-            $run_calc = 'function run_calc(){ ';
-            $formulascall = '';
-            $isFirstInput = true;
-
-            foreach ($steps as $currentstep_index => $currentstep) {
-                $stepdep = '';
-
-                if (!$isFirstInput) : $run_calc .= ";";
-                else : $isFirstInput = false; endif;
-
-                $run_calc .= 'step' . $currentstep_index . '()';
-
-                $formulascall .= 'function step' . $currentstep_index . '() {' . "\n" . "  ";
-
-                foreach ($currentstep['formulas'] as $formula) {
-                    $formulascall .= $formula;
-                }
-                $formulascall .= "\n" . '}' . "\n";
-            }
-        } else {
-            $run_calc = "";
-            $formulascall = "";
-        }
-        $run_calc .= "};" . "\n";
-
-        // Get external formulas
-        if (!empty($formulascall)) {
-            $script .= "(function() {" . "\n";
-
-            $formulas_ext = "var root = this;" . "\n";
-            $formulas_ext .= "var Formula = root.Formula = {};" . "\n";
-            $formulas_ext .= "var APY = root.APY = {};" . "\n";
-
-            $accessFormulas = [
-                'window.onload',
-                '$.fn.setFormattedValue',
-                'APY.getInput',
-                'APY.set',
-                'APY.formatValue',
-                'window.RANGE'
-            ];
-            foreach ($accessFormulas as $formula) {
-                $formulas_ext .= $this->getExtFunction($formula,
-                    __DIR__ . "/../assets/js/src/appizy.js");
-            }
-
-            foreach ($ext_formulas as $ext_formula) {
-                $formulas_ext .= $this->getExtFunction($ext_formula,
-                    __DIR__ . "/../assets/js/src/formula.js");
-            }
-
-
-            $script .= $run_calc;
-            $script .= $formulascall;
-            $script .= $formulas;
-            $script .= $formulas_ext;
-            $script .= "}).call();" . "\n";
-        }
-
-        // D�but du tableau
-        $htmlHead = '<!-- The code of your app starts just below. Thank you for using Appizy. -->' . "\n";
-
-        $htmlTable = '<div id="appizy">' . "\n" . '<form' . $oninput . '>' . "\n" . $htmlTable;
-
-        // Fin du tableau
-        $htmlTable .= '</form>' . "\n" . '</div><!-- /#apppizy -->' . "\n";
+        $scriptBuilder = new WebAppScriptBuilder($this);
+        $script = $scriptBuilder->buildScript();
+        $libraries = $scriptBuilder->getExternalJsLibraries();
 
         // *** Code de la section CSS
         $used_styles = array_merge($used_styles, $this->used_styles);
@@ -570,9 +344,12 @@ class Tool
         $cssTable = $this->getCss($used_styles);
 
         //$variables['style'] = $style;
-        $variables['content'] = $htmlTable;
-        $variables['style'] = $cssTable;
-        $variables['script'] = $script;
+        $variables = [
+            'content' => $htmlTable,
+            'style' => $cssTable,
+            'script' => $script,
+            'libraries' => array_unique($libraries)
+        ];
 
         return $variables;
     }
@@ -594,44 +371,6 @@ class Tool
         }
 
         return $css_code;
-    }
-
-    function getExtFunction($function_name, $library_path, $already_loaded = [])
-    {
-        $namu = $function_name;
-        $function_name = preg_quote($function_name);
-
-        $ext_formula = ''; // Default returned value
-
-        $expression = '/' . $function_name . ' = function(.*?)\};/is';
-
-        if (!in_array($function_name, $already_loaded)) {
-
-            if (preg_match_all($expression, file_get_contents($library_path),
-                $match)) {
-                $function = $match[1][0];
-                $ext_formula = $namu . " = function" . $function . "};" . "\n\n";
-            }
-
-            $already_loaded[] = $namu;
-
-            if (preg_match_all('/Formula.(.*?)\(/is', $function, $match)) {
-                // Si la fonction a des d�pendances
-                $match = array_unique($match[1]); // Chaque d�pendance n'est imprim�e qu'une fois
-                //$match = array_diff($already_loaded,$match);
-                foreach ($match as $dep_name) {
-
-                    $dep_name = "Formula." . $dep_name;
-
-                    if (!in_array($dep_name, $already_loaded)) {
-                        $ext_formula .= $this->getExtFunction($dep_name,
-                            $library_path, $already_loaded);
-                    }
-                }
-            }
-        }
-
-        return $ext_formula;
     }
 
     private function cleanStyles()

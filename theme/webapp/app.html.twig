@@ -5,21 +5,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
+    <meta name="description" content="Another web application created from a spreadsheet with Appizy">
     <meta name="author" content="Appizy">
     <title>Appizy</title>
     <style>
         {% include 'partial/default-style.css' %}
         {{ style }}
     </style>
-    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    {% for library in libraries %}
-        {{ library | raw }}
-    {% endfor %}
-    {% if options.jqueryui %}
-        <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
-        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-    {% endif %}
 </head>
 <body>
 <div id="appizy">
@@ -82,6 +74,13 @@
         {% endfor %}
     </form>
 </div>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+{% if options.jqueryui %}
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+{% endif %}
+
 {% if options.jqueryui %}
     <script>
         (function ($) {
@@ -89,9 +88,22 @@
         })(jQuery);
     </script>
 {% endif %}
+
 {% if script %}
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.5.3/numeral.min.js"></script>
-    <script type="application/javascript" src="script.js"></script>
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jstat/1.5.3/jstat.min.js"></script>
+    <script>
+        jStat.jStat = jStat;
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/formulajs/1.0.8/formula.js"></script>
+    <!-- Spreadsheet calculations -->
+    <script type="application/javascript">
+        (function(Formula) {
+            {{ script | raw }}
+        })(formulajs);
+    </script>
 {% endif %}
 </body>
 </html>

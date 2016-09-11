@@ -58,10 +58,7 @@ class Cell extends TableElement
             $this->type = "out";
         }
     }
-
-    /*
-    Editeurs
-    */
+    
     function setValueType($myValueType)
     {
         $this->valueType = $myValueType;
@@ -210,11 +207,11 @@ class Cell extends TableElement
     {
         if ($this->getFormula() != null) {
             $this->type = "out";
-// Si formule dans la cellule, lexage de la formule pour deviner les interd�pendants
-
-// On r�cup�re les cellules d�pendantes
-
-// setType des d�pendants en input sauf si il y a d�j� une formule !
+            // Si formule dans la cellule, lexage de la formule pour deviner les interd�pendants
+            
+            // On r�cup�re les cellules d�pendantes
+            
+            // setType des d�pendants en input sauf si il y a d�j� une formule !
         }
     }
 

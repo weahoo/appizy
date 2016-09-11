@@ -9,6 +9,10 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
 {
     /** @var  Crawler */
     protected $crawler;
+    /** @var  String */
+    protected $generatedApp;
+    /** @var  String */
+    protected $generatedScript;
 
     public static function setUpBeforeClass()
     {
@@ -21,14 +25,14 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            'source' => 'tests/fixtures/demo-appizy.ods'
+            'source'  => 'tests/fixtures/demo-appizy.ods'
         ));
     }
 
     protected function setUp()
     {
-        $generatedHtml = file_get_contents('tests/fixtures/app.html');
-        $this->crawler = new Crawler($generatedHtml);
+        $this->generatedApp = file_get_contents('tests/fixtures/app.html');
+        $this->crawler = new Crawler($this->generatedApp);
     }
 
     public function testBasicDOMComponents()
@@ -57,8 +61,27 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
             $this->crawler->filter('.s2r3')->attr('class'));
     }
 
-    public function testValidationListAsSelectTag(){
+    public function testValidationListAsSelectTag()
+    {
         $this->assertEquals($this->crawler->filter('#s0r4c1')->nodeName(), 'select');
+    }
+    
+    public function testJsStatPresence()
+    {
+        preg_match_all('|jstat\.min\.js|', $this->generatedApp, $out);
+        $this->assertCount(1, $out[0]);
+    }
+
+    public function testFormulaUniqueness()
+    {
+        preg_match_all('|Formula.VLOOKUP = function|', $this->generatedApp, $out);
+        $this->assertCount(1, $out[0]);
+    }
+
+    public function testFormulaDependenciesPresence()
+    {
+        preg_match_all('|Formula.ARGSTOARRAY = function|', $this->generatedApp, $out);
+        $this->assertCount(1, $out[0]);
     }
 
     protected function tearDown()
@@ -70,6 +93,5 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     {
         parent::tearDownAfterClass();
         exec('rm tests/fixtures/*.html');
-        exec('rm tests/fixtures/*.js');
     }
 }
