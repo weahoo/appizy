@@ -93,6 +93,5 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     {
         parent::tearDownAfterClass();
         exec('rm tests/fixtures/*.html');
-        exec('rm tests/fixtures/*.js');
     }
 }
