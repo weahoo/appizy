@@ -190,7 +190,6 @@ class WebAppScriptBuilder
             $script .= "(function() {" . "\n";
 
             $formulas_ext = "var root = this;" . "\n";
-            $formulas_ext .= "var Formula = root.Formula = {};" . "\n";
             $formulas_ext .= "var APY = root.APY = {};" . "\n";
 
             $accessFormulas = [
@@ -210,7 +209,7 @@ class WebAppScriptBuilder
 
             foreach ($ext_formulas as $ext_formula) {
                 $formulas_ext .= $this->getExtFunction($ext_formula,
-                    __DIR__ . "/../assets/js/src/formula.js");
+                    __DIR__ . "/../assets/js/src/formula-addons.js");
             }
 
 

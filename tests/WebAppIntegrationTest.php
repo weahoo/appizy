@@ -10,7 +10,7 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     /** @var  Crawler */
     protected $crawler;
     /** @var  String */
-    protected $generatedHtml;
+    protected $generatedApp;
     /** @var  String */
     protected $generatedScript;
 
@@ -31,9 +31,8 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->generatedHtml = file_get_contents('tests/fixtures/app.html');
-        $this->generatedScript = file_get_contents('tests/fixtures/script.js');
-        $this->crawler = new Crawler($this->generatedHtml);
+        $this->generatedApp = file_get_contents('tests/fixtures/app.html');
+        $this->crawler = new Crawler($this->generatedApp);
     }
 
     public function testBasicDOMComponents()
@@ -69,19 +68,19 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     
     public function testJsStatPresence()
     {
-        preg_match_all('|jstat\.min\.js|', $this->generatedHtml, $out);
+        preg_match_all('|jstat\.min\.js|', $this->generatedApp, $out);
         $this->assertCount(1, $out[0]);
     }
-    
+
     public function testFormulaUniqueness()
     {
-        preg_match_all('|Formula.AVERAGE = function|', $this->generatedScript, $out);
+        preg_match_all('|Formula.VLOOKUP = function|', $this->generatedApp, $out);
         $this->assertCount(1, $out[0]);
     }
 
     public function testFormulaDependenciesPresence()
     {
-        preg_match_all('|Formula.ARGSTOARRAY = function|', $this->generatedScript, $out);
+        preg_match_all('|Formula.ARGSTOARRAY = function|', $this->generatedApp, $out);
         $this->assertCount(1, $out[0]);
     }
 
