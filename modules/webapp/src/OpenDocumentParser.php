@@ -141,12 +141,12 @@ class OpenDocumentParser
 
                 if (array_key_exists('attrs', $col)) {
                     if (array_key_exists('TABLE:STYLE-NAME', $col['attrs'])) {
-                        $tempcol->add_style_name($col['attrs']['TABLE:STYLE-NAME']);
+                        $tempcol->addStyle($col['attrs']['TABLE:STYLE-NAME']);
                     }
 
                     if (array_key_exists('TABLE:VISIBILITY', $col['attrs'])) {
                         if ($col['attrs']['TABLE:VISIBILITY'] == 'collapse') {
-                            $tempcol->col_collapse();
+                            $tempcol->collapse();
                         }
                     }
 

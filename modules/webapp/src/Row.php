@@ -27,7 +27,7 @@ class Row extends TableElement
             $this->collapse = $options['collapse'];
         }
         if (isset($options['style'])) {
-            $this->add_style_name($options['style']);
+            $this->addStyle($options['style']);
         }
     }
 
@@ -66,6 +66,9 @@ class Row extends TableElement
         return $styles;
     }
 
+    /**
+     * @return Cell[]
+     */
     function row_get_cells()
     {
         return $this->cell;
@@ -133,7 +136,6 @@ class Row extends TableElement
 
     function cleanRow()
     {
-
         $isFirstFilled = false;
         $offset = 0;
         // On inverse les cells

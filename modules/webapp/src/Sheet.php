@@ -4,8 +4,8 @@ namespace Appizy\WebApp;
 
 class Sheet extends TableElement
 {
+    /** @var  string */
     var $name;
-    var $style;
     /** @var Column[] */
     var $col;
     /** @var Row[] */
@@ -16,14 +16,13 @@ class Sheet extends TableElement
         parent::__construct($sheet_id);
 
         $this->name = $sheet_name;
-        $this->style = "";
         $this->col = [];
         $this->row = [];
     }
 
     function addCol(Column $newCol)
     {
-        $col_ind = $newCol->get_colid();
+        $col_ind = $newCol->get_id();
         $this->col[$col_ind] = $newCol;
     }
 
@@ -41,6 +40,10 @@ class Sheet extends TableElement
         }
 
         return $column;
+    }
+
+    function getColumns() {
+        return $this->col;
     }
 
     /**

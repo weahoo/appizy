@@ -7,18 +7,18 @@ class TableElement
     // Index of the TableElement
     var $eid;
 
-    /** @var array */
-    var $styles_name = array();
+    /** @var string[] */
+    var $stylesNameList;
 
     function __construct($element_id)
     {
         $this->set_id($element_id);
-        $this->styles_name = [];
+        $this->stylesNameList = [];
     }
 
     function set_id($element_id)
     {
-        $this->eid = (int) $element_id;
+        $this->eid = (int)$element_id;
     }
 
     function tabelmt_error($message)
@@ -36,9 +36,12 @@ class TableElement
         return $this->eid;
     }
 
-    function add_style_name($new_style_name)
+    /**
+     * @param string $styleName
+     */
+    function addStyle($styleName)
     {
-        $this->styles_name[] = $new_style_name;
+        $this->stylesNameList[] = $styleName;
     }
 
     /**
@@ -48,7 +51,7 @@ class TableElement
     {
         $styles_name = "";
         $is_first = true;
-        foreach ($this->styles_name as $name) {
+        foreach ($this->stylesNameList as $name) {
             $styles_name .= ($is_first) ? $name : " " . $name;
             $is_first = false;
         }
@@ -56,13 +59,12 @@ class TableElement
         return $styles_name;
     }
 
-
     /**
      * @return mixed
      */
     function getStyleName()
     {
-        return array_shift($this->styles_name);
+        return array_shift($this->stylesNameList);
     }
 
     /**
@@ -70,11 +72,11 @@ class TableElement
      */
     function getStyles()
     {
-        return $this->styles_name;
+        return $this->stylesNameList;
     }
 
     function get_styles()
     {
-        return $this->styles_name;
+        return $this->stylesNameList;
     }
 }

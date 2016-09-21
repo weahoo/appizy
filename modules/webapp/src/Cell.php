@@ -5,6 +5,7 @@ namespace Appizy\WebApp;
 class Cell extends TableElement
 {
     var $coord; // Coordonn�es de la cellule sheet,row,col - identifie de fa�on unique la cellule
+    /** @var string */
     var $type; // Type de cellule pour Appizy : text, in, out
     var $value_type; // Type de valeur de la cellule : string, float, boolean
     var $value_attr; // Valeur de la cellule
@@ -16,13 +17,14 @@ class Cell extends TableElement
     var $colspan;
     /** @var int */
     var $rowspan;
-    var $styles = array();
-    // Comment on the cell
+    /** @var string[]  */
+    var $styles;
+    /** @var string  */
     var $annotation;
 
     function __construct($sheet, $row, $col, $options = array())
     {
-        $this->set_id($col);
+        parent::__construct($col);
 
         $this->coord = array(
             'sheet' => $sheet,
@@ -31,7 +33,7 @@ class Cell extends TableElement
         );
 
         if (isset($options['style'])) {
-            $this->add_style_name($options['style']);
+            $this->addStyle($options['style']);
         }
 
         $this->value_disp = isset($options['value_disp']) ?
@@ -42,9 +44,9 @@ class Cell extends TableElement
             $options['type'] : "text";
         $this->value_type = isset($options['value_type']) ?
             $options['value_type'] : "string";
-        $this->rowspan = (int) isset($options['rowspan']) ?
+        $this->rowspan = (int)isset($options['rowspan']) ?
             $options['rowspan'] : 1;
-        $this->colspan = (int) isset($options['colspan']) ?
+        $this->colspan = (int)isset($options['colspan']) ?
             $options['colspan'] : 1;
         $this->validation = isset($options['validation']) ?
             $options['validation'] : null;
@@ -58,7 +60,7 @@ class Cell extends TableElement
             $this->type = "out";
         }
     }
-    
+
     function setValueType($myValueType)
     {
         $this->valueType = $myValueType;
@@ -77,11 +79,6 @@ class Cell extends TableElement
     function cell_set_type($myType)
     {
         $this->type = $myType;
-    }
-
-    function addStyle($style_name = null)
-    {
-        $this->styles[] = $style_name;
     }
 
     function setValueInList($myList)
@@ -208,9 +205,9 @@ class Cell extends TableElement
         if ($this->getFormula() != null) {
             $this->type = "out";
             // Si formule dans la cellule, lexage de la formule pour deviner les interd�pendants
-            
+
             // On r�cup�re les cellules d�pendantes
-            
+
             // setType des d�pendants en input sauf si il y a d�j� une formule !
         }
     }

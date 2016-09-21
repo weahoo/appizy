@@ -4,19 +4,16 @@ namespace Appizy\WebApp;
 
 class Column extends TableElement
 {
-    var $colid;
+    /** @var bool */
     var $collapse;
+    /** @var string */
     var $default_cell_style;
 
     function __construct($colid)
     {
+        parent::__construct($colid);
         $this->default_cell_style = "";
         $this->collapse = false;
-    }
-
-    function get_colid()
-    {
-        return $this->get_id();
     }
 
     function col_set_default_cell_style($newStyle)
@@ -24,12 +21,12 @@ class Column extends TableElement
         $this->default_cell_style = $newStyle;
     }
 
-    function col_collapse()
+    function collapse()
     {
         $this->collapse = true;
     }
 
-    function get_collapsed()
+    function isCollapsed()
     {
         return $this->collapse == true;
     }

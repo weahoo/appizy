@@ -19,7 +19,7 @@
         <ul>
             {% for sheet in spreadSheet.getSheets() %}
                 <li>
-                    <a href="#sheet{{ loop.index }}">{{ sheet.getName() }}</a>
+                    <a href="#sheet{{ loop.index }}">{{ sheet.getName() | raw }}</a>
                 </li>
             {% endfor %}
         </ul>
@@ -27,7 +27,7 @@
             <div id="sheet{{ loop.index }}">
                 <table>
                     {% for row in sheet.getRows() %}
-                        <tr class="{{ row.getName() }} {{ row.getStyles()|join(' ') }}"{{ hiddenRowStyle }}>
+                        <tr class="{{ row.getName() }} {{ row.getStyles()|join(' ') }}">
                             {% for cell in row.getCells() %}
                                 {% set col_span = '' %}
                                 {% set row_span = '' %}
@@ -46,7 +46,7 @@
                                         {% if values is empty %}
                                             <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
                                                    data-value-type="{{ cell.getValueType() }}"
-                                                   value="{{ cell.getValue() }}"
+                                                   value="{{ cell.getValue() | raw }}"
                                                     {{ macro.dataFormat(cell, spreadSheet) }}
                                             >
                                         {% else %}
@@ -57,8 +57,8 @@
                                             </select>
                                         {% endif %}
                                     {% elseif cellType == 'out' %}
-                                        <input disabled="disabled" name="{{ cell.getName() }}"
-                                               value="{{ cell.getValueAttr() }}"
+                                        <input disabled="disabled" name="{{ cell.getName() | raw }}"
+                                               value="{{ cell.getValueAttr() | raw }}"
                                                data-value-type="{{ cell.getValueType() }}"
                                                 {{ macro.dataFormat(cell, spreadSheet) }}
                                         >

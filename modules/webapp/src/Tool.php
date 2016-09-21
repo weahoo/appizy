@@ -260,33 +260,33 @@ class Tool
 
                 $used_styles[] = $row->get_styles_name();
 
-                foreach ($row->row_get_cells() as $cCI => $tempcell) {
+                foreach ($row->row_get_cells() as $cCI => $tempCell) {
 
-                    if ($tempcell->cell_get_validation() != '') {
-                        $this->render_validation($tempcell->cell_get_validation(),
+                    if ($tempCell->cell_get_validation() != '') {
+                        $this->render_validation($tempCell->cell_get_validation(),
                             array($key, $row_index, $cCI));
-                        $tempcell->cell_set_type("in");
+                        $tempCell->cell_set_type("in");
                     }
 
                     $td = "";
 
-                    $tempstyle = $tempcell->get_styles_name();
+                    $tempstyle = $tempCell->get_styles_name();
 
                     $used_styles[] = $tempstyle;
 
                     $data_format = "";
 
-                    $value_type = $tempcell->cell_value_type();
+                    $value_type = $tempCell->cell_value_type();
 
-                    switch ($tempcell->getType()) {
+                    switch ($tempCell->getType()) {
                         case 'in':
                             $class = "in";
-                            $list_values = $tempcell->getValueList();
+                            $list_values = $tempCell->getValueList();
                             if (empty($list_values)) {
-                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . ' id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '" type="text" value="' . $tempcell->cell_get_value() . '">';
+                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . ' id="' . $tempCell->getName() . '" name="' . $tempCell->getName() . '" type="text" value="' . $tempCell->cell_get_value() . '">';
                             } else {
-                                $td .= '<select id="' . $tempcell->getName() . '" name="' . $tempcell->getName() . '">';
-                                $value_attr = $tempcell->cell_get_value_attr();
+                                $td .= '<select id="' . $tempCell->getName() . '" name="' . $tempCell->getName() . '">';
+                                $value_attr = $tempCell->cell_get_value_attr();
                                 foreach ($list_values as $value) {
                                     $selected = ($value == $value_attr) ? " selected" : "";
                                     $td .= '<option value="' . $value . '"' . $selected . '>' . $value . '</option>';
@@ -295,11 +295,11 @@ class Tool
                             }
                             break;
                         case 'text':
-                            $td .= $tempcell->cell_get_value_disp();
+                            $td .= $tempCell->cell_get_value_disp();
                             $class = "text";
                             break;
                         case 'out':
-                            $td .= '<input data-type="' . $value_type . '" ' . $data_format . 'disabled name="' . $tempcell->getName() . '" value="' . $tempcell->cell_get_value_attr() . '">';
+                            $td .= '<input data-type="' . $value_type . '" ' . $data_format . 'disabled name="' . $tempCell->getName() . '" value="' . $tempCell->cell_get_value_attr() . '">';
                             $class = "out";
                             break;
                     }
@@ -321,9 +321,8 @@ class Tool
                         }
                         $used_styles[] = $temp_curcol_style;
 
-                        // Hidde cell if col is collapsed
-                        if ($temp_curcol->get_collapsed() == true) {
-                            $class .= " hidden-cell";
+                        if ($temp_curcol->isCollapsed() == true) {
+                            $tempCell->addStyle('hidden-cell');
                         }
                     }
                     $htmlTable .= '  <td class="' . $class . '">' . $td . '</td>' . "\n";
