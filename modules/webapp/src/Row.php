@@ -4,28 +4,35 @@ namespace Appizy\WebApp;
 
 class Row extends TableElement
 {
+    /** @var string */
     var $name;
+    /** @var  int */
     var $sheet_ind;
+    /** @var  int */
     var $row_ind;
+    /** @var  boolean */
+    var $collapse;
+    /** @var Cell[] */
     var $cells;
 
-    var $collapse;
-    /** @var array */
-    var $cell;
-
+    /**
+     * Row constructor.
+     * @param int $sheet_ind
+     * @param int $row_ind
+     * @param array $options
+     */
     function __construct($sheet_ind, $row_ind, $options)
     {
-        $this->set_id($row_ind);
+        parent::__construct($row_ind);
 
         $this->sheet_ind = $sheet_ind;
-        $this->row_ind = $row_ind;
         $this->name = 's' . $sheet_ind . 'r' . $row_ind;
-
-        $this->cell = [];
+        $this->cells = [];
 
         if (isset($options['collapse'])) {
             $this->collapse = $options['collapse'];
         }
+
         if (isset($options['style'])) {
             $this->addStyle($options['style']);
         }
@@ -37,20 +44,7 @@ class Row extends TableElement
     function addCell(Cell $newCell)
     {
         $cell_id = $newCell->get_id();
-        $this->cell[$cell_id] = $newCell;
-    }
-
-    function getCells()
-    {
-        return $this->cell;
-    }
-
-    /**
-     * @return bool
-     */
-    function isHidden()
-    {
-        return $this->collapse === true;
+        $this->cells[$cell_id] = $newCell;
     }
 
     /**
@@ -67,98 +61,74 @@ class Row extends TableElement
     }
 
     /**
-     * @return Cell[]
+     * @return bool
      */
-    function row_get_cells()
+    function isHidden()
     {
-        return $this->cell;
+        return $this->collapse === true;
     }
 
-    function row_get_cell($cell_ind)
+    /**
+     * @param $cellId
+     * @return Cell
+     * @throws \Exception
+     */
+    function getCell($cellId)
     {
-        if (array_key_exists($cell_ind, $this->cell)) {
-            return $this->cell[$cell_ind];
+        if (array_key_exists($cellId, $this->cells)) {
+            return $this->cells[$cellId];
         } else {
-            $this->tabelmt_debug("Unexistent cell r" . $this->get_id() . "c$cell_ind");
-
-            return false;
+            throw new \Exception("Cell $cellId does not exists in row");
         }
     }
 
     /**
-     * Returns the number of cells in a row
+     * @return string
      */
-    function row_nbcell()
-    {
-        return count($this->row_get_cells());
-    }
-
-    /**
-     * Returns the size of a row = nb of cells + colspan
-     */
-    function row_length()
-    {
-        $length = 0;
-        $cells = $this->row_get_cells();
-
-        foreach ($cells as $cell) {
-            $rowspan = $cell->cell_get_colspan();
-            $length += $rowspan;
-        }
-
-        return $length;
-    }
-
-    function get_rowind()
-    {
-        return $this->get_id();
-    }
-
-    function get_cell($cell_ind)
-    {
-        return $this->cell[$cell_ind];
-    }
-
     function getName()
     {
         return $this->name;
-    }
-
-    function getStyle()
-    {
-        return $this->style;
-    }
-
-    function row_set_cell($new_cells)
-    {
-        $this->cell = $new_cells;
     }
 
     function cleanRow()
     {
         $isFirstFilled = false;
         $offset = 0;
-        // On inverse les cells
-        $cells_reverse = array_reverse($this->getCells(), true);
+        $reservedCells = array_reverse($this->getCells(), true);
 
-        // On nettoie ensuite chaque row
-        foreach ($cells_reverse as $tempcell) {
-            if (!$isFirstFilled) :
-                if ($tempcell->cell_isempty()) {
+        /** @var Cell $tempCell */
+        foreach ($reservedCells as $tempCell) {
+            if (!$isFirstFilled) {
+                if ($tempCell->cell_isempty()) {
                     $offset++;
                 } else {
                     $isFirstFilled = true;
                 }
-            endif;
+            }
         }
-        // On supprime les $offset premi�res $sheet vides
-        if ($offset > 0) {
-            $cells_reverse = array_slice($cells_reverse, $offset);
-        }
-        // On inverse a nouveau et on affecte les sheets du tableau
-        $cells = array_reverse($cells_reverse, true);
-        $this->row_set_cell($cells);
 
+        if ($offset > 0) {
+            $reservedCells = array_slice($reservedCells, $offset);
+        }
+
+        $cells = array_reverse($reservedCells, true);
+        $this->setCells($cells);
+    }
+
+    /**
+     * @return Cell[]
+     */
+    function getCells()
+    {
+        return $this->cells;
+    }
+
+    /**
+     * @param Cell[] $newCells
+     */
+    function setCells($newCells)
+    {
+        $this->cells = $newCells;
     }
 
     function isEmptyRow()
@@ -166,11 +136,6 @@ class Row extends TableElement
         $cells = $this->getCells();
 
         return empty($cells);
-    }
-
-    function cellExistInRows($coord = array())
-    {
-        return array_key_exists($coord['cell'], $this->getCells());
     }
 
     function collapseRow()

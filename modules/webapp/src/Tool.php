@@ -157,7 +157,7 @@ class Tool
                 $tmp_rI = $head[1];
                 $tmp_cI = $head[2];
             }
-            $tempcell = $this->sheets[$tmp_sI]->row[$tmp_rI]->cell[$tmp_cI];
+            $tempcell = $this->sheets[$tmp_sI]->row[$tmp_rI]->cells[$tmp_cI];
             $tempcell->setValueInList($values);
         }
     }
@@ -260,7 +260,7 @@ class Tool
 
                 $used_styles[] = $row->get_styles_name();
 
-                foreach ($row->row_get_cells() as $cCI => $tempCell) {
+                foreach ($row->getCells() as $cCI => $tempCell) {
 
                     if ($tempCell->cell_get_validation() != '') {
                         $this->render_validation($tempCell->cell_get_validation(),

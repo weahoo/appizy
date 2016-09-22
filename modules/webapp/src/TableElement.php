@@ -21,6 +21,10 @@ class TableElement
         $this->eid = (int)$element_id;
     }
 
+    function getId() {
+        return $this->eid;
+    }
+
     function tabelmt_error($message)
     {
         trigger_error(__CLASS__ . ': ' . $message, E_USER_WARNING);

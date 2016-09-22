@@ -26,10 +26,13 @@ class Sheet extends TableElement
         $this->col[$col_ind] = $newCol;
     }
 
+    /**
+     * @param Row $newRow
+     */
     function addRow(Row $newRow)
     {
-        $row_ind = $newRow->get_rowind();
-        $this->row[$row_ind] = $newRow;
+        $rowId = $newRow->getId();
+        $this->row[$rowId] = $newRow;
     }
 
     function getCol($col_key)
@@ -42,7 +45,8 @@ class Sheet extends TableElement
         return $column;
     }
 
-    function getColumns() {
+    function getColumns()
+    {
         return $this->col;
     }
 
@@ -59,19 +63,19 @@ class Sheet extends TableElement
         return $this->row;
     }
 
-    function getRow($key_row)
-    {
-        return $this->row[$key_row];
-    }
-
-    function sheet_get_row($row_ind)
+    /**
+     * @param $rowId
+     * @return Row
+     * @throws \Exception
+     */
+    function getRow($rowId)
     {
         $rows = $this->row;
-        $row = false;
-        if (array_key_exists($row_ind, $rows)) {
-            $row = $rows[$row_ind];
+
+        if (array_key_exists($rowId, $rows)) {
+            $row = $rows[$rowId];
         } else {
-            $this->tabelmt_debug("Unexistent row: s" . $this->get_id() . "r$row_ind");
+            throw new \Exception("Row $rowId does not exist,");
         }
 
         return $row;
@@ -81,11 +85,11 @@ class Sheet extends TableElement
     {
         $cell = false;
 
-        $row = $this->sheet_get_row($row_ind);
+        $row = $this->getRow($row_ind);
 
         if ($row) {
 
-            $cell = $row->row_get_cell($col_ind);
+            $cell = $row->getCell($col_ind);
             if (!$cell) {
                 $this->tabelmt_debug("Unexistent cell: s" . $this->get_id() . "r$row_ind" . "c$col_ind");
             }
