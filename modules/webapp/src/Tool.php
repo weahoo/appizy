@@ -220,13 +220,12 @@ class Tool
         $is_first_filled = false;
         $offset = 0;
 
-        // On inverse les sheets
-        $sheets_reverse = array_reverse($this->sheets, true);
+        $reversedSheets = array_reverse($this->sheets, true);
 
-        // On nettoie ensuite chaque sheet
-        foreach ($sheets_reverse as $temp_sheet) {
+        /** @var Sheet $temp_sheet */
+        foreach ($reversedSheets as $temp_sheet) {
 
-            $temp_sheet->sheet_clean();
+            $temp_sheet->removeEmptyRows();
 
             if (!$is_first_filled) :
                 if ($temp_sheet->isEmptySheet()) {
@@ -239,10 +238,10 @@ class Tool
         }
         // On supprime les $offset premi�res $sheet vides
         if ($offset > 0) {
-            $sheets_reverse = array_slice($sheets_reverse, $offset);
+            $reversedSheets = array_slice($reversedSheets, $offset);
         }
         // On inverse a nouveau et on affecte les sheets du tableau
-        $sheets = array_reverse($sheets_reverse, true);
+        $sheets = array_reverse($reversedSheets, true);
         $this->sheets = $sheets;
 
     }

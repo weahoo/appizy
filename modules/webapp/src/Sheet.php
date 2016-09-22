@@ -11,11 +11,11 @@ class Sheet extends TableElement
     /** @var Row[] */
     var $row;
 
-    function __construct($sheet_id, $sheet_name)
+    function __construct($sheetId, $sheetName)
     {
-        parent::__construct($sheet_id);
+        parent::__construct($sheetId);
 
-        $this->name = $sheet_name;
+        $this->name = $sheetName;
         $this->col = [];
         $this->row = [];
     }
@@ -35,29 +35,33 @@ class Sheet extends TableElement
         $this->row[$rowId] = $newRow;
     }
 
-    function getCol($col_key)
+    /**
+     * @param $columnId
+     * @return Column
+     * @throws \Exception
+     */
+    function getCol($columnId)
     {
-        $column = false;
-        if (array_key_exists($col_key, $this->col)) {
-            $column = $this->col[$col_key];
+        if (array_key_exists($columnId, $this->col)) {
+            $column = $this->col[$columnId];
+        } else {
+            throw new \Exception("Column $columnId does not exists in sheet");
         }
 
         return $column;
     }
 
+    /**
+     * @return Column[]
+     */
     function getColumns()
     {
         return $this->col;
     }
 
     /**
-     * Returns sheet cols
+     * @return Row[]
      */
-    function sheet_get_cols()
-    {
-        return $this->col;
-    }
-
     function getRows()
     {
         return $this->row;
@@ -98,39 +102,37 @@ class Sheet extends TableElement
         return $cell;
     }
 
-    function setRows($new_rows)
+    /**
+     * @param Row[] $newRows
+     */
+    function setRows($newRows)
     {
-        $this->row = $new_rows;
+        $this->row = $newRows;
     }
 
-    function get_sheet_name()
-    {
-        return $this->name;
-    }
-
+    /**
+     * @return string
+     */
     function getName()
     {
         return $this->name;
     }
 
-    function sheet_clean()
+    function removeEmptyRows()
     {
-
         $isFirstFilled = false;
         $offset = 0;
-        // On inverse les rows
         $rows = $this->getRows();
         $row_nb = count($rows);
+        $reversedRows = array_reverse($rows, true);
 
-        $rows_reverse = array_reverse($rows, true);
+        /** @var Row $tempRow */
+        foreach ($reversedRows as $tempRow) {
 
-        // On nettoie ensuite chaque row
-        foreach ($rows_reverse as $temprow) {
-
-            $temprow->cleanRow();
+            $tempRow->cleanRow();
 
             if (!$isFirstFilled) {
-                if ($temprow->isEmptyRow()) {
+                if ($tempRow->isEmptyRow()) {
                     $offset++;
                 } else {
                     $isFirstFilled = true;
@@ -138,10 +140,11 @@ class Sheet extends TableElement
             }
 
         }
-        // $this->tabelmt_debug("Clean sheet s".$this->get_id()."offset:$offset");
 
         // On supprime les $offset premi�res $sheet vides
-        if ($offset > 0) $rows = array_slice($rows, 0, $row_nb - $offset);
+        if ($offset > 0) {
+            $rows = array_slice($rows, 0, $row_nb - $offset);
+        }
 
         $this->setRows($rows);
     }
@@ -151,17 +154,5 @@ class Sheet extends TableElement
         $rows = $this->getRows();
 
         return empty($rows);
-    }
-
-    function cellExistsInSheet($coord = array())
-    {
-        $key_row = $coord['row'];
-        if (array_key_exists($key_row, $this->getRows())) {
-            $row = $this->getRows($key_row);
-
-            return $row->cellExistInRow(array_slice($coord, 1));
-        } else {
-            return false;
-        }
     }
 }
