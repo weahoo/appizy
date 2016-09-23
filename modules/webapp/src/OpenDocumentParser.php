@@ -402,13 +402,11 @@ class OpenDocumentParser
             $this->currentColumn += $col_repeated - 1;
 
         } elseif ($cTagName == 'text:tab') {
-
             global $globaldata;
 
             $globaldata .= "&nbsp;";
 
         } elseif ($cTagName == 'text:p') {
-
             global $globaldata;
 
             $class = "";
@@ -424,16 +422,14 @@ class OpenDocumentParser
             $globaldata .= "<p$class>";
 
         } elseif ($cTagName == 'text:span') {
-
             global $globaldata;
 
+            $class = "";
             if ($style_name = strtolower(self::array_attribute($attrs,
                 'TEXT:STYLE-NAME'))
             ) {
-
                 $class = ' class="' . strtolower($style_name) . '" ';
                 $this->used_styles[] = $style_name;
-
             }
 
             $globaldata .= "<span$class>";

@@ -55,6 +55,13 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->crawler->filter('.s2r1c3')->attr('colspan'), 2);
     }
 
+    public function testDataFormatPresence()
+    {
+        $this->assertEquals('0%', $this->crawler->filter('input[name="s0r19c3"]')->attr('data-format'));
+        $this->assertEquals('0.0%', $this->crawler->filter('input[name="s0r20c3"]')->attr('data-format'));
+        $this->assertEquals('0.000%', $this->crawler->filter('input[name="s0r21c3"]')->attr('data-format'));
+    }
+
     public function testHiddenRowShouldHaveCSSClass()
     {
         $this->assertContains('hidden-row',
