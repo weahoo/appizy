@@ -1,4 +1,3 @@
-
 # Appizy
 
 Convert spreadsheet data to web content
