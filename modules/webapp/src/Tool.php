@@ -205,9 +205,7 @@ class Tool
 
     function tool_error($message)
     {
-        trigger_error(__CLASS__ . '-' . __FUNCTION__ . ': ' . $message,
-            E_USER_WARNING);
-        //$this->error = $message;
+        trigger_error(__CLASS__ . '-' . __FUNCTION__ . ': ' . $message, E_USER_WARNING);
     }
 
     function tool_debug($message)
@@ -250,7 +248,6 @@ class Tool
     {
         $htmlTable = '';
 
-        $sheets_link = array(); // Array containing link to sheet anchors
         $used_styles = array(); // Contains styles used by the table elements.
 
         foreach ($this->sheets as $key => $sheet) {
@@ -267,7 +264,8 @@ class Tool
                         $tempCell->cell_set_type("in");
                     }
 
-                    $td = "";
+                    $td = '';
+                    $class = '';
 
                     $tempstyle = $tempCell->get_styles_name();
 
@@ -309,22 +307,24 @@ class Tool
                     }
 
                     // Adds current col style (if exists)
-                    $temp_curcol_style = '';
-                    $temp_curcol = $sheet->getCol($cCI);
+                    try {
+                        $currentColumn = $sheet->getCol($cCI);
 
+                        $currentColumnStyle = '';
+                        if ($currentColumn) {
+                            $currentColumnStyle = $currentColumn->get_styles_name();
+                            if ($currentColumnStyle != '') {
+                                $class .= " " . $currentColumnStyle;
+                            }
+                            $used_styles[] = $currentColumnStyle;
 
-                    if ($temp_curcol) {
-                        $temp_curcol_style = $temp_curcol->get_styles_name();
-                        if ($temp_curcol_style != '') {
-                            $class .= " " . $temp_curcol_style;
+                            if ($currentColumn->isCollapsed() == true) {
+                                $tempCell->addStyle('hidden-cell');
+                            }
                         }
-                        $used_styles[] = $temp_curcol_style;
+                    } catch (\Exception $exception) {
 
-                        if ($temp_curcol->isCollapsed() == true) {
-                            $tempCell->addStyle('hidden-cell');
-                        }
                     }
-                    $htmlTable .= '  <td class="' . $class . '">' . $td . '</td>' . "\n";
                 }
             }
         }
@@ -335,37 +335,29 @@ class Tool
 
         // *** Code de la section CSS
         $used_styles = array_merge($used_styles, $this->used_styles);
-
         $used_styles = array_unique($used_styles);
-
-
         $cssTable = $this->getCss($used_styles);
 
-        //$variables['style'] = $style;
-        $variables = [
+        return [
             'content' => $htmlTable,
             'style' => $cssTable,
             'script' => $script,
             'libraries' => array_unique($libraries)
         ];
-
-        return $variables;
     }
 
     /**
-     * @param array $used_styles
+     * @param string[] $stylesNames
      * @return string
      */
-    function getCss($used_styles)
+    function getCss($stylesNames)
     {
+        $usedStyles = array_intersect_key($this->styles, array_flip($stylesNames));
+
         $css_code = '';
-
-        $used_styles = array_flip($used_styles);
-        // Gets intersection of used and available styles
-        $used_styles = array_intersect_key($this->styles, $used_styles);
-
-        foreach ($used_styles as $key => $value) {
-            $css_code .= $value->style_print();
+        /** @var Style $style */
+        foreach ($usedStyles as $style) {
+            $css_code .= $style->style_print();
         }
 
         return $css_code;
