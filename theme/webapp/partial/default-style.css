@@ -31,10 +31,10 @@
     font-family: inherit;
     font-size: inherit;
     font-weight: inherit;
-    padding-right: 4px;
+    padding-right: 1%;
     text-align: inherit;
-    margin: 1px;
-    width: 90%;
+    margin: 1%;
+    width: 97%;
 }
 
 #appizy input:focus {

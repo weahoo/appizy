@@ -4,14 +4,16 @@ namespace Appizy\WebApp;
 
 class OpenFormulaParser
 {
+    const MS_EXCEL_NAMESPACE = 'msoxl';
+
     public function __construct()
     {
     }
 
     /**
-     * @param string    $openFormula
-     * @param integer   $currentSheetIndex
-     * @param string[]  $sheetsNames
+     * @param string $openFormula
+     * @param integer $currentSheetIndex
+     * @param string[] $sheetsNames
      * @param integer[] $cellCoordinates
      * @return Formula
      */
@@ -104,7 +106,7 @@ class OpenFormulaParser
 
     /**
      * @param string $formula
-     * @param array  $lexicon
+     * @param array $lexicon
      * @return array
      */
     private static function lexer($formula, $lexicon)
@@ -153,16 +155,17 @@ class OpenFormulaParser
     }
 
     /**
-     * @param string  $reference cell coordinate as string
+     * @param string $reference cell coordinate as string
      * @param integer $referenceSheetIndex sheet index where the reference is
-     * @param array   $sheetsNames
+     * @param array $sheetsNames
      * @return array|bool
      */
     public static function referenceToCoordinates(
         $reference,
         $referenceSheetIndex,
         $sheetsNames
-    ) {
+    )
+    {
         // Sorts sheets' name by length to avoid inclusion issue
         uasort($sheetsNames, function ($a, $b) {
             return strlen($b) - strlen($a);
@@ -231,11 +234,17 @@ class OpenFormulaParser
      */
     private static function cleanOdsFormula($openFormula)
     {
-        $formulaParts = explode("=", $openFormula, 2);
-        $formula = $formulaParts[1];
+        $formulaParts = explode(":=", $openFormula, 2);
 
-        // Remove '$' sign, not more necessary
-        $formula = str_replace('$', '', $formula);
+        $namespace = $formulaParts[0];
+        if ($namespace === self::MS_EXCEL_NAMESPACE) {
+            // TODO: trigger an error here
+            $formula = '';
+        } else {
+            $formula = $formulaParts[1];
+            // Remove '$' sign, not more necessary
+            $formula = str_replace('$', '', $formula);
+        }
 
         return $formula;
     }

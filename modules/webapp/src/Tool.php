@@ -18,6 +18,8 @@ class Tool
     var $formats;
     /** @var string[] */
     var $libraries;
+    /** @var  string[} */
+    var $used_styles;
 
     private $debug;
     private $error;
@@ -29,7 +31,23 @@ class Tool
         $this->formulas = [];
         $this->validations = [];
         $this->formats = [];
+        $this->used_styles = [];
         $this->debug = $debug;
+    }
+
+    function addFormula($new_formula)
+    {
+        $this->formulas[] = $new_formula;
+    }
+
+    /**
+     * @param $sheet_id Integer
+     * @param $sheet_name String
+     */
+    function addSheet($sheet_id, $sheet_name)
+    {
+        $new_sheet = new Sheet($sheet_id, $sheet_name);
+        $this->sheets[$sheet_id] = $new_sheet;
     }
 
     function tool_parse_wb($xml_path)
@@ -213,7 +231,7 @@ class Tool
         trigger_error(__CLASS__ . ': ' . $message);
     }
 
-    function tool_clean()
+    function clean()
     {
         $is_first_filled = false;
         $offset = 0;
@@ -363,7 +381,7 @@ class Tool
         return $css_code;
     }
 
-    private function cleanStyles()
+    public function cleanStyles()
     {
         foreach ($this->styles as $id => $style) {
             $parent_style_name = $style->parent_style_name;

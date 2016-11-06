@@ -3,6 +3,7 @@
 namespace Appizy\Core\Command;
 
 use Appizy\Core\Theme;
+use Appizy\WebApp\OpenDocumentParser;
 use Appizy\WebApp\Tool;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -67,23 +68,23 @@ class ConvertCommand extends Command
         $zip->extractTo($extractDir);
         $zip->close();
 
-        $xml_path[] = $extractDir . "/styles.xml";
-        $xml_path[] = $extractDir . "/content.xml";
-
-
-        $tool = new Tool(true);
+        $xmlFilesPath[] = $extractDir . "/styles.xml";
+        $xmlFilesPath[] = $extractDir . "/content.xml";
 
         $output->writeln("Parsing spreadsheet");
-        $tool->tool_parse_wb($xml_path);
-        $tool->tool_clean();
+        $OpenDocumentParser = new OpenDocumentParser();
+        $spreadsheet = $OpenDocumentParser->parse($xmlFilesPath);
+        $spreadsheet->setFormulaDependenciesAsInputCells();
+        $spreadsheet->cleanStyles();
+        $spreadsheet->clean();
 
         $output->writeln("Rendering application");
-        $elements = $tool->tool_render();
+        $elements = $spreadsheet->tool_render();
 
         $this->renderAndSave(
             $theme,
             [
-                'spreadSheet' => $tool,
+                'spreadSheet' => $spreadsheet,
                 'content'     => $elements['content'],
                 'style'       => $elements['style'],
                 'script'      => $elements['script'],

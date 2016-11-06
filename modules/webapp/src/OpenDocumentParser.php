@@ -8,15 +8,10 @@ class OpenDocumentParser
 {
     use ArrayTrait;
 
-    var $validations;
     var $fonts;
     var $styles;
     var $sheets;
-    var $formulas;
-    var $formats;
-
     var $lastElement;
-    var $fods;
     var $currentSheet;
     var $currentRow;
     var $currentCell;
@@ -34,23 +29,16 @@ class OpenDocumentParser
 
     var $used_styles;
     var $debug;
+    /** @var Tool */
+    var $spreadsheet;
 
-    /**
-     * @param $filenames
-     * @param $debug
-     */
-    function __construct($filenames, $debug)
+    function __construct()
     {
-
+        $this->spreadsheet = new Tool();
         $this->styles = array();
         $this->fonts = array();
         $this->sheets = array();
-        $this->validations = array();
-        $this->formats = array();
-        $this->formulas = array();
-
         $this->used_styles = array();
-
         $this->currentSheet = 0;
         $this->currentColumn = 0;
         $this->currentRow = 0;
@@ -58,29 +46,8 @@ class OpenDocumentParser
         $this->currentCell = 0;
         $this->currentFrame = 0;
         $this->currentValidation = 0;
-
-        foreach ($filenames as $filename) {
-            $xml_content = file_get_contents($filename);
-            $this->parse($xml_content);
-        }
-
-        $this->order_data();
-
         $this->debug = true;
-
         $this->contenttag_stack = array(); // Stack of tags that can have "Content"
-    }
-
-    /**
-     * Adds a new sheet to the Parser
-     *
-     * @param $sheet_id Integer
-     * @param $sheet_name String
-     */
-    function addSheet($sheet_id, $sheet_name)
-    {
-        $new_sheet = new Sheet($sheet_id, $sheet_name);
-        $this->sheets[$sheet_id] = $new_sheet;
     }
 
     /**
@@ -91,7 +58,7 @@ class OpenDocumentParser
         $new_row = new Row($sheet_ind, $row_ind, $options);
 
         /** @var Sheet $sheet */
-        $sheet = $this->sheets[$sheet_ind];
+        $sheet = $this->spreadsheet->sheets[$sheet_ind];
         $sheet->addRow($new_row);
     }
 
@@ -100,25 +67,20 @@ class OpenDocumentParser
         $new_cell = new Cell($sheet_ind, $row_ind, $col_ind, $options);
         // Get selected row in the selected sheet
         /** @var Sheet $sheet */
-        $sheet = $this->sheets[$sheet_ind];
+        $sheet = $this->spreadsheet->sheets[$sheet_ind];
         /** @var Row $row */
         $row = $sheet->getRow($row_ind);
 
         $row->addCell($new_cell);
     }
 
-    function addFormula($new_formula)
-    {
-        $this->formulas[] = $new_formula;
-    }
-
     function addCol($sheet_ind, $new_col)
     {
-        $sheet = $this->sheets[$sheet_ind];
+        $sheet = $this->spreadsheet->sheets[$sheet_ind];
         $sheet->addCol($new_col);
     }
 
-    function order_data()
+    function orderData()
     {
         $sheetsNames = array();
         foreach ($this->sheets as $currentSheetIndex => $sheet) {
@@ -133,128 +95,139 @@ class OpenDocumentParser
         }
 
         foreach ($this->sheets as $currentSheetIndex => $sheet) {
+            $this->spreadsheet->addSheet($currentSheetIndex, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
 
-            $this->addSheet($currentSheetIndex, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
+            if (array_key_exists('column', $sheet)) {
+                foreach ($sheet['column'] as $curCOLI => $col) {
+                    $tempcol = new Column($curCOLI);
 
-            foreach ($sheet['column'] as $curCOLI => $col) {
-                $tempcol = new Column($curCOLI);
+                    if (array_key_exists('attrs', $col)) {
+                        if (array_key_exists('TABLE:STYLE-NAME', $col['attrs'])) {
+                            $tempcol->addStyle($col['attrs']['TABLE:STYLE-NAME']);
+                        }
 
-                if (array_key_exists('attrs', $col)) {
-                    if (array_key_exists('TABLE:STYLE-NAME', $col['attrs'])) {
-                        $tempcol->addStyle($col['attrs']['TABLE:STYLE-NAME']);
-                    }
+                        if (array_key_exists('TABLE:VISIBILITY', $col['attrs'])) {
+                            if ($col['attrs']['TABLE:VISIBILITY'] == 'collapse') {
+                                $tempcol->collapse();
+                            }
+                        }
 
-                    if (array_key_exists('TABLE:VISIBILITY', $col['attrs'])) {
-                        if ($col['attrs']['TABLE:VISIBILITY'] == 'collapse') {
-                            $tempcol->collapse();
+                        if (array_key_exists('TABLE:DEFAULT-CELL-STYLE-NAME',
+                            $col['attrs'])) {
+                            $tempcol->col_set_default_cell_style($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
                         }
                     }
-
-                    if (array_key_exists('TABLE:DEFAULT-CELL-STYLE-NAME',
-                        $col['attrs'])) {
-                        $tempcol->col_set_default_cell_style($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
-                    }
+                    $this->addCol($currentSheetIndex, $tempcol);
                 }
-                $this->addCol($currentSheetIndex, $tempcol);
             }
 
-            foreach ($sheet['rows'] as $cR => $row) {
+            if (array_key_exists('rows', $sheet)) {
+                foreach ($sheet['rows'] as $cR => $row) {
 
-                $row_options = array();
-                if (array_key_exists('attrs', $row)) {
-                    if (array_key_exists('TABLE:STYLE-NAME', $row['attrs'])) {
-                        $row_options['style'] = htmlentities($row['attrs']['TABLE:STYLE-NAME'],
-                            ENT_QUOTES, "UTF-8");
+                    $row_options = array();
+                    if (array_key_exists('attrs', $row)) {
+                        if (array_key_exists('TABLE:STYLE-NAME', $row['attrs'])) {
+                            $row_options['style'] = htmlentities($row['attrs']['TABLE:STYLE-NAME'],
+                                ENT_QUOTES, "UTF-8");
+                        }
+
+                        if (array_key_exists('TABLE:VISIBILITY', $row['attrs'])) {
+                            $row_options['collapse'] = ($row['attrs']['TABLE:VISIBILITY'] == 'collapse');
+                        }
+
+                        if (array_key_exists('TABLE:STYLE-NAME', $row['attrs'])) {
+                            $row_options['style'] = $row['attrs']['TABLE:STYLE-NAME'];
+                        }
                     }
+                    $this->addRow($currentSheetIndex, $cR, $row_options);
 
-                    if (array_key_exists('TABLE:VISIBILITY', $row['attrs'])) {
-                        $row_options['collapse'] = ($row['attrs']['TABLE:VISIBILITY'] == 'collapse');
-                    }
+                    if (array_key_exists('cells', $row)) {
+                        // If there are cells in the row
+                        foreach ($row['cells'] as $cC => $cell) {
 
-                    if (array_key_exists('TABLE:STYLE-NAME', $row['attrs'])) {
-                        $row_options['style'] = $row['attrs']['TABLE:STYLE-NAME'];
-                    }
-                }
-                $this->addRow($currentSheetIndex, $cR, $row_options);
+                            $cell_options = array();
 
-                if (array_key_exists('cells', $row)) {
-                    // If there are cells in the row
-                    foreach ($row['cells'] as $cC => $cell) {
-
-                        $cell_options = array();
-
-                        if (array_key_exists('attrs', $cell)) {
-                            if (array_key_exists('TABLE:NUMBER-ROWS-SPANNED', $cell['attrs'])) {
-                                $cell_options['rowspan'] = $cell['attrs']['TABLE:NUMBER-ROWS-SPANNED'];
-                            }
-
-                            if (array_key_exists('TABLE:NUMBER-COLUMNS-SPANNED', $cell['attrs'])) {
-                                $cell_options['colspan'] = $cell['attrs']['TABLE:NUMBER-COLUMNS-SPANNED'];
-                            }
-
-                            if (array_key_exists('TABLE:STYLE-NAME', $cell['attrs'])) {
-                                $cell_options['style'] = strtolower($cell['attrs']['TABLE:STYLE-NAME']);
-                            } else {
-                                if ($default_style = $this->getColDefaultCellStyle($currentSheetIndex, $cC)) {
-                                    $cell_options['style'] = strtolower($default_style);
+                            if (array_key_exists('attrs', $cell)) {
+                                if (array_key_exists('TABLE:NUMBER-ROWS-SPANNED', $cell['attrs'])) {
+                                    $cell_options['rowspan'] = $cell['attrs']['TABLE:NUMBER-ROWS-SPANNED'];
                                 }
 
-                            }
-                            if (array_key_exists('OFFICE:VALUE', $cell['attrs'])) {
-                                $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'],
-                                    ENT_QUOTES, "UTF-8");
-                            }
-
-                            if (array_key_exists('OFFICE:BOOLEAN-VALUE', $cell['attrs'])) {
-                                $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:BOOLEAN-VALUE'],
-                                    ENT_QUOTES, "UTF-8");
-                            }
-
-                            if (array_key_exists("OFFICE:VALUE-TYPE", $cell['attrs'])) {
-                                $cell_options['value_type'] = $cell['attrs']['OFFICE:VALUE-TYPE'];
-                            }
-
-                            if (array_key_exists("TABLE:CONTENT-VALIDATION-NAME", $cell['attrs'])) {
-                                $cell_options['validation'] = $cell['attrs']["TABLE:CONTENT-VALIDATION-NAME"];
-                            }
-
-                            if (array_key_exists("TABLE:FORMULA", $cell['attrs'])) {
-                                $openFormula = $cell['attrs']['TABLE:FORMULA'];
-                                $cellCoordinates = [$currentSheetIndex, $cR, $cC];
-                                $formula = OpenFormulaParser::parse($openFormula, $currentSheetIndex, $sheetsNames,
-                                    $cellCoordinates);
-
-                                if ($formula->isPrintable()) {
-                                    $this->addFormula($formula);
+                                if (array_key_exists('TABLE:NUMBER-COLUMNS-SPANNED', $cell['attrs'])) {
+                                    $cell_options['colspan'] = $cell['attrs']['TABLE:NUMBER-COLUMNS-SPANNED'];
                                 }
 
-                                $cell_options['type'] = "out";
+                                if (array_key_exists('TABLE:STYLE-NAME', $cell['attrs'])) {
+                                    $cell_options['style'] = strtolower($cell['attrs']['TABLE:STYLE-NAME']);
+                                } else {
+                                    if ($default_style = $this->getColDefaultCellStyle($currentSheetIndex, $cC)) {
+                                        $cell_options['style'] = strtolower($default_style);
+                                    }
+
+                                }
+                                if (array_key_exists('OFFICE:VALUE', $cell['attrs'])) {
+                                    $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'],
+                                        ENT_QUOTES, "UTF-8");
+                                }
+
+                                if (array_key_exists('OFFICE:BOOLEAN-VALUE', $cell['attrs'])) {
+                                    $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:BOOLEAN-VALUE'],
+                                        ENT_QUOTES, "UTF-8");
+                                }
+
+                                if (array_key_exists("OFFICE:VALUE-TYPE", $cell['attrs'])) {
+                                    $cell_options['value_type'] = $cell['attrs']['OFFICE:VALUE-TYPE'];
+                                }
+
+                                if (array_key_exists("TABLE:CONTENT-VALIDATION-NAME", $cell['attrs'])) {
+                                    $cell_options['validation'] = $cell['attrs']["TABLE:CONTENT-VALIDATION-NAME"];
+                                }
+
+                                if (array_key_exists("TABLE:FORMULA", $cell['attrs'])) {
+                                    $openFormula = $cell['attrs']['TABLE:FORMULA'];
+                                    $cellCoordinates = [$currentSheetIndex, $cR, $cC];
+                                    $formula = OpenFormulaParser::parse($openFormula, $currentSheetIndex, $sheetsNames,
+                                        $cellCoordinates);
+
+                                    if ($formula->isPrintable()) {
+                                        $this->spreadsheet->addFormula($formula);
+                                    }
+
+                                    $cell_options['type'] = "out";
+                                }
                             }
-                        }
 
-                        if (array_key_exists('value', $cell)) {
-                            $cell_options['value_disp'] = $cell['value'];
-                        }
+                            if (array_key_exists('value', $cell)) {
+                                $cell_options['value_disp'] = $cell['value'];
+                            }
 
-                        if (array_key_exists('annotation', $cell)) {
-                            $cell_options['annotation'] = $cell['annotation'];
+                            if (array_key_exists('annotation', $cell)) {
+                                $cell_options['annotation'] = $cell['annotation'];
+                            }
+                            $this->addCell($currentSheetIndex, $cR, $cC, $cell_options);
                         }
-                        $this->addCell($currentSheetIndex, $cR, $cC, $cell_options);
                     }
                 }
             }
         }
     }
 
-    function parse($data)
+    function parse($filenames)
     {
-        $xml_parser = xml_parser_create();
-        xml_set_object($xml_parser, $this);
-        xml_set_element_handler($xml_parser, "startElement", "endElement");
-        xml_set_character_data_handler($xml_parser, "characterData");
-        xml_parser_set_option($xml_parser, XML_OPTION_TARGET_ENCODING, "UTF-8");
-        xml_parse($xml_parser, $data, strlen($data));
-        xml_parser_free($xml_parser);
+        foreach ($filenames as $filename) {
+
+            $xmlContent = file_get_contents($filename);
+            $xml_parser = xml_parser_create();
+            xml_set_object($xml_parser, $this);
+            xml_set_element_handler($xml_parser, "startElement", "endElement");
+            xml_set_character_data_handler($xml_parser, "characterData");
+            xml_parser_set_option($xml_parser, XML_OPTION_TARGET_ENCODING, "UTF-8");
+            xml_parse($xml_parser, $xmlContent, false);
+            xml_parser_free($xml_parser);
+        }
+
+        $this->orderData();
+
+        return $this->spreadsheet;
     }
 
     function startElement($parser, $tagName, $attrs)
@@ -379,7 +352,7 @@ class OpenDocumentParser
         } elseif ($cTagName == 'table:content-validation') {
             $this->lastElement = $cTagName;
             $id = $attrs['TABLE:NAME'];
-            $this->validations[$id]['attrs'] = $attrs;
+            $this->spreadsheet->validations[$id]['attrs'] = $attrs;
 
         } elseif ($cTagName == 'table:table-column') {
             $this->lastElement = $cTagName;
@@ -413,10 +386,8 @@ class OpenDocumentParser
             if ($style_name = strtolower(self::array_attribute($attrs,
                 'TEXT:STYLE-NAME'))
             ) {
-
                 $class = ' class="' . $style_name . '" ';
-                $this->used_styles[] = $style_name;
-
+                $this->spreadsheet->used_styles[] = $style_name;
             }
 
             $globaldata .= "<p$class>";
@@ -429,7 +400,7 @@ class OpenDocumentParser
                 'TEXT:STYLE-NAME'))
             ) {
                 $class = ' class="' . strtolower($style_name) . '" ';
-                $this->used_styles[] = $style_name;
+                $this->spreadsheet->used_styles[] = $style_name;
             }
 
             $globaldata .= "<span$class>";
@@ -518,7 +489,7 @@ class OpenDocumentParser
 
             $current_style = $this->currentStyle;
 
-            $this->styles[$current_style->name] = $current_style;
+            $this->spreadsheet->styles[$current_style->name] = $current_style;
 
             unset($this->currentStyle);
 
@@ -528,7 +499,7 @@ class OpenDocumentParser
         ) {
             $data_style = $this->currentDataStyle;
 
-            $this->formats[$data_style->id] = $data_style;
+            $this->spreadsheet->formats[$data_style->id] = $data_style;
 
             unset($this->currentDataStyle);
 
