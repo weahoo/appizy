@@ -8,7 +8,13 @@ class OpenFormulaParser
 
     public function __construct()
     {
+//        set_error_handler('self::errorHandle', E_ALL);
     }
+
+//    static public function errorHandle()
+//    {
+//        print "Something just happened in formula Parser \n";
+//    }
 
     /**
      * @param string $openFormula
@@ -241,6 +247,7 @@ class OpenFormulaParser
             // TODO: trigger an error here
             $formula = '';
         } else {
+            trigger_error("hello", E_USER_WARNING);
             $formula = $formulaParts[1];
             // Remove '$' sign, not more necessary
             $formula = str_replace('$', '', $formula);

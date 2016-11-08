@@ -4,7 +4,6 @@ namespace Appizy\Core\Command;
 
 use Appizy\Core\Theme;
 use Appizy\WebApp\OpenDocumentParser;
-use Appizy\WebApp\Tool;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,6 +45,8 @@ class ConvertCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        set_error_handler('Foo::handle');
+
         $filePath = $input->getArgument('source');
 
         $destinationPath = $input->getArgument('destination');
@@ -85,11 +86,11 @@ class ConvertCommand extends Command
             $theme,
             [
                 'spreadSheet' => $spreadsheet,
-                'content'     => $elements['content'],
-                'style'       => $elements['style'],
-                'script'      => $elements['script'],
-                'options'     => json_decode($input->getOption('options')),
-                'libraries'   => $elements['libraries']
+                'content' => $elements['content'],
+                'style' => $elements['style'],
+                'script' => $elements['script'],
+                'options' => json_decode($input->getOption('options')),
+                'libraries' => $elements['libraries']
             ],
             $destinationPath
         );
@@ -102,7 +103,7 @@ class ConvertCommand extends Command
 
     /**
      * @param \Appizy\Core\Theme $theme
-     * @param string             $path
+     * @param string $path
      */
     private function copyThemeIncludedFiles($theme, $path)
     {
@@ -116,8 +117,8 @@ class ConvertCommand extends Command
 
     /**
      * @param \Appizy\Core\Theme $theme
-     * @param array              $data
-     * @param string             $path
+     * @param array $data
+     * @param string $path
      */
     private function renderAndSave($theme, $data, $path)
     {
@@ -171,9 +172,9 @@ class ConvertCommand extends Command
     private function formatHTML($html)
     {
         $config = [
-            'indent'      => true,
+            'indent' => true,
             'output-html' => true,
-            'wrap'        => '1000'
+            'wrap' => '1000'
         ];
 
         $tidy = new tidy();
@@ -182,4 +183,6 @@ class ConvertCommand extends Command
 
         return tidy_get_output($tidy);
     }
+
+
 }
