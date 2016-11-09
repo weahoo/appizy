@@ -45,7 +45,7 @@ class ConvertCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        set_error_handler('Foo::handle');
+        set_error_handler('\Appizy\Core\ErrorHandler::handle');
 
         $filePath = $input->getArgument('source');
 
@@ -183,6 +183,4 @@ class ConvertCommand extends Command
 
         return tidy_get_output($tidy);
     }
-
-
 }

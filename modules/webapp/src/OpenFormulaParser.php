@@ -2,19 +2,11 @@
 
 namespace Appizy\WebApp;
 
+use Appizy\WebApp\Constant\ParsingErrorMessage;
+
 class OpenFormulaParser
 {
     const MS_EXCEL_NAMESPACE = 'msoxl';
-
-    public function __construct()
-    {
-//        set_error_handler('self::errorHandle', E_ALL);
-    }
-
-//    static public function errorHandle()
-//    {
-//        print "Something just happened in formula Parser \n";
-//    }
 
     /**
      * @param string $openFormula
@@ -244,10 +236,9 @@ class OpenFormulaParser
 
         $namespace = $formulaParts[0];
         if ($namespace === self::MS_EXCEL_NAMESPACE) {
-            // TODO: trigger an error here
+            trigger_error(ParsingErrorMessage::MS_EXCEL_NOT_SUPPORTED, E_USER_WARNING);
             $formula = '';
         } else {
-            trigger_error("hello", E_USER_WARNING);
             $formula = $formulaParts[1];
             // Remove '$' sign, not more necessary
             $formula = str_replace('$', '', $formula);
