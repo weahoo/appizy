@@ -2,7 +2,7 @@
 
 namespace Appizy\WebApp;
 
-use Appizy\WebApp\Constant\ParsingErrorMessage;
+use Appizy\WebApp\Constant\ErrorMessage;
 
 class OpenFormulaParser
 {
@@ -236,7 +236,7 @@ class OpenFormulaParser
 
         $namespace = $formulaParts[0];
         if ($namespace === self::MS_EXCEL_NAMESPACE) {
-            trigger_error(ParsingErrorMessage::MS_EXCEL_NOT_SUPPORTED, E_USER_WARNING);
+            trigger_error(ErrorMessage::MS_EXCEL_NOT_SUPPORTED, E_USER_WARNING);
             $formula = '';
         } else {
             $formula = $formulaParts[1];

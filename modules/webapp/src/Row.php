@@ -70,15 +70,14 @@ class Row extends TableElement
 
     /**
      * @param $cellId
-     * @return Cell
-     * @throws \Exception
+     * @return Cell|Bool
      */
     function getCell($cellId)
     {
         if (array_key_exists($cellId, $this->cells)) {
             return $this->cells[$cellId];
         } else {
-            throw new \Exception("Cell $cellId does not exists in row");
+            return false;
         }
     }
 

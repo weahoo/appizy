@@ -2,6 +2,8 @@
 
 namespace Appizy\WebApp;
 
+use Appizy\WebApp\Constant\ErrorMessage;
+
 class Tool
 {
     use ArrayTrait;
@@ -75,17 +77,17 @@ class Tool
                 $dependances = $formula->getDependencies();
 
                 foreach ($dependances as $dep) {
-                    $tempcell = $this->tool_get_cell($dep[0], $dep[1], $dep[2]);
+                    $tempcell = $this->getCell($dep[0], $dep[1], $dep[2]);
                     if ($tempcell) {
                         if ($tempcell->getType() != 'out') {
                             $tempcell->cell_set_type('in');
                         }
                     } else {
-                        // If cell doesn't exists
-                        // Happens when formula's ranges are on empty cells
-                        $new_cell = new cell($dep[0], $dep[1], $dep[2],
-                            array("type" => 'in'));
-                        //$this->tool_get_row($dep[0],$dep[1]);
+                        $cell_coord = $formula->cell_coord;
+                        $referencedCellName = $this->getHumanizedCellName($dep[0], $dep[1], $dep[2]);
+                        $formulaCellName = $this->getHumanizedCellName($cell_coord[0], $cell_coord[1], $cell_coord[2]);
+                        trigger_error(ErrorMessage::NON_EXISTING_CELL . " The formula in cell $formulaCellName" .
+                            " references an non-existing cell $referencedCellName");
                     }
                 }
             }
@@ -144,7 +146,7 @@ class Tool
                         $tmp_rI = $head[1] + $i;
                         $tmp_cI = $head[2] + $j;
 
-                        $tempcell = $this->tool_get_cell($tmp_sI, $tmp_rI,
+                        $tempcell = $this->getCell($tmp_sI, $tmp_rI,
                             $tmp_cI);
 
                         if ($tempcell) {
@@ -195,40 +197,40 @@ class Tool
         return self::array_attribute($this->formats, $dataStyleName);
     }
 
-    function tool_get_sheet($sheet_index)
+    /**
+     * @param $sheet_index
+     * @return Sheet|bool
+     */
+    function getSheet($sheet_index)
     {
-        $sheets = $this->sheets;
         $sheet = false;
-        if (array_key_exists($sheet_index, $sheets)) {
-            $sheet = $sheets[$sheet_index];
-        } else {
-            $this->tool_error("Try to access unexistent sheet index:$sheet_index");
+        if (array_key_exists($sheet_index, $this->sheets)) {
+            $sheet = $this->sheets[$sheet_index];
         }
 
         return $sheet;
     }
 
-    function tool_get_cell($sheet_ind, $row_ind, $col_ind)
+    /**
+     * @param $sheet_ind
+     * @param $row_ind
+     * @param $col_ind
+     * @return Cell|bool
+     */
+    function getCell($sheet_ind, $row_ind, $col_ind)
     {
         $cell = false;
 
-        $sheet = $this->tool_get_sheet($sheet_ind);
+        $sheet = $this->getSheet($sheet_ind);
 
         if ($sheet) {
-            $cell = $sheet->sheet_get_cell($row_ind, $col_ind);
+            $row = $sheet->getRow($row_ind);
+
+            if ($row) {
+                $cell = $row->getCell($col_ind);
+            }
         }
-
         return $cell;
-    }
-
-    function tool_error($message)
-    {
-        trigger_error(__CLASS__ . '-' . __FUNCTION__ . ': ' . $message, E_USER_WARNING);
-    }
-
-    function tool_debug($message)
-    {
-        trigger_error(__CLASS__ . ': ' . $message);
     }
 
     function clean()
@@ -392,5 +394,21 @@ class Tool
                 $this->styles[$id] = $style;
             }
         }
+    }
+
+    private function getHumanizedCellName($sheetId, $rowId, $coId)
+    {
+        $sheetName = $this->getSheet($sheetId)->getName();
+        $colName = Tool::num2alpha($coId);
+        return "'$sheetName'.". $colName . ($rowId + 1);
+    }
+
+    private static function num2alpha($n) {
+        $r = '';
+        for ($i = 1; $n >= 0 && $i < 10; $i++) {
+            $r = chr(0x41 + ($n % pow(26, $i) / pow(26, $i - 1))) . $r;
+            $n -= pow(26, $i);
+        }
+        return $r;
     }
 }

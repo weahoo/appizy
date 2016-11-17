@@ -69,37 +69,17 @@ class Sheet extends TableElement
 
     /**
      * @param $rowId
-     * @return Row
-     * @throws \Exception
+     * @return Row|bool
      */
     function getRow($rowId)
     {
-        $rows = $this->row;
+        $row = false;
 
-        if (array_key_exists($rowId, $rows)) {
-            $row = $rows[$rowId];
-        } else {
-            throw new \Exception("Row $rowId does not exist,");
+        if (array_key_exists($rowId, $this->row)) {
+            $row = $this->row[$rowId];
         }
 
         return $row;
-    }
-
-    function sheet_get_cell($row_ind, $col_ind)
-    {
-        $cell = false;
-
-        $row = $this->getRow($row_ind);
-
-        if ($row) {
-
-            $cell = $row->getCell($col_ind);
-            if (!$cell) {
-                $this->tabelmt_debug("Unexistent cell: s" . $this->get_id() . "r$row_ind" . "c$col_ind");
-            }
-        }
-
-        return $cell;
     }
 
     /**
