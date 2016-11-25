@@ -35,6 +35,12 @@ class ConvertCommand extends Command
                 'Theme name',
                 'webapp'
             )->addOption(
+                'tabs',
+                null,
+                InputArgument::OPTIONAL,
+                'Tabs options (none|js|list)',
+                'js'
+            )->addOption(
                 'options',
                 'o',
                 InputArgument::OPTIONAL,
@@ -82,6 +88,8 @@ class ConvertCommand extends Command
         $output->writeln("Rendering application");
         $elements = $spreadsheet->tool_render();
 
+        $options = $this->getOptions($input);
+
         $this->renderAndSave(
             $theme,
             [
@@ -89,7 +97,7 @@ class ConvertCommand extends Command
                 'content' => $elements['content'],
                 'style' => $elements['style'],
                 'script' => $elements['script'],
-                'options' => json_decode($input->getOption('options')),
+                'options' => $options,
                 'libraries' => $elements['libraries']
             ],
             $destinationPath
@@ -182,5 +190,26 @@ class ConvertCommand extends Command
         $tidy->cleanRepair();
 
         return tidy_get_output($tidy);
+    }
+
+    /**
+     * @param InputInterface $input
+     */
+    public function getOptions(InputInterface $input)
+    {
+        $options = json_decode($input->getOption('options'));
+
+        $optionTab = $input->getOption('tabs');
+        switch ($optionTab) {
+            case 'list':
+            case 'js':
+            case 'none':
+                $options->tabs = $optionTab;
+                break;
+            default:
+                $options->tabs = 'js';
+        }
+
+        return $options;
     }
 }

@@ -16,62 +16,69 @@
 <body>
 <div id="appizy">
     <form>
-        <ul>
-            {% for sheet in spreadSheet.getSheets() %}
-                <li>
-                    <a href="#sheet{{ loop.index }}">{{ sheet.getName() | raw }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-        {% for sheet in spreadSheet.getSheets() %}
-            <div id="sheet{{ loop.index }}">
-                <table>
-                    {% for row in sheet.getRows() %}
-                        <tr class="{{ row.getName() }} {{ row.getStyles()|join(' ') }}">
-                            {% for cell in row.getCells() %}
-                                {% set col_span = '' %}
-                                {% set row_span = '' %}
-                                {% if (cell.getColSpan() > 1) %}
-                                    {% set col_span = ' colspan="' ~ cell.getColSpan() ~ '"' %}
-                                {% endif %}
+        {% set sheets = spreadSheet.getSheets() %}
+        {% if options.tabs != 'none' and (sheets | length) > 1 %}
+            <div>
+                <ul class="tabs-list">
+                    {% for sheet in sheets %}
+                        <li class="{% if loop.first %}active{% endif %}">
+                            <a href="#sheet{{ loop.index }}">{{ sheet.getName() | raw }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="tabs">
+            {% for sheet in sheets %}
+                <div id="sheet{{ loop.index }}" class="tab-content {% if loop.first %}active{% endif %}">
+                    <table>
+                        {% for row in sheet.getRows() %}
+                            <tr class="{{ row.getName() }} {{ row.getStyles()|join(' ') }}">
+                                {% for cell in row.getCells() %}
+                                    {% set col_span = '' %}
+                                    {% set row_span = '' %}
+                                    {% if (cell.getColSpan() > 1) %}
+                                        {% set col_span = ' colspan="' ~ cell.getColSpan() ~ '"' %}
+                                    {% endif %}
 
-                                {% if (cell.getRowSpan() > 1) %}
-                                    {% set row_span = ' rowspan="' ~ cell.getRowSpan() ~ '"' %}
-                                {% endif %}
-                                {% set cellType = cell.getType() %}
-                                {% set cellStyle = cell.getStyles()|join(' ') %}
-                                <td class="{{ cell.getName() }} {{ cellType }} {{ cellStyle }}" {{ col_span | raw }}{{ row_span | raw }}>
-                                    {% if cellType == 'in' %}
-                                        {% set values = cell.getValueList() %}
-                                        {% if values is empty %}
-                                            <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
+                                    {% if (cell.getRowSpan() > 1) %}
+                                        {% set row_span = ' rowspan="' ~ cell.getRowSpan() ~ '"' %}
+                                    {% endif %}
+                                    {% set cellType = cell.getType() %}
+                                    {% set cellStyle = cell.getStyles()|join(' ') %}
+                                    <td class="{{ cell.getName() }} {{ cellType }} {{ cellStyle }}" {{ col_span | raw }}{{ row_span | raw }}>
+                                        {% if cellType == 'in' %}
+                                            {% set values = cell.getValueList() %}
+                                            {% if values is empty %}
+                                                <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
+                                                       data-value-type="{{ cell.getValueType() }}"
+                                                       value="{{ cell.getValue() | raw }}"
+                                                        {{ macro.dataFormat(cell, spreadSheet) }}
+                                                >
+                                            {% else %}
+                                                <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
+                                                    {% for value in values %}
+                                                        <option value="{{ value }}">{{ value }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            {% endif %}
+                                        {% elseif cellType == 'out' %}
+                                            <input disabled="disabled" name="{{ cell.getName() | raw }}"
+                                                   value="{{ cell.getValueAttr() | raw }}"
                                                    data-value-type="{{ cell.getValueType() }}"
-                                                   value="{{ cell.getValue() | raw }}"
                                                     {{ macro.dataFormat(cell, spreadSheet) }}
                                             >
                                         {% else %}
-                                            <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
-                                                {% for value in values %}
-                                                    <option value="{{ value }}">{{ value }}</option>
-                                                {% endfor %}
-                                            </select>
+                                            {{ cell.getDisplayedValue() | raw }}
                                         {% endif %}
-                                    {% elseif cellType == 'out' %}
-                                        <input disabled="disabled" name="{{ cell.getName() | raw }}"
-                                               value="{{ cell.getValueAttr() | raw }}"
-                                               data-value-type="{{ cell.getValueType() }}"
-                                                {{ macro.dataFormat(cell, spreadSheet) }}
-                                        >
-                                    {% else %}
-                                        {{ cell.getDisplayedValue() | raw }}
-                                    {% endif %}
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        {% endfor %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
     </form>
 </div>
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -100,10 +107,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/formulajs/1.0.8/formula.js"></script>
     <!-- Spreadsheet calculations -->
     <script type="application/javascript">
-        (function(Formula) {
+        (function (Formula) {
             {{ script | raw }}
         })(formulajs);
     </script>
+{% endif %}
+
+{% if options.tabs == 'js' and (sheets | length) > 1 %}
+    {% include 'partial/dynamic-tabs.twig' %}
 {% endif %}
 </body>
 </html>
