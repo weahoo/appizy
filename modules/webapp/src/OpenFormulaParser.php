@@ -109,47 +109,60 @@ class OpenFormulaParser
      */
     private static function lexer($formula, $lexicon)
     {
-        $index = 0;
-        $lexedformula = [];
+        $stack = [
+            [
+                'content' => $formula,
+                'type' => 'string'
+            ]
+        ];
 
-        $size = count($lexicon);
+        foreach ($lexicon as $odsToken => $jsToken) {
+            $newStack = [];
 
-        if ($size > 0) {
-            // Si le lexique contient un �l�ment on d�compose suivante cet �l�ment
+            foreach ($stack as $index => $element) {
+                if ($element['type'] === 'string') {
+                    $stringPieces = explode($odsToken, $element['content']);
 
-            // La formule pass�e en param�tre est d�compos�e suivant le terme du lexique ODS($lexico)
-            list($odslexicon, $javalexicon) = each($lexicon);
+                    $localStack = [];
+                    $count = count($stringPieces);
+                    foreach ($stringPieces as $j => $stringPiece) {
+                        // Do not a give shit about empty pieces
+                        if ($stringPiece !== '') {
+                            $localStack[] = [
+                                'content' => $stringPiece,
+                                'type' => 'string'
+                            ];
+                        }
 
-            $formulapiece = explode($odslexicon, $formula);
+                        // If is not last element
+                        if ($j < ($count - 1)) {
+                            $localStack[] = [
+                                'content' => $jsToken,
+                                'type' => 'token'
+                            ];
+                        }
+                    }
+                    $newStack = array_merge($newStack, $localStack);
 
-            // l'array retourn� dans ce cas est compos� des morceaux de formules que l'on continue de d�compos�e
-            // avec les termes du lexique entre
-            $isFirst = true;
-            foreach ($formulapiece as $piece) {
-                if ($isFirst) {
-                    $isFirst = false;
                 } else {
-                    $lexedformula[$index - 1] = $javalexicon;
+                    $newStack[] = $element;
                 }
-                $newlexicon = array_slice($lexicon, 1);
-
-                // avant de lancer la r�curcivit� on v�rifie que le morceau de formule n'est pas vide
-                if ($piece != "") : $lexedformula[$index] = self::lexer($piece,
-                    $newlexicon); endif;
-                $index = $index + 2;
             }
-            // Avant de renvoyer on aplanit le tableau
-            $flat_formula = array();
-            array_walk_recursive($lexedformula,
-                function ($a) use (&$flat_formula) {
-                    $flat_formula[] = $a;
-                });
 
-            return $flat_formula;
-        } else {
-
-            return $formula;
+            $stack = $newStack;
         }
+
+        $parsedFormula = [];
+        array_walk($stack, function ($element) use (&$parsedFormula) {
+            // TODO: detect if unavailable token is present
+//            if ($element['type'] === 'token') {
+                $parsedFormula[] = $element['content'];
+//            } else {
+//                trigger_error('Non recognized token '. $element['content']);
+//            }
+        });
+
+        return $parsedFormula;
     }
 
     /**

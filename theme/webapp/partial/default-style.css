@@ -40,11 +40,6 @@
     width: 97%;
 }
 
-#appizy input:focus {
-    border: 2px solid #333333;
-    margin: 0px;
-}
-
 #appizy input:disabled {
     border: none !important;
     color: inherit;

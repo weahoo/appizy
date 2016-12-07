@@ -35,15 +35,10 @@ class ErrorHandler
         return true;
     }
 
-    function fatalHandler() {
+    static function fatalHandler() {
         $error = error_get_last();
 
         if( $error !== NULL) {
-            $errno   = $error["type"];
-            $errfile = $error["file"];
-            $errline = $error["line"];
-            $errstr  = $error["message"];
-
             echo "FATAL ERROR: we are really sorry for the inconvenience. Please report us the problem, sending if 
             possible the spreadsheet you are trying to convert.\n";
         }
