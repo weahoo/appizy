@@ -4,9 +4,8 @@ namespace Appizy\WebApp;
 
 class TableElement
 {
-    // Index of the TableElement
+    /** @var integer */
     var $eid;
-
     /** @var string[] */
     var $stylesNameList;
 
@@ -23,16 +22,6 @@ class TableElement
 
     function getId() {
         return $this->eid;
-    }
-
-    function tabelmt_error($message)
-    {
-        trigger_error(__CLASS__ . ': ' . $message, E_USER_WARNING);
-    }
-
-    function tabelmt_debug($message)
-    {
-        trigger_error(__CLASS__ . ': ' . $message);
     }
 
     function get_id()

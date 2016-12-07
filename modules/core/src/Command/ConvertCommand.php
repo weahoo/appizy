@@ -51,6 +51,7 @@ class ConvertCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        register_shutdown_function('\Appizy\Core\ErrorHandler::fatalHandler' );
         set_error_handler('\Appizy\Core\ErrorHandler::handle');
 
         $filePath = $input->getArgument('source');
