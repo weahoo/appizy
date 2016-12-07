@@ -1,6 +1,10 @@
 /* Normalize */
 
 /* Appizy default CSS */
+#appizy {
+    display: inline-block;
+}
+
 #appizy table {
     table-layout: fixed;
     border: none;

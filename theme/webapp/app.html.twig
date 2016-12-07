@@ -17,7 +17,7 @@
 <div id="appizy">
     <form>
         {% set sheets = spreadSheet.getSheets() %}
-        {% if options.tabs != 'none' and (sheets | length) > 1 %}
+        {% if options.tabs != 'none' %}
             <div>
                 <ul class="tabs-list">
                     {% for sheet in sheets %}
@@ -113,7 +113,7 @@
     </script>
 {% endif %}
 
-{% if options.tabs == 'js' and (sheets | length) > 1 %}
+{% if options.tabs == 'js' %}
     {% include 'partial/dynamic-tabs.twig' %}
 {% endif %}
 </body>
