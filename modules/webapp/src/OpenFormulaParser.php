@@ -154,12 +154,19 @@ class OpenFormulaParser
 
         $parsedFormula = [];
         array_walk($stack, function ($element) use (&$parsedFormula) {
-            // TODO: detect if unavailable token is present
-//            if ($element['type'] === 'token') {
+            if ($element['type'] === 'token') {
                 $parsedFormula[] = $element['content'];
-//            } else {
-//                trigger_error('Non recognized token '. $element['content']);
-//            }
+            } else {
+                if (is_numeric($element['content'])) {
+                    $parsedFormula[] = $element['content'];
+                } else {
+                    if (strpos($element['content'], '^') !== FALSE) {
+                        trigger_error(ErrorMessage::USER_POWER_FUNCTION, E_USER_WARNING);
+                    } else {
+                        trigger_error(ErrorMessage::UNKNOWN_TOKEN . ': "' . $element['content'] . '"', E_USER_WARNING);
+                    }
+                }
+            }
         });
 
         return $parsedFormula;
