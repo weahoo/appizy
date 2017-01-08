@@ -13,8 +13,7 @@ class ErrorHandler
 
         switch ($errno) {
             case E_USER_ERROR:
-                echo "$errstr \n";
-                echo "Aborting due to fatal error :/";
+                echo "Aborting due to fatal error : $errstr \n";
                 exit(1);
                 break;
 

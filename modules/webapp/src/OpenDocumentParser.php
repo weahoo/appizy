@@ -31,8 +31,19 @@ class OpenDocumentParser
     var $debug;
     /** @var Tool */
     var $spreadsheet;
+    /** @var int */
+    private $totalCell;
+    /** @var int */
+    private $maxCellsNumber;
+    /** @var int */
+    private $currentColumn;
+    /** @var int */
+    private $currentAttrs;
 
-    function __construct()
+    /**
+     * @param int $maxCellsNumber
+     */
+    function __construct($maxCellsNumber = -1)
     {
         $this->spreadsheet = new Tool();
         $this->styles = array();
@@ -48,6 +59,8 @@ class OpenDocumentParser
         $this->currentValidation = 0;
         $this->debug = true;
         $this->contenttag_stack = array(); // Stack of tags that can have "Content"
+        $this->totalCell = 0;
+        $this->maxCellsNumber = $maxCellsNumber;
     }
 
     /**
@@ -471,6 +484,10 @@ class OpenDocumentParser
             $this->currentRow += $this->repeatRow;
             $this->currentCell = 0;
         } elseif ($cTagName == 'table:table-cell') {
+            $this->totalCell++;
+            if ($this->maxCellsNumber > 0 && $this->totalCell > $this->maxCellsNumber) {
+                trigger_error("maximum number of cells reached ($this->maxCellsNumber)", E_USER_ERROR);
+            }
             $this->currentCell++;
             //$this->currentCell+= $this->repeatCell; // Default value of $repeatCell = 1
             $this->currentFrame = 0;

@@ -19,7 +19,7 @@ class Theme
     public function load($configFile)
     {
         if (is_file($configFile)) {
-            $this->rawConfig = Yaml::parse($configFile);
+            $this->rawConfig = Yaml::parse(file_get_contents($configFile));
         } else {
             echo "File $configFile not found";
         }

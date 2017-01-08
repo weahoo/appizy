@@ -46,6 +46,12 @@ class ConvertCommand extends Command
                 InputArgument::OPTIONAL,
                 'Theme options (as JSON object)',
                 '{}'
+            )->addOption(
+                'max-cells',
+                'm',
+                InputArgument::OPTIONAL,
+                'Max parsed cells number',
+                -1
             );
     }
 
@@ -80,7 +86,8 @@ class ConvertCommand extends Command
         $xmlFilesPath[] = $extractDir . "/content.xml";
 
         $output->writeln("Parsing spreadsheet");
-        $OpenDocumentParser = new OpenDocumentParser();
+        $maxParsedCells = $input->getOption('max-cells');
+        $OpenDocumentParser = new OpenDocumentParser($maxParsedCells);
         $spreadsheet = $OpenDocumentParser->parse($xmlFilesPath);
         $spreadsheet->setFormulaDependenciesAsInputCells();
         $spreadsheet->cleanStyles();
@@ -195,6 +202,7 @@ class ConvertCommand extends Command
 
     /**
      * @param InputInterface $input
+     * @return mixed
      */
     public function getOptions(InputInterface $input)
     {
