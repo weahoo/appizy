@@ -2,6 +2,8 @@
 
 namespace Appizy\Core;
 
+use ZipArchive;
+
 class Parser
 {
     /** @var  string $tempDir */
@@ -25,11 +27,10 @@ class Parser
         $uid = uniqid();
         $tempDir = $tmp . '/' . $uid;
         mkdir($tempDir);
-        shell_exec(
-          'unzip ' . escapeshellarg($path) . ' -d ' . escapeshellarg(
-            $tempDir
-          )
-        );
+
+        $zip = new ZipArchive;
+        $zip->open($path);
+        $zip->extractTo($tempDir);
 
         $document = new \DOMDocument();
         $document->loadXML(
