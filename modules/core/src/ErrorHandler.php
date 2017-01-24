@@ -13,8 +13,7 @@ class ErrorHandler
 
         switch ($errno) {
             case E_USER_ERROR:
-                echo "$errstr \n";
-                echo "Aborting due to fatal error :/";
+                echo "Aborting due to fatal error : $errstr \n";
                 exit(1);
                 break;
 
@@ -38,7 +37,7 @@ class ErrorHandler
     static function fatalHandler() {
         $error = error_get_last();
 
-        if( $error !== NULL) {
+        if( $error['type'] === E_ERROR) {
             echo "FATAL ERROR: we are really sorry for the inconvenience. Please report us the problem, sending if 
             possible the spreadsheet you are trying to convert.\n";
         }

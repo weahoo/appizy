@@ -24,15 +24,19 @@ class OpenFormulaParserTest extends PHPUnit_Framework_TestCase
         ]);
     }
 
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
     public function testThrowErrorForUnknownTokenFunction()
     {
-        $formula = OpenFormulaParser::parse('of:=YOLO(4,5,"WEIRD FUNCTION SIGNATURE?")', 0, ['test'], [0, 0, 0]);
-        $this->assertEquals($formula->getElements(), []);
+        OpenFormulaParser::parse('of:=YOLO(4,5,"WEIRD FUNCTION SIGNATURE?")', 0, ['test'], [0, 0, 0]);
     }
 
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
     public function testThrowErrorForPowerTokenFunction()
     {
-        $formula = OpenFormulaParser::parse('of:=2^3', 0, ['test'], [0, 0, 0]);
-        $this->assertEquals($formula->getElements(), []);
+        OpenFormulaParser::parse('of:=2^3', 0, ['test'], [0, 0, 0]);
     }
 }

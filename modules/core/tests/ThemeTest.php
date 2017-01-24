@@ -1,6 +1,6 @@
 <?php
 
-class ThemeTest extends PHPUnit_Framework_TestCase
+class ThemeTest extends PHPUnit\Framework\TestCase
 {
     // TODO: refactor $theme object generation in a setup or before function
 
@@ -27,4 +27,3 @@ class ThemeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($includedFiles));
     }
 }
- 

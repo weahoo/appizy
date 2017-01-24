@@ -1,10 +1,9 @@
 /**
- * Functions not yet implemented in formulajs
+ * Functions not implemented in formulajs
  * @see https://github.com/sutoiku/formula.js
  */
-(function () {
+define([], function () {
     var root = this;
-
     var Formula = root.Formula = {};
 
     Formula.ARGSTOARRAY = function (args) {
@@ -21,5 +20,8 @@
         return result;
     };
 
-}).call(this);
-
+    return {
+        ARGSTOARRAY: Formula.ARGSTOARRAY,
+        VLOOKUP: Formula.VLOOKUP
+    }
+});

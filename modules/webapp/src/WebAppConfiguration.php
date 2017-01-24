@@ -77,6 +77,7 @@ class WebAppConfiguration
             'IFERROR'      => 'Formula.IFERROR',
             'IFNA'         => 'Formula.IFNA',
             'NOT'          => 'Formula.NOT',
+            'NPER'         => 'Formula.NPER',
             'OR'           => 'Formula.OR',
             'TRUE'         => 'Formula.TRUE',
             'XOR'          => 'Formula.XOR',
