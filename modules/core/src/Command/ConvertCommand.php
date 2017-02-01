@@ -114,7 +114,7 @@ class ConvertCommand extends Command
         $this->copyThemeIncludedFiles($theme, $destinationPath);
 
 
-//        self::delTree($destinationPath . '/deflated');
+        self::delTree($destinationPath . '/deflated');
     }
 
     /**
