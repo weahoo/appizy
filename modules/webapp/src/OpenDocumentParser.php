@@ -128,7 +128,7 @@ class OpenDocumentParser
 
                         if (array_key_exists('TABLE:DEFAULT-CELL-STYLE-NAME',
                             $col['attrs'])) {
-                            $tempcol->col_set_default_cell_style($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
+                            $tempcol->setDefaultCellStyle($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
                         }
                     }
                     $this->addCol($currentSheetIndex, $tempcol);

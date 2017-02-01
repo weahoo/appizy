@@ -277,54 +277,13 @@ class Tool
                 $used_styles[] = $row->get_styles_name();
 
                 foreach ($row->getCells() as $cCI => $tempCell) {
-
                     if ($tempCell->cell_get_validation() != '') {
                         $this->render_validation($tempCell->cell_get_validation(),
                             array($key, $row_index, $cCI));
                         $tempCell->cell_set_type("in");
                     }
 
-                    $td = '';
-                    $class = '';
-
-                    $tempstyle = $tempCell->get_styles_name();
-
-                    $used_styles[] = $tempstyle;
-
-                    $data_format = "";
-
-                    $value_type = $tempCell->cell_value_type();
-
-                    switch ($tempCell->getType()) {
-                        case 'in':
-                            $class = "in";
-                            $list_values = $tempCell->getValueList();
-                            if (empty($list_values)) {
-                                $td .= '<input data-type="' . $value_type . '" ' . $data_format . ' id="' . $tempCell->getName() . '" name="' . $tempCell->getName() . '" type="text" value="' . $tempCell->cell_get_value() . '">';
-                            } else {
-                                $td .= '<select id="' . $tempCell->getName() . '" name="' . $tempCell->getName() . '">';
-                                $value_attr = $tempCell->cell_get_value_attr();
-                                foreach ($list_values as $value) {
-                                    $selected = ($value == $value_attr) ? " selected" : "";
-                                    $td .= '<option value="' . $value . '"' . $selected . '>' . $value . '</option>';
-                                }
-                                $td .= '</select>';
-                            }
-                            break;
-                        case 'text':
-                            $td .= $tempCell->cell_get_value_disp();
-                            $class = "text";
-                            break;
-                        case 'out':
-                            $td .= '<input data-type="' . $value_type . '" ' . $data_format . 'disabled name="' . $tempCell->getName() . '" value="' . $tempCell->cell_get_value_attr() . '">';
-                            $class = "out";
-                            break;
-                    }
-
-                    // Adds current cel style
-                    if ($tempstyle != '') {
-                        $class .= " " . $tempstyle;
-                    }
+                    $used_styles[] = $tempCell->get_styles_name();
 
                     // Adds current col style (if exists)
                     try {
@@ -333,13 +292,17 @@ class Tool
                         $currentColumnStyle = '';
                         if ($currentColumn) {
                             $currentColumnStyle = $currentColumn->get_styles_name();
-                            if ($currentColumnStyle != '') {
-                                $class .= " " . $currentColumnStyle;
-                            }
+
                             $used_styles[] = $currentColumnStyle;
 
                             if ($currentColumn->isCollapsed() == true) {
                                 $tempCell->addStyle('hidden-cell');
+                            }
+
+                            $columnDefaultCellStyleId = $currentColumn->getDefaultCellStyle();
+                            if ($columnDefaultCellStyleId !== '' && count($tempCell->getStyles()) === 0) {
+                                $tempCell->addStyle($columnDefaultCellStyleId);
+                                $used_styles[] = $columnDefaultCellStyleId;
                             }
                         }
                     } catch (\Exception $exception) {
@@ -400,10 +363,11 @@ class Tool
     {
         $sheetName = $this->getSheet($sheetId)->getName();
         $colName = Tool::num2alpha($coId);
-        return "'$sheetName'.". $colName . ($rowId + 1);
+        return "'$sheetName'." . $colName . ($rowId + 1);
     }
 
-    private static function num2alpha($n) {
+    private static function num2alpha($n)
+    {
         $r = '';
         for ($i = 1; $n >= 0 && $i < 10; $i++) {
             $r = chr(0x41 + ($n % pow(26, $i) / pow(26, $i - 1))) . $r;

@@ -16,7 +16,7 @@ class Column extends TableElement
         $this->collapse = false;
     }
 
-    function col_set_default_cell_style($newStyle)
+    function setDefaultCellStyle($newStyle)
     {
         $this->default_cell_style = $newStyle;
     }
@@ -31,7 +31,7 @@ class Column extends TableElement
         return $this->collapse == true;
     }
 
-    function col_get_default_cell_style()
+    function getDefaultCellStyle()
     {
         return $this->default_cell_style;
     }
