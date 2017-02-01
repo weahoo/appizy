@@ -114,7 +114,7 @@ class ConvertCommand extends Command
         $this->copyThemeIncludedFiles($theme, $destinationPath);
 
 
-        self::delTree($destinationPath . '/deflated');
+//        self::delTree($destinationPath . '/deflated');
     }
 
     /**
@@ -153,9 +153,9 @@ class ConvertCommand extends Command
             $fileName = str_replace('.twig', '', $fileName);
             $filename = $path . DIRECTORY_SEPARATOR . $fileName;
 
-            if (preg_match('/\.html/', $fileName)) {
-                $renderedTemplate = $this->formatHTML($renderedTemplate);
-            }
+//            if (preg_match('/\.html/', $fileName)) {
+//                $renderedTemplate = $this->formatHTML($renderedTemplate);
+//            }
 
             $open = fopen($filename, "w");
             fwrite($open, $renderedTemplate);

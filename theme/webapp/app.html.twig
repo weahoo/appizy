@@ -10,7 +10,12 @@
     <title>Appizy</title>
     <style>
         {% include 'partial/default-style.css' %}
+
         {{ style }}
+
+        {% if options.tabs == 'js' %}
+            {% include 'partial/dynamic-tabs.css' %}
+        {% endif %}
     </style>
 </head>
 <body>

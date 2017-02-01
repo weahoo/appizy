@@ -2,7 +2,7 @@
     {% set styleName = cell.getStyleName() %}
     {% set cellStyle = spreadSheet.getStyle(styleName) %}
     {% set dataStyleName = cellStyle.getDataStyleName() %}
-    {% set dataFormat = spreadSheet.getDataStyle(dataStyleName).format_code() %}
+    {% set dataFormat = spreadSheet.getDataStyle(dataStyleName).toNumeralStringFormat() %}
     {% if dataFormat != '' %}
         data-format="{{ dataFormat }}"
     {% endif %}

@@ -22,6 +22,7 @@ class OpenDocumentParser
     var $validation;
     var $currentValidation;
     var $currentStyle;
+    /** @var DataStyle */
     var $currentDataStyle;
 
     var $contenttag_stack;
@@ -436,13 +437,10 @@ class OpenDocumentParser
              */
             if ($cTagName == 'number:number') {
 
-                // Format of the number itself
                 $data_style = $this->currentDataStyle;
-
-                $data_style->min_int_digit = intval(self::array_attribute($attrs,
-                    'NUMBER:MIN-INTEGER-DIGITS'));
-                $data_style->decimal_places = intval(self::array_attribute($attrs,
-                    'NUMBER:DECIMAL-PLACES'));
+                $data_style->minIntDigit = intval(self::array_attribute($attrs, 'NUMBER:MIN-INTEGER-DIGITS'));
+                $data_style->decimalPlaces = intval(self::array_attribute($attrs, 'NUMBER:DECIMAL-PLACES'));
+                $data_style->grouping = self::array_attribute($attrs, 'NUMBER:GROUPING') === 'true';
 
                 $this->currentDataStyle = $data_style;
 
@@ -568,10 +566,10 @@ class OpenDocumentParser
 
         } elseif ($c_container == 'data-style-prefix') {
 
-            $this->currentDataStyle->data_style_set_prefix($globaldata);
+            $this->currentDataStyle->setPrefix($globaldata);
         } elseif ($c_container == 'data-style-suffix') {
 
-            $this->currentDataStyle->data_style_set_suffix($globaldata);
+            $this->currentDataStyle->setSuffix($globaldata);
         }
     }
 

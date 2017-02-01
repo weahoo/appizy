@@ -5,19 +5,25 @@ namespace Appizy\WebApp;
 class DataStyle
 {
     var $id;
-
-    var $decimal_places;
-    var $min_int_digit;
+    /** @var int */
+    var $decimalPlaces;
+    /** @var int */
+    var $minIntDigit;
     var $maps;
+    /** @var string */
     var $prefix;
+    /** @var string */
     var $suffix;
+    /** @var boolean */
+    var $grouping;
 
     function __construct($id)
     {
         $this->id = $id;
+        $this->decimalPlaces = 0;
     }
 
-    function data_style_set_prefix($prefix)
+    function setPrefix($prefix)
     {
         // Remove euro sign
         $prefix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), "", $prefix);
@@ -27,7 +33,7 @@ class DataStyle
         }
     }
 
-    function data_style_set_suffix($suffix)
+    function setSuffix($suffix)
     {
         // Remove euro sign
         $suffix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), "", $suffix);
@@ -37,15 +43,19 @@ class DataStyle
         }
     }
 
-    // Returns the format code of the data style
-    function format_code()
+    /**
+     * @return string
+     */
+    function toNumeralStringFormat()
     {
-        $code = "";
-        for ($i = 0; $i < $this->min_int_digit; $i++) {
-            $code .= '0';
+        $code = '0';
+
+        if ($this->grouping) {
+            $code .= ',0';
         }
+
         $is_first = true;
-        for ($i = 0; $i < $this->decimal_places; $i++) {
+        for ($i = 0; $i < $this->decimalPlaces; $i++) {
             $code .= ($is_first) ? '.' : '';
             $code .= '0';
             $is_first = false;
