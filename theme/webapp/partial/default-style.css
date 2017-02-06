@@ -15,10 +15,6 @@
     border: none;
 }
 
-#appizy td, #appizy th {
-    overflow: hidden;
-}
-
 #appizy tr {
     font-size: 10pt;
     font-family: Arial;
