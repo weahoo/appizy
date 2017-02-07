@@ -3,7 +3,7 @@
 namespace Appizy\Command;
 
 use Appizy\Service\ThemeReadService;
-use Appizy\OpenDocumentParser;
+use Appizy\Parser\OpenDocumentParser;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

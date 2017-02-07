@@ -1,8 +1,10 @@
 <?php
 
-namespace Appizy;
+namespace Appizy\Parser;
 
 use Appizy\Constant\ErrorMessage;
+use Appizy\Formula;
+use Appizy\WebAppConfiguration;
 
 class OpenFormulaParser
 {

@@ -2,7 +2,7 @@
 
 namespace Appizy;
 
-use Appizy\Parser;
+use Appizy\Parser\Parser;
 
 class ODSReader
 {

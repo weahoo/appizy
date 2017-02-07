@@ -1,6 +1,6 @@
 <?php
 
-namespace Appizy;
+namespace Appizy\Parser;
 
 use ZipArchive;
 

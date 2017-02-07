@@ -1,6 +1,14 @@
 <?php
 
-namespace Appizy;
+namespace Appizy\Parser;
+
+use Appizy\ArrayTrait;
+use Appizy\Cell;
+use Appizy\Column;
+use Appizy\DataStyle;
+use Appizy\Row;
+use Appizy\Style;
+use Appizy\Tool;
 
 $globaldata = "";
 
