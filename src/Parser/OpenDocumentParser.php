@@ -9,6 +9,7 @@ use Appizy\DataStyle;
 use Appizy\Row;
 use Appizy\Style;
 use Appizy\Tool;
+use ZipArchive;
 
 $globaldata = "";
 
@@ -72,9 +73,6 @@ class OpenDocumentParser
         $this->maxCellsNumber = $maxCellsNumber;
     }
 
-    /**
-     * Adds a new row to the selected wb_sheet
-     */
     function addRow($sheet_ind, $row_ind, $options)
     {
         $new_row = new Row($sheet_ind, $row_ind, $options);
@@ -184,7 +182,6 @@ class OpenDocumentParser
                                     if ($default_style = $this->getColDefaultCellStyle($currentSheetIndex, $cC)) {
                                         $cell_options['style'] = strtolower($default_style);
                                     }
-
                                 }
                                 if (array_key_exists('OFFICE:VALUE', $cell['attrs'])) {
                                     $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'],
@@ -233,9 +230,32 @@ class OpenDocumentParser
         }
     }
 
-    function parse($filenames)
+    function parse($file)
     {
-        foreach ($filenames as $filename) {
+        $tmp = self::getTmpDir();
+        echo copy($file, $tmp . '/' . basename($file));
+
+        $path = $tmp . '/' . basename($file);
+        $uid = uniqid();
+        $tempDir = $tmp . '/' . $uid;
+
+        echo $tempDir;
+        echo mkdir($tempDir);
+
+        $zip = new ZipArchive();
+        $zip->open($path);
+        $zip->extractTo($tempDir);
+
+        exec('ls /tmp/' . $uid, $out);
+        print_r($out);
+        exec('pwd', $out);
+        print_r($out);
+        $fileNames = [
+            $tempDir . '/content.xml',
+            $tempDir . '/styles.xml'
+        ];
+
+        foreach ($fileNames as $filename) {
 
             $xmlContent = file_get_contents($filename);
             $xml_parser = xml_parser_create();
@@ -249,7 +269,17 @@ class OpenDocumentParser
 
         $this->orderData();
 
+        self::deleteTree($tempDir);
+
         return $this->spreadsheet;
+    }
+
+    /**
+     * @return string
+     */
+    static function getTmpDir()
+    {
+        return sys_get_temp_dir();
     }
 
     function startElement($parser, $tagName, $attrs)

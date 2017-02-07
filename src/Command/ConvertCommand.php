@@ -71,25 +71,18 @@ class ConvertCommand extends Command
         $theme = $themeReadService->getThemeByName($input->getOption('theme'));
 
         $output->writeln("Decompressing file");
-        $extractDir = $destinationPath . '/deflated';
-//        $filePath = APPIZY_BASE_DIR . DIRECTORY_SEPARATOR . $filePath;
-        $zip = new ZipArchive;
-        $zip->open($filePath);
-        $zip->extractTo($extractDir);
-        $zip->close();
-
-        $xmlFilesPath[] = $extractDir . "/styles.xml";
-        $xmlFilesPath[] = $extractDir . "/content.xml";
 
         $output->writeln("Parsing spreadsheet");
+
         $maxParsedCells = $input->getOption('max-cells');
         $OpenDocumentParser = new OpenDocumentParser($maxParsedCells);
-        $spreadsheet = $OpenDocumentParser->parse($xmlFilesPath);
+        $spreadsheet = $OpenDocumentParser->parse($filePath);
         $spreadsheet->setFormulaDependenciesAsInputCells();
         $spreadsheet->cleanStyles();
         $spreadsheet->clean();
 
         $output->writeln("Rendering application");
+
         $elements = $spreadsheet->tool_render();
 
         $options = $this->getOptions($input);
@@ -108,9 +101,6 @@ class ConvertCommand extends Command
         );
 
         $this->copyThemeIncludedFiles($theme, $destinationPath);
-
-
-        self::delTree($destinationPath . '/deflated');
     }
 
     /**
