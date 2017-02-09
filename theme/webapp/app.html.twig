@@ -1,4 +1,6 @@
 {% import 'partial/macro.twig' as macro %}
+
+{% set tabs = options.tabs | default('js')  %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +15,7 @@
 
         {{ style }}
 
-        {% if options.tabs == 'js' %}
+        {% if tabs == 'js' %}
             {% include 'partial/dynamic-tabs.css' %}
         {% endif %}
     </style>
@@ -22,7 +24,7 @@
 <div id="appizy">
     <form>
         {% set sheets = spreadSheet.getSheets() %}
-        {% if options.tabs != 'none' %}
+        {% if tabs != 'none' %}
             <div>
                 <ul class="tabs-list">
                     {% for sheet in sheets %}
@@ -118,7 +120,7 @@
     </script>
 {% endif %}
 
-{% if options.tabs == 'js' %}
+{% if tabs == 'js' %}
     {% include 'partial/dynamic-tabs.twig' %}
 {% endif %}
 </body>

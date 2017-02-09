@@ -2,6 +2,8 @@
 
 namespace Appizy\Command;
 
+use Appizy\Model\Theme;
+use Appizy\Service\SpreadsheetRenderService;
 use Appizy\Service\ThemeReadService;
 use Appizy\Parser\OpenDocumentParser;
 use Symfony\Component\Console\Command\Command;
@@ -67,144 +69,19 @@ class ConvertCommand extends Command
             $destinationPath = dirname($filePath);
         }
 
-        $themeReadService = new ThemeReadService();
-        $theme = $themeReadService->getThemeByName($input->getOption('theme'));
-
         $output->writeln("Decompressing file");
-
         $output->writeln("Parsing spreadsheet");
 
         $maxParsedCells = $input->getOption('max-cells');
         $OpenDocumentParser = new OpenDocumentParser($maxParsedCells);
         $spreadsheet = $OpenDocumentParser->parse($filePath);
-        $spreadsheet->setFormulaDependenciesAsInputCells();
-        $spreadsheet->cleanStyles();
-        $spreadsheet->clean();
 
         $output->writeln("Rendering application");
 
-        $elements = $spreadsheet->tool_render();
 
-        $options = $this->getOptions($input);
-
-        $this->renderAndSave(
-            $theme,
-            [
-                'spreadSheet' => $spreadsheet,
-                'content' => $elements['content'],
-                'style' => $elements['style'],
-                'script' => $elements['script'],
-                'options' => $options,
-                'libraries' => $elements['libraries']
-            ],
-            $destinationPath
-        );
-
-        $this->copyThemeIncludedFiles($theme, $destinationPath);
-    }
-
-    /**
-     * @param \\Appizy\Model\Theme $theme
-     * @param string $path
-     */
-    private function copyThemeIncludedFiles($theme, $path)
-    {
-        $themeDir = $theme->getDirectory();
-        $includedFiles = $theme->getIncludedFiles();
-
-        foreach ($includedFiles as $file) {
-            copy($themeDir . '/' . $file, $path . '/' . $file);
-        }
-    }
-
-    /**
-     * @param \\Appizy\Model\Theme $theme
-     * @param array $data
-     * @param string $path
-     */
-    private function renderAndSave($theme, $data, $path)
-    {
-        $themeDir = $theme->getDirectory();
-        $templateFiles = $theme->getTemplateFiles();
-
-
-        $loader = new Twig_Loader_Filesystem($themeDir);
-        $twig = new Twig_Environment($loader, [
-            // 'cache' => __DIR__ . '/../data',
-        ]);
-
-        foreach ($templateFiles as $fileName) {
-            $renderedTemplate = $twig->render($fileName, $data);
-
-            $fileName = str_replace('.twig', '', $fileName);
-            $filename = $path . DIRECTORY_SEPARATOR . $fileName;
-
-            if (preg_match('/\.html/', $fileName)) {
-                $renderedTemplate = $this->formatHTML($renderedTemplate);
-            }
-
-            $open = fopen($filename, "w");
-            fwrite($open, $renderedTemplate);
-            fclose($open);
-        }
-    }
-
-    /**
-     * @param string $dir
-     * @return mixed
-     */
-    private function delTree($dir)
-    {
-        $files = array_diff(scandir($dir), ['.', '..']);
-        foreach ($files as $file) {
-            if (is_dir("$dir/$file")) {
-                self::delTree("$dir/$file");
-            } else {
-                unlink("$dir/$file");
-            }
-        }
-
-        return rmdir($dir);
-    }
-
-    /**
-     * @param string $html
-     * @return string
-     */
-    private function formatHTML($html)
-    {
-        $config = [
-            'indent' => true,
-            'output-html' => true,
-            'wrap' => '1000'
-        ];
-
-        $tidy = new tidy();
-        $tidy->parseString($html, $config, 'utf8');
-        $tidy->cleanRepair();
-
-        return tidy_get_output($tidy);
-    }
-
-    /**
-     * @param InputInterface $input
-     * @return mixed
-     */
-    public function getOptions(InputInterface $input)
-    {
-        $options = json_decode($input->getOption('options'));
-
-        $optionTab = $input->getOption('tabs');
-        switch ($optionTab) {
-            case 'list':
-            case 'js':
-            case 'none':
-                $options->tabs = $optionTab;
-                break;
-            default:
-                $options->tabs = 'js';
-        }
-
-        return $options;
+        $themeOptions = json_decode($input->getOption('options'));
+        $theme = $input->getOption('theme');
+        $renderService = new SpreadsheetRenderService($spreadsheet, $theme);
+        $renderService->render($destinationPath, $themeOptions);
     }
 }

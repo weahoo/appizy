@@ -3,6 +3,7 @@
 namespace Appizy;
 
 use Appizy\Constant\ErrorMessage;
+use Appizy\Parser\OpenFormulaParser;
 
 class Tool
 {
@@ -50,23 +51,6 @@ class Tool
     {
         $new_sheet = new Sheet($sheet_id, $sheet_name);
         $this->sheets[$sheet_id] = $new_sheet;
-    }
-
-    function tool_parse_wb($xml_path)
-    {
-        $extracted_ods = new OpenDocumentParser($xml_path, $this->debug);
-
-        $this->sheets = $extracted_ods->sheets;
-        $this->formulas = $extracted_ods->formulas;
-        $this->styles = $extracted_ods->styles;
-        $this->validations = $extracted_ods->validations;
-        $this->formats = $extracted_ods->formats;
-
-        $this->used_styles = $extracted_ods->used_styles;
-
-        $this->setFormulaDependenciesAsInputCells();
-
-        $this->cleanStyles();
     }
 
     function setFormulaDependenciesAsInputCells()
@@ -264,7 +248,7 @@ class Tool
 
     }
 
-    function tool_render()
+    function render()
     {
         $htmlTable = '';
 

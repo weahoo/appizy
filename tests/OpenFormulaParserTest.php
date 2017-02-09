@@ -1,6 +1,6 @@
 <?php
 
-use Appizy\WebApp\OpenFormulaParser;
+use Appizy\Parser\OpenFormulaParser;
 
 class OpenFormulaParserTest extends PHPUnit_Framework_TestCase
 {

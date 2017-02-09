@@ -233,23 +233,17 @@ class OpenDocumentParser
     function parse($file)
     {
         $tmp = self::getTmpDir();
-        echo copy($file, $tmp . '/' . basename($file));
+        copy($file, $tmp . '/' . basename($file));
 
         $path = $tmp . '/' . basename($file);
         $uid = uniqid();
         $tempDir = $tmp . '/' . $uid;
-
-        echo $tempDir;
-        echo mkdir($tempDir);
+        mkdir($tempDir);
 
         $zip = new ZipArchive();
         $zip->open($path);
         $zip->extractTo($tempDir);
 
-        exec('ls /tmp/' . $uid, $out);
-        print_r($out);
-        exec('pwd', $out);
-        print_r($out);
         $fileNames = [
             $tempDir . '/content.xml',
             $tempDir . '/styles.xml'
@@ -268,8 +262,6 @@ class OpenDocumentParser
         }
 
         $this->orderData();
-
-        self::deleteTree($tempDir);
 
         return $this->spreadsheet;
     }

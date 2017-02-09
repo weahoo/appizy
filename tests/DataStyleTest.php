@@ -1,6 +1,6 @@
 <?php
 
-use Appizy\WebApp\DataStyle;
+use Appizy\DataStyle;
 
 
 class DataStyleTest extends PHPUnit_Framework_TestCase
