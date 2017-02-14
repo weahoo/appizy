@@ -7,6 +7,7 @@ use Appizy\Cell;
 use Appizy\Column;
 use Appizy\DataStyle;
 use Appizy\Row;
+use Appizy\Sheet;
 use Appizy\Style;
 use Appizy\Tool;
 use ZipArchive;
@@ -102,7 +103,8 @@ class OpenDocumentParser
 
     function orderData()
     {
-        $sheetsNames = array();
+        $sheetsNames = [];
+
         foreach ($this->sheets as $currentSheetIndex => $sheet) {
             $name = $sheet['TABLE:NAME'];
             /**
@@ -112,11 +114,14 @@ class OpenDocumentParser
                 $name = "'" . $name . "'";
             }
             $sheetsNames[] = $name;
-        }
 
-        foreach ($this->sheets as $currentSheetIndex => $sheet) {
-            $this->spreadsheet->addSheet($currentSheetIndex, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
+            $newSheet = new Sheet($currentSheetIndex, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
 
+            if(array_key_exists('TABLE:STYLE-NAME', $sheet['attrs'])) {
+                $newSheet->addStyle($sheet['attrs']['TABLE:STYLE-NAME']);
+            }
+
+            $this->spreadsheet->addSheet($newSheet);
             if (array_key_exists('column', $sheet)) {
                 foreach ($sheet['column'] as $curCOLI => $col) {
                     $tempcol = new Column($curCOLI);
@@ -391,7 +396,7 @@ class OpenDocumentParser
             }
         } elseif ($cTagName == 'table:table') {
             $this->lastElement = $cTagName;
-            $this->sheets[$this->currentSheet] = $attrs;
+            $this->sheets[$this->currentSheet]['attrs'] = $attrs;
 
         } elseif ($cTagName == 'table:content-validation') {
             $this->lastElement = $cTagName;

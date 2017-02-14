@@ -38,19 +38,20 @@ class Tool
         $this->debug = $debug;
     }
 
-    function addFormula($new_formula)
+    /**
+     * @param $formula Formula
+     */
+    function addFormula($formula)
     {
-        $this->formulas[] = $new_formula;
+        $this->formulas[] = $formula;
     }
 
     /**
-     * @param $sheet_id Integer
-     * @param $sheet_name String
+     * @param $sheet Sheet
      */
-    function addSheet($sheet_id, $sheet_name)
+    function addSheet($sheet)
     {
-        $new_sheet = new Sheet($sheet_id, $sheet_name);
-        $this->sheets[$sheet_id] = $new_sheet;
+        $this->sheets[] = $sheet;
     }
 
     function setFormulaDependenciesAsInputCells()
