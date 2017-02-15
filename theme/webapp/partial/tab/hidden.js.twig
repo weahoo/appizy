@@ -1,0 +1,15 @@
+// Hidden tab '{{ tab.getName() }}'
+var cells = {};
+{% spaceless %}
+{%- for row in tab.getRows() %}
+    {%- for cell in row.getCells() %}
+        {%- if cell.getType() in ['in', 'out'] -%}
+            {%- if cell.getValueType() in ['float', 'currency', 'number'] -%}
+                var {{ cell.getName() }} = {{ cell.getValue() }};
+            {%- else -%}
+                cells.{{ cell.getName() }}= '{{ cell.getValue() }}';
+            {%- endif -%}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor -%}
+{% endspaceless %}

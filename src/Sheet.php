@@ -129,7 +129,7 @@ class Sheet extends TableElement
         $this->setRows($rows);
     }
 
-    function isEmptySheet()
+    function isEmpty()
     {
         $rows = $this->getRows();
 

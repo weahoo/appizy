@@ -1,0 +1,45 @@
+<table>
+    {% for row in sheet.getRows() %}
+        <tr class="{{ row.getName() }} {{ row.getStyles()|join(' ') }}">
+            {% for cell in row.getCells() %}
+                {% set col_span = '' %}
+                {% set row_span = '' %}
+                {% if (cell.getColSpan() > 1) %}
+                    {% set col_span = ' colspan="' ~ cell.getColSpan() ~ '"' %}
+                {% endif %}
+
+                {% if (cell.getRowSpan() > 1) %}
+                    {% set row_span = ' rowspan="' ~ cell.getRowSpan() ~ '"' %}
+                {% endif %}
+                {% set cellType = cell.getType() %}
+                {% set cellStyle = cell.getStyles()|join(' ') %}
+                <td class="{{ cell.getName() }} {{ cellType }} {{ cellStyle }}" {{ col_span | raw }}{{ row_span | raw }}>
+                    {% if cellType == 'in' %}
+                        {% set values = cell.getValueList() %}
+                        {% if values is empty %}
+                            <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
+                                   data-value-type="{{ cell.getValueType() }}"
+                                   value="{{ cell.getValue() | raw }}"
+                                    {{ macro.dataFormat(cell, spreadSheet) }}
+                            >
+                        {% else %}
+                            <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
+                                {% for value in values %}
+                                    <option value="{{ value }}">{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    {% elseif cellType == 'out' %}
+                        <input disabled="disabled" name="{{ cell.getName() | raw }}"
+                               value="{{ cell.getValueAttr() | raw }}"
+                               data-value-type="{{ cell.getValueType() }}"
+                                {{ macro.dataFormat(cell, spreadSheet) }}
+                        >
+                    {% else %}
+                        {{ cell.getDisplayedValue() | raw }}
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>

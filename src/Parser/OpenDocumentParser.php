@@ -106,18 +106,19 @@ class OpenDocumentParser
         $sheetsNames = [];
 
         foreach ($this->sheets as $currentSheetIndex => $sheet) {
-            $name = $sheet['TABLE:NAME'];
-            /**
-             * Sheet name with just a dot
-             */
+            $name = $sheet['attrs']['TABLE:NAME'];
+
+            // Handle sheet name with just a dot
             if ($name == '.') {
                 $name = "'" . $name . "'";
             }
             $sheetsNames[] = $name;
+        }
 
-            $newSheet = new Sheet($currentSheetIndex, htmlentities($sheet['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
+        foreach ($this->sheets as $currentSheetIndex => $sheet) {
+            $newSheet = new Sheet($currentSheetIndex, htmlentities($sheet['attrs']['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
 
-            if(array_key_exists('TABLE:STYLE-NAME', $sheet['attrs'])) {
+            if (array_key_exists('TABLE:STYLE-NAME', $sheet['attrs'])) {
                 $newSheet->addStyle($sheet['attrs']['TABLE:STYLE-NAME']);
             }
 

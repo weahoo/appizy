@@ -172,6 +172,46 @@ class Tool
         return $this->sheets;
     }
 
+    function getVisibleSheets()
+    {
+        return array_filter(
+            $this->sheets, function ($sheet) {
+
+            /** var $sheet Sheet */
+            $isVisible = array_reduce(
+                $sheet->getStyles(),
+                function ($accumulator, $styleName) {
+                    $style = $this->getStyle($styleName);
+
+                    return $accumulator && $style->isShown();
+                },
+                true
+            );
+
+            return $isVisible;
+        });
+    }
+
+    function getHiddenSheets()
+    {
+        return array_filter(
+            $this->sheets, function ($sheet) {
+
+            /** var $sheet Sheet */
+            $isHidden = array_reduce(
+                $sheet->getStyles(),
+                function ($accumulator, $styleName) {
+                    $style = $this->getStyle($styleName);
+
+                    return $accumulator || !$style->isShown();
+                },
+                false
+            );
+
+            return $isHidden;
+        });
+    }
+
     function getStyle($styleName)
     {
         return self::array_attribute($this->styles, $styleName);
@@ -231,7 +271,7 @@ class Tool
             $temp_sheet->removeEmptyRows();
 
             if (!$is_first_filled) :
-                if ($temp_sheet->isEmptySheet()) {
+                if ($temp_sheet->isEmpty()) {
                     $offset++;
                 } else {
                     $is_first_filled = true;
@@ -270,7 +310,7 @@ class Tool
 
                     $used_styles[] = $tempCell->get_styles_name();
 
-                    // Adds current col style (if exists)
+                    // Adds current col styleName (if exists)
                     try {
                         $currentColumn = $sheet->getCol($cCI);
 

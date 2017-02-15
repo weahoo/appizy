@@ -217,6 +217,7 @@ class WebAppScriptBuilder
             $script .= $formulascall;
             $script .= $formulas;
             $script .= $formulas_ext;
+            $script .= 'window.calc = run_calc;' . "\n";
             $script .= "}).call();" . "\n";
         }
 

@@ -19,10 +19,11 @@ class Style
         $this->styles = array();
     }
 
-    function getDataStyleName() {
+    function getDataStyleName()
+    {
         return $this->data_style_name;
     }
-    
+
     /**
      * Merges the another style into the style. Option: overriding existing properties
      */
@@ -103,7 +104,7 @@ class Style
 
         return $style_code;
     }
-    
+
     function addOdsStyles($myOdsStyles)
     {
         $i = 0;
@@ -179,8 +180,8 @@ class Style
                     break;
                 case "TABLE:DISPLAY":
                     if ($value === "false") {
-                        $propValue = "display";
-                        $propName = "none";
+                        $propName = "display";
+                        $propValue = "none";
                     }
                     break;
             }
@@ -189,7 +190,18 @@ class Style
         }
         if (isset($cssStyles)) $this->addStyles($cssStyles);
     }
-    
+
+    /**
+     * @return bool
+     */
+    function isShown()
+    {
+        return !($this->styles['display'] === 'none');
+    }
+
+    /**
+     * @param $newStyles
+     */
     function addStyles($newStyles)
     {
         $i = count($this->styles);

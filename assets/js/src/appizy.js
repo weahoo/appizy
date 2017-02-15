@@ -18,13 +18,14 @@ define([
     };
 
     window.RANGE = function () {
+        var item, value;
         if (arguments.length == 1) {
-            var value = null;
             var cell_ref = 's' + arguments[0][0] + 'r' + arguments[0][1] + 'c' + arguments[0][2];
-            var item = $('[name=' + cell_ref + ']');
-
-            if (item.length > 0) {
-                value = APY.getInput(item.val(), item.attr('data-value-type'));
+            if (window.cells[cell_ref]) {
+                value = window.cells[cell_ref]
+            } else {
+                item = $('[name=' + cell_ref + ']');
+                value = item.length > 0 ? APY.getInput(item.val(), item.attr('data-value-type')) : null;
             }
 
             return value;
@@ -39,13 +40,13 @@ define([
                 for (var j = 0; j <= tail[2] - head[2]; j++) {
                     cell_ref = 's' + head[0] + 'r' + (head[1] + i) + 'c' + (head[2] + j);
 
-                    var item = $('[name=' + cell_ref + ']');
-
-                    if (item.length > 0) {
-                        row.push(APY.getInput(item.val(), item.attr('data-value-type')));
+                    if (window.cells[cell_ref]) {
+                        value = window.cells[cell_ref]
                     } else {
-                        row.push(null);
+                        item = $('[name=' + cell_ref + ']');
+                        value = item.length > 0 ? APY.getInput(item.val(), item.attr('data-value-type')) : null;
                     }
+                    row.push(value);
                 }
                 values.push(row);
             }
