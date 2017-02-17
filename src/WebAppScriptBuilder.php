@@ -21,13 +21,15 @@ class WebAppScriptBuilder
         $this->spreadSheet = $spreadSheet;
     }
 
-    function getExternalJsLibraries() {
+    function getExternalJsLibraries()
+    {
         return $this->externalJsLibraries;
     }
-    
+
     function buildScript()
     {
         $formulas = "// Cells formulas" . "\n";
+        $formulas = 'APY.formulas = {};' . "\n";
         $formulaslist = [];
         $script = '';
         $steps = [];
@@ -162,7 +164,7 @@ class WebAppScriptBuilder
         // Impression des steps de calcul, uniquement s'il y a des �tapes de calcul
         if ($currentstep > 0) {
             $run_calc = 'function run_calc(){ ';
-            $formulascall = '';
+            $calculationSteps = '';
             $isFirstInput = true;
 
             foreach ($steps as $currentstep_index => $currentstep) {
@@ -173,24 +175,23 @@ class WebAppScriptBuilder
 
                 $run_calc .= 'step' . $currentstep_index . '()';
 
-                $formulascall .= 'function step' . $currentstep_index . '() {' . "\n" . "  ";
+                $calculationSteps .= 'function step' . $currentstep_index . '() {' . "\n" . "  ";
 
                 foreach ($currentstep['formulas'] as $formula) {
-                    $formulascall .= $formula;
+                    $calculationSteps .= 'APY.formulas.' . $formula;
                 }
-                $formulascall .= "\n" . '}' . "\n";
+                $calculationSteps .= "\n" . '}' . "\n";
             }
         } else {
             $run_calc = "";
-            $formulascall = "";
+            $calculationSteps = "";
         }
         $run_calc .= "}" . "\n";
 
-        if (!empty($formulascall)) {
+        if (!empty($calculationSteps)) {
             $script .= "(function() {" . "\n";
 
-            $formulas_ext = "var root = this;" . "\n";
-            $formulas_ext .= "var APY = root.APY = {};" . "\n";
+            $formulasExt = "window.APY = window.APY || {};" . "\n";
 
             $accessFormulas = [
                 'window.onload',
@@ -203,20 +204,19 @@ class WebAppScriptBuilder
 
 
             foreach ($accessFormulas as $formula) {
-                $formulas_ext .= $this->getExtFunction($formula,
+                $formulasExt .= $this->getExtFunction($formula,
                     __DIR__ . "/../assets/js/src/appizy.js");
             }
 
             foreach ($ext_formulas as $ext_formula) {
-                $formulas_ext .= $this->getExtFunction($ext_formula,
+                $formulasExt .= $this->getExtFunction($ext_formula,
                     __DIR__ . "/../assets/js/src/formula-addons.js");
             }
 
-
             $script .= $run_calc;
-            $script .= $formulascall;
             $script .= $formulas;
-            $script .= $formulas_ext;
+            $script .= $calculationSteps;
+            $script .= $formulasExt;
             $script .= 'window.calc = run_calc;' . "\n";
             $script .= "}).call();" . "\n";
         }
@@ -225,21 +225,21 @@ class WebAppScriptBuilder
     }
 
     /**
-     * @param string $function_name
-     * @param string $library_path
+     * @param string $functionName
+     * @param string $libraryPath
      * @return string
      */
-    private function getExtFunction($function_name, $library_path)
+    private function getExtFunction($functionName, $libraryPath)
     {
         $externalFormulaScript = '';
-        $namu = $function_name;
-        $function_name = preg_quote($function_name);
+        $namu = $functionName;
+        $functionName = preg_quote($functionName);
 
-        $formulaRegex = '/' . $function_name . ' = function(.*?)\};/is';
+        $formulaRegex = '/' . $functionName . ' = function(.*?)\};/is';
 
-        if (!in_array($function_name, $this->loadedFunction)) {
+        if (!in_array($functionName, $this->loadedFunction)) {
 
-            if (preg_match_all($formulaRegex, file_get_contents($library_path), $match)) {
+            if (preg_match_all($formulaRegex, file_get_contents($libraryPath), $match)) {
                 $function = $match[1][0];
                 $externalFormulaScript = $namu . " = function" . $function . "};" . "\n\n";
 
@@ -256,13 +256,9 @@ class WebAppScriptBuilder
 
                         if (!in_array($dep_name, $this->loadedFunction)) {
                             $externalFormulaScript .= $this->getExtFunction($dep_name,
-                                $library_path, $this->loadedFunction);
+                                $libraryPath, $this->loadedFunction);
                         }
                     }
-                }
-
-                if (preg_match_all('/jStat.(.*?)\(/is', $function, $match)) {
-                    $this->externalJsLibraries[] = 'jStat';
                 }
             }
         }

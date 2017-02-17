@@ -58,7 +58,7 @@ class Formula
         $name = $this->getName();
         $script = join('',$this->getElements());
 
-        return "function " . $name . "(){ APY.set('" . $name . "'," . $script . ") }";
+        return "APY.formulas." . $name . " = function() { APY.set('" . $name . "'," . $script . ") }";
     }
 
     /**

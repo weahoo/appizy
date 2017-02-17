@@ -1,7 +1,6 @@
 define([
-    '../src/appizy',
     '../src/formula-addons'
-], function (appizy, formula) {
+], function (formula) {
     'use strict';
 
     describe('Module: formula add-ons', function () {
