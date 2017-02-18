@@ -18,7 +18,7 @@ class ODSReaderTest extends PHPUnit_Framework_TestCase
         $tables = $ods->getTables();
 
         $firstTabRows = $ods->getRows($tables->item(0));
-        $this->assertEquals(22, $firstTabRows->length);
+        $this->assertEquals(28, $firstTabRows->length);
     }
 
     public function testGetCells() {
