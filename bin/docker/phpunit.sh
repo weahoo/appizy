@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker run -it --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp appizy-cli php phpunit.phar
+docker run -it --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp appizy-cli vendor/bin/phpunit

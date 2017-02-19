@@ -17,8 +17,8 @@ if (is_file($autoload = __DIR__ . '/../vendor/autoload.php')) {
     exit(1);
 }
 
-use Appizy\Core\Command\ConvertCommand;
-use Appizy\Core\Command\ThemesCommand;
+use Appizy\Command\ConvertCommand;
+use Appizy\Command\ThemesCommand;
 use Symfony\Component\Console\Application;
 
 define('APPIZY_BASE_DIR', __DIR__ . '/..');

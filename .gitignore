@@ -1,7 +1,6 @@
 .idea
 dist/
 vendor/
-composer.lock
 
 # Build directory
 build/*.ods
