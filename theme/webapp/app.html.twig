@@ -74,9 +74,9 @@
             {% include 'partial/tab/hidden.js.twig' with {'tab': sheet} %}
         {% endfor %}
 
-        (function (Formula) {
+        (function ($, Formula) {
             {{ script | raw }}
-        })(formulajs);
+        })(jQuery, formulajs);
     </script>
 {% endif %}
 

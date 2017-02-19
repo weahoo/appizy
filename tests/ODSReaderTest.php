@@ -8,7 +8,7 @@ class ODSReaderTest extends PHPUnit_Framework_TestCase
         $ods->load(__DIR__ . '/fixtures/demo-appizy.ods');
 
         $tables = $ods->getTables();
-        $this->assertEquals(6, $tables->length);
+        $this->assertEquals(7, $tables->length);
     }
 
     public function testGetRows() {

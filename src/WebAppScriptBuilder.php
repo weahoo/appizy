@@ -28,8 +28,8 @@ class WebAppScriptBuilder
 
     function buildScript()
     {
-        $formulas = "// Cells formulas" . "\n";
-        $formulas = 'APY.formulas = {};' . "\n";
+        $formulas = "window.APY = window.APY || {};" . "\n";
+        $formulas .= 'APY.formulas = {};' . "\n";
         $formulaslist = [];
         $script = '';
         $steps = [];
@@ -189,9 +189,7 @@ class WebAppScriptBuilder
         $run_calc .= "}" . "\n";
 
         if (!empty($calculationSteps)) {
-            $script .= "(function() {" . "\n";
-
-            $formulasExt = "window.APY = window.APY || {};" . "\n";
+            $formulasExt = '';
 
             $accessFormulas = [
                 'window.onload',
@@ -213,12 +211,11 @@ class WebAppScriptBuilder
                     __DIR__ . "/../assets/js/src/formula-addons.js");
             }
 
-            $script .= $run_calc;
             $script .= $formulas;
             $script .= $calculationSteps;
+            $script .= $run_calc;
             $script .= $formulasExt;
-            $script .= 'window.calc = run_calc;' . "\n";
-            $script .= "}).call();" . "\n";
+            $script .= 'APY.calculate = run_calc;' . "\n";
         }
 
         return $script;
