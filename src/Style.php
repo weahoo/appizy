@@ -196,7 +196,7 @@ class Style
      */
     function isShown()
     {
-        return !($this->styles['display'] === 'none');
+        return !(array_key_exists('display', $this->styles) && $this->styles['display'] === 'none');
     }
 
     /**

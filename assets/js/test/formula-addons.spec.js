@@ -3,18 +3,25 @@ define([
 ], function (formula) {
     'use strict';
 
+    var searchMatrix;
+
     describe('Module: formula add-ons', function () {
         describe('function: VLOOKUP', function () {
-            it('should return the searched value', function () {
-                expect(formula.VLOOKUP('a', [
-                    ['a', 1, 'foo'],
-                    ['b', 2, 'bar']
-                ], 2)).toEqual(1);
 
-                expect(formula.VLOOKUP('b', [
-                    ['a', 1, 'foo'],
-                    ['b', 2, 'bar']
-                ], 3)).toEqual('bar');
+            beforeEach(function () {
+               searchMatrix =  [
+                   ['a', 1, 'foo'],
+                   ['b', 2, 'bar']
+               ];
+            });
+            it('should return the searched value', function () {
+                expect(formula.VLOOKUP('a', searchMatrix, 2)).toEqual(1);
+
+                expect(formula.VLOOKUP('b', searchMatrix, 3)).toEqual('bar');
+            });
+
+            it('should be empty by default', function () {
+                expect(formula.VLOOKUP('', searchMatrix, '')).toEqual('');
             });
         });
     });
