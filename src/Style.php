@@ -196,7 +196,11 @@ class Style
      */
     function isShown()
     {
-        return !(array_key_exists('display', $this->styles) && $this->styles['display'] === 'none');
+        if (array_key_exists('display', $this->styles)) {
+            return !($this->styles['display'] === 'none');
+        } else {
+            return true;
+        }
     }
 
     /**
