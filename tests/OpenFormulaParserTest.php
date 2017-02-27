@@ -19,6 +19,22 @@ class OpenFormulaParserTest extends PHPUnit_Framework_TestCase
         ]);
     }
 
+    public function testDictionaryInGrowingTokenSize(){
+        $formula = OpenFormulaParser::parse('of:=ROUND(ROUNDUP(ROUND(3.123)))', 0, ['test'], [0, 0, 0]);
+        $this->assertEquals($formula->getElements(), [
+            'Formula.ROUND',
+            '(',
+            'Formula.ROUNDUP',
+            '(',
+            'Formula.ROUND',
+            '(',
+            '3.123',
+            ')',
+            ')',
+            ')',
+        ]);
+    }
+
     /**
      * @expectedException PHPUnit_Framework_Error
      */
