@@ -86,9 +86,9 @@ class SpreadsheetRenderService
             $fileName = str_replace('.twig', '', $fileName);
             $filename = $path . DIRECTORY_SEPARATOR . $fileName;
 
-            if (preg_match('/\.html/', $fileName)) {
-                $renderedTemplate = $this->formatHTML($renderedTemplate);
-            }
+//            if (preg_match('/\.html/', $fileName)) {
+//                $renderedTemplate = $this->formatHTML($renderedTemplate);
+//            }
 
             $open = fopen($filename, "w");
             fwrite($open, $renderedTemplate);

@@ -10,12 +10,18 @@ define([], function () {
         return Array.prototype.slice.call(args, 0);
     };
 
-    Formula.VLOOKUP = function (lookup_value, table_array, col_index_num) {
-        var table = Formula.ARGSTOARRAY(table_array);
+    Formula.VLOOKUP = function (searchCriterion, array, columnIndex, exactMatch) {
+        exactMatch = (exactMatch != false && exactMatch != 0 && exactMatch != undefined) || (typeof searchCriterion === 'string');
+
+        var table = Formula.ARGSTOARRAY(array);
         var n = table.length;
+        var currentValue;
         var result = '';
         for (var i = 0; i < n; i++) {
-            if (table[i][0] == lookup_value) result = table[i][col_index_num - 1];
+            currentValue = table[i][0];
+            if (currentValue == searchCriterion || (!exactMatch && currentValue < searchCriterion)) {
+                result = table[i][columnIndex - 1];
+            }
         }
         return result;
     };

@@ -1,7 +1,6 @@
-.idea
-dist/
+.idea/
 vendor/
 
 # Build directory
-build/*.ods
-build/*.html
+dist/*.ods*
+dist/*.html
