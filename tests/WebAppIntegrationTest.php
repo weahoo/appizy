@@ -31,7 +31,7 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->generatedApp = file_get_contents('tests/fixtures/app.html');
+        $this->generatedApp = file_get_contents('tests/fixtures/index.html');
         $this->crawler = new Crawler($this->generatedApp);
     }
 
