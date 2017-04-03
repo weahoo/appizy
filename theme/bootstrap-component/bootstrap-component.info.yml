@@ -1,0 +1,11 @@
+name: Bootstrap component
+description: Create Bootstrap components: scrollspy navigation.
+templates:
+  - index.html.twig
+
+options:
+  component:
+    title: Component
+    values:
+      table: 'Static reponsive Table'
+      scrollspy: 'Scrollspy'

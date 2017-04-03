@@ -1,11 +1,4 @@
-name: Bootstrap components
-description: Create Bootstrap components: scrollspy navigation.
+name: Bootstrap one-page
+description: One-page website using Boostrap Framework
 templates:
   - index.html.twig
-
-options:
-  component:
-    title: Component
-    values:
-      table: 'Static reponsive Table'
-      scrollspy: 'Scrollspy'

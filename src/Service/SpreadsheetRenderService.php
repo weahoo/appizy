@@ -4,7 +4,7 @@ namespace Appizy\Service;
 
 use Appizy\Model\Theme;
 use Appizy\Tool;
-use tidy;
+use Gajus\Dindent\Indenter;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 
@@ -12,7 +12,7 @@ class SpreadsheetRenderService
 {
     /** @var Tool */
     private $spreadsheet;
-    /** @var Theme  */
+    /** @var Theme */
     private $theme;
 
     /**
@@ -28,7 +28,8 @@ class SpreadsheetRenderService
         $this->theme = $themeReadService->getThemeByName($themeName);
     }
 
-    public function render($destinationPath, $themeOptions) {
+    public function render($destinationPath, $themeOptions)
+    {
         $this->spreadsheet->setFormulaDependenciesAsInputCells();
         $this->spreadsheet->cleanStyles();
         $this->spreadsheet->clean();
@@ -78,7 +79,9 @@ class SpreadsheetRenderService
         $loader = new Twig_Loader_Filesystem($themeDir);
         $twig = new Twig_Environment($loader, [
             // 'cache' => __DIR__ . '/../data',
+//            'debug' => true,
         ]);
+//        $twig->addExtension(new Twig_Extension_Debug());
 
         foreach ($templateFiles as $fileName) {
             $renderedTemplate = $twig->render($fileName, $data);
@@ -120,17 +123,19 @@ class SpreadsheetRenderService
      */
     private function formatHTML($html)
     {
-        $config = [
-            'indent' => true,
-            'output-html' => true,
-            'wrap' => '1000'
-        ];
-
-        $tidy = new tidy();
-        $tidy->parseString($html, $config, 'utf8');
-        $tidy->cleanRepair();
-
-        return tidy_get_output($tidy);
+        $indenter = new Indenter();
+        return $indenter->indent($html);
+//        $config = [
+//            'indent' => true,
+//            'output-html' => true,
+//            'wrap' => '1000'
+//        ];
+//
+//        $tidy = new tidy();
+//        $tidy->parseString($html, $config, 'utf8');
+//        $tidy->cleanRepair();
+//
+//        return tidy_get_output($tidy);
     }
 
 }
