@@ -63,6 +63,8 @@ class WebAppConfiguration
             'LEGACY.FINV'  => 'Formula.FINV',
             'LEGACY.STDEV' => 'Formula.STDEVS',
             'LEGACY.TDIST' => 'Formula.TDIST',
+            'LOG'          => 'Formula.LOG',
+            'LOG10'        => 'Formula.LOG10',
             'LOOKUP'       => 'Formula.LOOKUP',
             'MAX'          => 'Formula.MAX',
             'MIN'          => 'Formula.MIN',
