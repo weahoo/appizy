@@ -1,5 +1,7 @@
 # Appizy
 
+[![Build Status](https://www.travis-ci.org/Appizy/appizy.svg?branch=master)](https://www.travis-ci.org/Appizy/appizy)
+
 Convert spreadsheet data to web content
 
 ## Setup
