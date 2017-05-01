@@ -41,6 +41,8 @@ or directly using the shell script that encapsulate this command:
 
 ## Test
 
+Run unit tests inside the Docker container.
+
 ```bash
-./vendor/bin/phpunit -c phpunit.xml
+./bin/docker/phpunit.sh
 ```
