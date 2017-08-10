@@ -45,7 +45,6 @@ define([
                 $('body').append('<input id="fixture-cell" name="fixture-cell">');
             });
 
-
             it('should set a cell value', function () {
                 APY.cells['s0r0c0'] = 42;
                 appizy.set('s0r0c0', 3);

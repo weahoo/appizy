@@ -11,7 +11,7 @@ define([
             run_calc();
         });
 
-        $('input:enabled').each(function () {
+        $('input:enabled, select').each(function () {
             $(this).setFormattedValue();
         });
         run_calc();
@@ -64,7 +64,7 @@ define([
             returnedValue = (rawInputValue === 'true');
         } else if (type === 'float' || type === 'number') {
             if (rawInputValue.length > 0) {
-                returnedValue =parseFloat(rawInputValue);
+                returnedValue = parseFloat(rawInputValue);
             } else {
                 returnedValue = 0;
             }
@@ -87,7 +87,6 @@ define([
      * @param {string} type
      */
     APY.set = function (outputName, value, type) {
-        console.log('set', outputName, value, type);
         if (window.APY.cells && window.APY.cells.hasOwnProperty(outputName)) {
             window.APY.cells[outputName] = value;
         } else {
