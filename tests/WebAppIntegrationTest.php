@@ -75,7 +75,7 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testAbsenceOfLocalhostCallInGeneratedApplication()
     {
-        preg_match_all('|http:\/\/localhost|', $this->generatedApp, $out);
+        preg_match_all('|\/\/localhost|', $this->generatedApp, $out);
         $this->assertCount(0, $out[0]);
     }
 
