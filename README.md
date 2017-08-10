@@ -39,6 +39,15 @@ or directly using the shell script that encapsulate this command:
 
 ## Test
 
+PHPUnit
+
 ```bash
 ./vendor/bin/phpunit -c phpunit.xml
+```
+
+Javascript assets
+
+```bash
+# in ./assets/js
+karma start
 ```

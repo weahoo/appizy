@@ -17,11 +17,10 @@ trait ArrayTrait
         return $flat_array;
     }
 
-    function array_attribute($object, $attribute)
+    function getArrayValueIfExists($array, $key)
     {
-        $attribute = $attribute;
-        if (isset($object[$attribute])) {
-            return $object[$attribute];
+        if (isset($array[$key])) {
+            return $array[$key];
         }
     }
 

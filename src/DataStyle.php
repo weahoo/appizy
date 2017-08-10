@@ -20,15 +20,14 @@ class DataStyle
     function __construct($id)
     {
         $this->id = $id;
-        $this->decimalPlaces = 0;
     }
 
     function setPrefix($prefix)
     {
         // Remove euro sign
-        $prefix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), "", $prefix);
+        $prefix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), '', $prefix);
 
-        if ($prefix != " " && $prefix != "  " && $prefix != "  " && $prefix != "   ") {
+        if ($prefix != ' ' && $prefix != '  ' && $prefix != '  ' && $prefix != '   ') {
             $this->prefix = $prefix;
         }
     }
@@ -36,9 +35,9 @@ class DataStyle
     function setSuffix($suffix)
     {
         // Remove euro sign
-        $suffix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), "", $suffix);
+        $suffix = str_replace(chr(0xE2) . chr(0x82) . chr(0xAC), '', $suffix);
 
-        if ($suffix != " " && $suffix != "  " && $suffix != "  " && $suffix != "   ") {
+        if ($suffix != ' ' && $suffix != '  ' && $suffix != '  ' && $suffix != '   ') {
             $this->suffix = $suffix;
         }
     }
@@ -48,17 +47,19 @@ class DataStyle
      */
     function toNumeralStringFormat()
     {
-        $code = '0';
+        $code = '';
 
         if ($this->grouping) {
-            $code .= ',0';
+            $code .= '0,0';
+        } else if ($this->decimalPlaces > 0 || isset($this->suffix) || isset($this->prefix)) {
+            $code .= '0';
         }
 
-        $is_first = true;
+        $isFirst = true;
         for ($i = 0; $i < $this->decimalPlaces; $i++) {
-            $code .= ($is_first) ? '.' : '';
+            $code .= ($isFirst) ? '.' : '';
             $code .= '0';
-            $is_first = false;
+            $isFirst = false;
         }
 
         return $this->prefix . $code . $this->suffix;

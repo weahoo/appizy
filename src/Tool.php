@@ -214,12 +214,16 @@ class Tool
 
     function getStyle($styleName)
     {
-        return self::array_attribute($this->styles, $styleName);
+        return self::getArrayValueIfExists($this->styles, $styleName);
     }
 
+    /**
+     * @param string $dataStyleName
+     * @return mixed
+     */
     function getDataStyle($dataStyleName = '')
     {
-        return self::array_attribute($this->formats, $dataStyleName);
+        return self::getArrayValueIfExists($this->formats, $dataStyleName);
     }
 
     /**

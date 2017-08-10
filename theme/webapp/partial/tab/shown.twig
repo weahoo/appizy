@@ -18,6 +18,7 @@
                         {% set values = cell.getValueList() %}
                         {% if values is empty %}
                             <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
+                                   data-value="{{ cell.getValue() | raw }}"
                                    data-value-type="{{ cell.getValueType() }}"
                                    value="{{ cell.getValue() | raw }}"
                                     {{ macro.dataFormat(cell, spreadSheet) }}
@@ -32,6 +33,7 @@
                     {% elseif cellType == 'out' %}
                         <input disabled="disabled" name="{{ cell.getName() | raw }}"
                                value="{{ cell.getValueAttr() | raw }}"
+                               data-value="{{ cell.getValueAttr() | raw }}"
                                data-value-type="{{ cell.getValueType() }}"
                                 {{ macro.dataFormat(cell, spreadSheet) }}
                         >

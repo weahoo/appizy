@@ -19,19 +19,19 @@ define([
 
     window.RANGE = function () {
         var item, value;
-        if (arguments.length == 1) {
+        if (arguments.length === 1) {
             var cell_ref = 's' + arguments[0][0] + 'r' + arguments[0][1] + 'c' + arguments[0][2];
 
             if (window.APY.cells && window.APY.cells.hasOwnProperty(cell_ref)) {
                 value = window.APY.cells[cell_ref];
             } else {
                 item = $('[name=' + cell_ref + ']');
-                value = item.length > 0 ? APY.getInput(item.val(), item.attr('data-value-type')) : null;
+                value = item.length > 0 ? APY.getInput(item.attr('data-value'), item.attr('data-value-type')) : null;
             }
 
             return value;
 
-        } else if (arguments.length == 2) {
+        } else if (arguments.length === 2) {
             var head = arguments[0];
             var tail = arguments[1];
             var values = [];
@@ -45,7 +45,7 @@ define([
                         value = window.APY.cells[cell_ref];
                     } else {
                         item = $('[name=' + cell_ref + ']');
-                        value = item.length > 0 ? APY.getInput(item.val(), item.attr('data-value-type')) : null;
+                        value = item.length > 0 ? APY.getInput(item.attr('data-value'), item.attr('data-value-type')) : null;
                     }
                     row.push(value);
                 }
@@ -55,26 +55,30 @@ define([
         }
     };
 
-    APY.getInput = function (value, type) {
+    APY.getInput = function (rawInputValue, type) {
+        var returnedValue;
+
         if (typeof type === 'undefined') type = 'string';
 
-        if (type == 'boolean') {
-            value = (value == 'true');
-        } else if (value.length === 0) {
-            value = '';
-        } else if (type == 'string') {
-
-            if (!isNaN(value) && isFinite(value)) {
-                value = parseFloat(value);
+        if (type === 'boolean') {
+            returnedValue = (rawInputValue === 'true');
+        } else if (type === 'float' || type === 'number') {
+            if (rawInputValue.length > 0) {
+                returnedValue =parseFloat(rawInputValue);
             } else {
-
+                returnedValue = 0;
             }
-
+        } else if (type === 'percentage') {
+            if (rawInputValue.length > 0) {
+                returnedValue = numeral().unformat(rawInputValue);
+            } else {
+                returnedValue = 0;
+            }
         } else {
-            old_format = value;
-            value = numeral().unformat(value);
+            returnedValue = rawInputValue;
         }
-        return value;
+
+        return returnedValue;
     };
 
     /**
@@ -86,31 +90,31 @@ define([
         if (window.APY.cells && window.APY.cells.hasOwnProperty(output_name)) {
             window.APY.cells[output_name] = value;
         } else {
-            // Set default type if necessary
             if (typeof type === "undefined") {
                 type = (typeof value === "undefined") ? "string" : typeof value;
             }
 
             var element = $('[name=' + output_name + ']');
-            var formats = $(element).data('format');
+            var format = $(element).data('format');
+            var myFormat;
 
             element.attr('data-value-type', type);
+            element.attr('data-value', value);
 
-            // Format allowed for number, float and percentage
-            if ((type == 'number' || type == 'float' || type == 'percentage' || type == 'currency') &&
-                (typeof formats != "undefined")) {
+            if ((type === 'number' || type === 'float' || type === 'percentage' || type === 'currency') &&
+                (typeof format !== "undefined")) {
 
-                var formats_array = formats.toString().split(";", 3);
-                var nb_format = formats_array.length;
-                if (value == 0 && nb_format == 3) {
-                    myformat = formats_array[1];
+                var formatParts = format.toString().split(";", 3);
+                var formatPartsNumber = formatParts.length;
+                if (value === 0 && formatPartsNumber === 3) {
+                    myFormat = formatParts[1];
                 } else if (value < 0) {
-                    myformat = formats_array[0];
+                    myFormat = formatParts[0];
                 } else {
-                    myformat = formats_array[nb_format - 1];
+                    myFormat = formatParts[formatPartsNumber - 1];
                 }
 
-                element.val(numeral(value).format(myformat));
+                element.val(numeral(value).format(myFormat));
 
             } else {
                 element.val(value);
@@ -119,30 +123,34 @@ define([
     };
 
     $.fn.setFormattedValue = function () {
-        var value = $(this).val();
         var valueType = $(this).attr('data-value-type');
         var valueFormat = $(this).attr('data-format');
 
+        var value = APY.getInput($(this).val(), valueType);
         var formattedValue = APY.formatValue(value, valueType, valueFormat);
+
+        this.attr('data-value', value);
         this.val(formattedValue);
     };
 
     APY.formatValue = function (value, type, formats) {
+        var myFormat;
         var formattedValue = value;
 
-        if ((type == 'number' || type == 'float' || type == 'percentage' || type == 'currency') &&
-            (typeof formats != "undefined")) {
+        if ((type === 'number' || type === 'float' || type === 'percentage' || type === 'currency') &&
+            (typeof formats !== 'undefined')) {
 
-            var formats_array = formats.toString().split(";", 3);
-            var nb_format = formats_array.length;
-            if (value == 0 && nb_format == 3) {
-                myformat = formats_array[1];
+            var formatsParts = formats.toString().split(";", 3);
+            var formatPartsNumber = formatsParts.length;
+            if (value === 0 && formatPartsNumber === 3) {
+                myFormat = formatsParts[1];
             } else if (value < 0) {
-                myformat = formats_array[0];
+                myFormat = formatsParts[0];
             } else {
-                myformat = formats_array[nb_format - 1];
+                myFormat = formatsParts[formatPartsNumber - 1];
             }
-            formattedValue = numeral(value).format(myformat);
+
+            formattedValue = numeral(value).format(myFormat);
         }
 
         return formattedValue;
