@@ -1,6 +1,7 @@
 define([
+    'jquery',
     '../src/appizy'
-], function (appizy) {
+], function ($, appizy) {
     describe('Appizy,', function () {
         beforeEach(function () {
             window.APY = {};
@@ -38,6 +39,13 @@ define([
         });
 
         describe('function: set', function () {
+            var $fixtureCell;
+
+            beforeEach(function () {
+                $('body').append('<input id="fixture-cell" name="fixture-cell">');
+            });
+
+
             it('should set a cell value', function () {
                 APY.cells['s0r0c0'] = 42;
                 appizy.set('s0r0c0', 3);
@@ -49,11 +57,19 @@ define([
                 appizy.set('s0r0c0', '');
                 expect(APY.cells['s0r0c0']).toEqual('');
             });
+
+            it('should set the value of the cell', function () {
+                appizy.set('fixture-cell', 42, 'number');
+                $fixtureCell = $('#fixture-cell');
+
+                expect($fixtureCell.val()).toEqual('42');
+                expect($fixtureCell.attr('data-value-type')).toEqual('number');
+            });
         });
 
         describe('function: getInput', function () {
             it('should string', function () {
-                expect(appizy.getInput('abc','string')).toBe('abc');
+                expect(appizy.getInput('abc', 'string')).toBe('abc');
             });
 
             it('should convert boolean string to "true"', function () {

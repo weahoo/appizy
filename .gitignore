@@ -4,3 +4,5 @@ vendor/
 # Build directory
 dist/*.ods*
 dist/*.html
+dist/**/*.xml
+dist/**/*.png

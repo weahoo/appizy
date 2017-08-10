@@ -82,19 +82,20 @@ define([
     };
 
     /**
-     * @param {string} output_name
+     * @param {string} outputName
      * @param {string|number} value
      * @param {string} type
      */
-    APY.set = function (output_name, value, type) {
-        if (window.APY.cells && window.APY.cells.hasOwnProperty(output_name)) {
-            window.APY.cells[output_name] = value;
+    APY.set = function (outputName, value, type) {
+        console.log('set', outputName, value, type);
+        if (window.APY.cells && window.APY.cells.hasOwnProperty(outputName)) {
+            window.APY.cells[outputName] = value;
         } else {
-            if (typeof type === "undefined") {
-                type = (typeof value === "undefined") ? "string" : typeof value;
+            if (typeof type === 'undefined') {
+                type = (typeof value === 'undefined') ? 'string' : typeof value;
             }
 
-            var element = $('[name=' + output_name + ']');
+            var element = $('[name=' + outputName + ']');
             var format = $(element).data('format');
             var myFormat;
 
