@@ -45,6 +45,11 @@ define([
                 $('body').append('<input id="fixture-cell" name="fixture-cell">');
             });
 
+            afterEach(function () {
+                $('#fixture-cell').remove();
+            });
+
+
             it('should set a cell value', function () {
                 APY.cells['s0r0c0'] = 42;
                 appizy.set('s0r0c0', 3);
@@ -63,6 +68,13 @@ define([
 
                 expect($fixtureCell.val()).toEqual('42');
                 expect($fixtureCell.attr('data-value-type')).toEqual('number');
+            });
+
+            it('should set type matching string if not provided', function () {
+                appizy.set('fixture-cell', 'hello world');
+                $fixtureCell = $('#fixture-cell');
+
+                expect($fixtureCell.attr('data-value-type')).toEqual('string');
             });
         });
 

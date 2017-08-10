@@ -93,11 +93,9 @@ define([
             if (typeof type === 'undefined') {
                 type = (typeof value === 'undefined') ? 'string' : typeof value;
             }
-
             var element = $('[name=' + outputName + ']');
             var format = $(element).data('format');
             var myFormat;
-
             element.attr('data-value-type', type);
             element.attr('data-value', value);
 
