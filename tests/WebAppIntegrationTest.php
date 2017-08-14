@@ -25,7 +25,7 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            'source'  => 'tests/fixtures/demo-appizy.ods'
+            'source' => 'tests/fixtures/demo-appizy.ods'
         ));
     }
 
@@ -76,6 +76,12 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     public function testAbsenceOfLocalhostCallInGeneratedApplication()
     {
         preg_match_all('|\/\/localhost|', $this->generatedApp, $out);
+        $this->assertCount(0, $out[0]);
+    }
+
+    public function testAbsenceOfHttp()
+    {
+        preg_match_all('|http:|', $this->generatedApp, $out);
         $this->assertCount(0, $out[0]);
     }
 

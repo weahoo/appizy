@@ -72,6 +72,7 @@ class WebAppConfiguration
             'MROUND'       => 'Formula.MROUND',
             'NOT'          => 'Formula.NOT',
             'NPER'         => 'Formula.NPER',
+            'NPV'          => 'Formula.NPV',
             'OR'           => 'Formula.OR',
             'PI'           => 'Formula.PI',
             'PMT'          => 'Formula.PMT',

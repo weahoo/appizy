@@ -1,5 +1,7 @@
 # Appizy
 
+[![Build Status](https://www.travis-ci.org/Appizy/appizy.svg?branch=master)](https://www.travis-ci.org/Appizy/appizy)
+
 Convert spreadsheet data to web content
 
 ## Setup
@@ -39,13 +41,15 @@ or directly using the shell script that encapsulate this command:
 
 ## Test
 
-PHPUnit
+### PHPUnit
+
+Run unit tests inside the Docker container.
 
 ```bash
-./vendor/bin/phpunit -c phpunit.xml
+./bin/docker/phpunit.sh
 ```
 
-Javascript assets
+### Javascript assets
 
 ```bash
 # in ./assets/js
