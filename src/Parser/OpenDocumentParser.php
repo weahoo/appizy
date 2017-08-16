@@ -289,12 +289,12 @@ class OpenDocumentParser
         } elseif ($cTagName == 'style:style') {
             $this->lastElement = $cTagName;
 
-            $id = self::array_attribute($attrs, 'STYLE:NAME');
+            $id = self::getArrayValueIfExists($attrs, 'STYLE:NAME');
 
             $new_style = new Style(strtolower($id));
-            $new_style->data_style_name = self::array_attribute($attrs,
+            $new_style->data_style_name = self::getArrayValueIfExists($attrs,
                 'STYLE:DATA-STYLE-NAME');
-            $new_style->parent_style_name = strtolower(self::array_attribute($attrs,
+            $new_style->parent_style_name = strtolower(self::getArrayValueIfExists($attrs,
                 'STYLE:PARENT-STYLE-NAME'));
 
             $this->currentStyle = $new_style;
@@ -433,7 +433,7 @@ class OpenDocumentParser
             global $globaldata;
 
             $class = "";
-            if ($style_name = strtolower(self::array_attribute($attrs,
+            if ($style_name = strtolower(self::getArrayValueIfExists($attrs,
                 'TEXT:STYLE-NAME'))
             ) {
                 $class = ' class="' . $style_name . '" ';
@@ -446,7 +446,7 @@ class OpenDocumentParser
             global $globaldata;
 
             $class = "";
-            if ($style_name = strtolower(self::array_attribute($attrs,
+            if ($style_name = strtolower(self::getArrayValueIfExists($attrs,
                 'TEXT:STYLE-NAME'))
             ) {
                 $class = ' class="' . strtolower($style_name) . '" ';
@@ -463,7 +463,7 @@ class OpenDocumentParser
             // Contenttag to prefix
             $this->new_contenttag('data-style-prefix');
 
-            $id = self::array_attribute($attrs, 'STYLE:NAME');
+            $id = self::getArrayValueIfExists($attrs, 'STYLE:NAME');
 
             $this->currentDataStyle = new DataStyle($id);
 
@@ -474,9 +474,9 @@ class OpenDocumentParser
             if ($cTagName == 'number:number') {
 
                 $data_style = $this->currentDataStyle;
-                $data_style->minIntDigit = intval(self::array_attribute($attrs, 'NUMBER:MIN-INTEGER-DIGITS'));
-                $data_style->decimalPlaces = intval(self::array_attribute($attrs, 'NUMBER:DECIMAL-PLACES'));
-                $data_style->grouping = self::array_attribute($attrs, 'NUMBER:GROUPING') === 'true';
+                $data_style->minIntDigit = intval(self::getArrayValueIfExists($attrs, 'NUMBER:MIN-INTEGER-DIGITS'));
+                $data_style->decimalPlaces = intval(self::getArrayValueIfExists($attrs, 'NUMBER:DECIMAL-PLACES'));
+                $data_style->grouping = self::getArrayValueIfExists($attrs, 'NUMBER:GROUPING') === 'true';
 
                 $this->currentDataStyle = $data_style;
 
@@ -485,8 +485,8 @@ class OpenDocumentParser
 
             } elseif ($cTagName == 'style:map') {
                 // Mapping of the DataStyle
-                $condition = self::array_attribute($attrs, 'STYLE:CONDITION');
-                $apply_style_name = self::array_attribute($attrs,
+                $condition = self::getArrayValueIfExists($attrs, 'STYLE:CONDITION');
+                $apply_style_name = self::getArrayValueIfExists($attrs,
                     'STYLE:APPLY-STYLE-NAME');
 
                 $data_style = $this->currentDataStyle;

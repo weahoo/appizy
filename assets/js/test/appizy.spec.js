@@ -1,14 +1,14 @@
 define([
+    'jquery',
     '../src/appizy'
-], function (appizy) {
-
+], function ($, appizy) {
     describe('Appizy,', function () {
         beforeEach(function () {
             window.APY = {};
             window.APY.cells = {};
         });
-        describe('function: RANGE', function () {
 
+        describe('function: RANGE', function () {
 
             it('should return null by default', function () {
                 expect(RANGE([0, 0, 0])).toEqual(null);
@@ -39,17 +39,82 @@ define([
         });
 
         describe('function: set', function () {
+            var $fixtureCell;
+
+            beforeEach(function () {
+                $('body').append('<input id="fixture-cell" name="fixture-cell">');
+            });
+
+            afterEach(function () {
+                $('#fixture-cell').remove();
+            });
+
+
             it('should set a cell value', function () {
                 APY.cells['s0r0c0'] = 42;
                 appizy.set('s0r0c0', 3);
                 expect(RANGE([0, 0, 0])).toEqual(3);
-            })
+            });
 
             it('should support empty string value', function () {
                 APY.cells['s0r0c0'] = 42;
                 appizy.set('s0r0c0', '');
                 expect(APY.cells['s0r0c0']).toEqual('');
-            })
+            });
+
+            it('should set the value of the cell', function () {
+                appizy.set('fixture-cell', 42, 'number');
+                $fixtureCell = $('#fixture-cell');
+
+                expect($fixtureCell.val()).toEqual('42');
+                expect($fixtureCell.attr('data-value-type')).toEqual('number');
+            });
+
+            it('should set type matching string if not provided', function () {
+                appizy.set('fixture-cell', 'hello world');
+                $fixtureCell = $('#fixture-cell');
+
+                expect($fixtureCell.attr('data-value-type')).toEqual('string');
+            });
+        });
+
+        describe('function: getInput', function () {
+            it('should string', function () {
+                expect(appizy.getInput('abc', 'string')).toBe('abc');
+            });
+
+            it('should convert boolean string to "true"', function () {
+                expect(appizy.getInput('true', 'boolean')).toBe(true);
+            });
+
+            it('should convert boolean string to "false"', function () {
+                expect(appizy.getInput('false', 'boolean')).toBe(false);
+            });
+
+            it('should parse float string', function () {
+                expect(appizy.getInput('0.42', 'float')).toEqual(0.42);
+            });
+
+            it('should parse very small float string', function () {
+                expect(appizy.getInput('-0.0000000816393442622951', 'float')).toEqual(-0.0000000816393442622951);
+            });
+
+            it('should parse scientific notation float string', function () {
+                expect(appizy.getInput('4.7155012434395e-8', 'float')).toEqual(0.000000047155012434395);
+            });
+
+            it('should parse percentage string to float', function () {
+                expect(appizy.getInput('0.5', 'percentage')).toEqual(0.5);
+            });
+
+            it('should parse percentage string with "%" sign to float', function () {
+                // Floating problem here, that's why Math.round is used
+                expect(Math.round(appizy.getInput('47%', 'percentage') * 100) / 100).toEqual(0.47);
+            });
+
+            it('should parse number string to float', function () {
+                expect(appizy.getInput('2.27180222782', 'number')).toEqual(2.27180222782);
+            });
         });
     });
 });

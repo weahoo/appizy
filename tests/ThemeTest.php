@@ -3,7 +3,6 @@
 class ThemeTest extends PHPUnit_Framework_TestCase
 {
     // TODO: refactor $theme object generation in a setup or before function
-
     public function testGetThemeDirectory(){
         $theme = new \Appizy\Model\Theme();
         $theme->load(__DIR__ . '/fixtures/theme.info.yml');

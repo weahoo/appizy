@@ -41,8 +41,17 @@ or directly using the shell script that encapsulate this command:
 
 ## Test
 
+### PHPUnit
+
 Run unit tests inside the Docker container.
 
 ```bash
 ./bin/docker/phpunit.sh
+```
+
+### Javascript assets
+
+```bash
+# in ./assets/js
+karma start
 ```

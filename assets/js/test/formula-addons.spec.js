@@ -17,7 +17,6 @@ define([
         [13, 'd']
     ];
 
-
     describe('Module: formula add-ons', function () {
         describe('function: VLOOKUP', function () {
 
@@ -33,16 +32,16 @@ define([
             });
 
             it('should return the searched value', function () {
-               searchMatrix = numSearchMatrix;
+                searchMatrix = numSearchMatrix;
 
-               expect(formula.VLOOKUP(10, searchMatrix, 2)).toEqual('a');
-               expect(formula.VLOOKUP(13, searchMatrix, 2)).toEqual('d');
+                expect(formula.VLOOKUP(10, searchMatrix, 2)).toEqual('a');
+                expect(formula.VLOOKUP(13, searchMatrix, 2)).toEqual('d');
             });
 
             it('should return the nearest value in case of numeric search', function () {
-               searchMatrix = numSearchMatrix;
+                searchMatrix = numSearchMatrix;
 
-               expect(formula.VLOOKUP(11.5, searchMatrix, 2)).toEqual('b');
+                expect(formula.VLOOKUP(11.5, searchMatrix, 2)).toEqual('b');
             });
 
 
