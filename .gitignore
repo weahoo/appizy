@@ -6,3 +6,5 @@ dist/*.ods*
 dist/*.html
 dist/**/*.xml
 dist/**/*.png
+dist/mimetype
+dist/*.rdf

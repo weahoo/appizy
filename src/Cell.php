@@ -2,25 +2,33 @@
 
 namespace Appizy;
 
+use Appizy\Constant\CellAttributes;
+
 class Cell extends TableElement
 {
     var $coord; // Coordonn�es de la cellule sheet,row,col - identifie de fa�on unique la cellule
-    /** @var string */
-    var $type; // Type de cellule pour Appizy : text, in, out
     var $value_type; // Type de valeur de la cellule : string, float, boolean
-    var $value_attr; // Valeur de la cellule
-    var $value_disp; // Valeur vue (il peut y avoir une diff�rence de mise en forme avec $value_attr)
     var $value_inlist; // Liste de l'ensemble des valeurs de la cellule, si vide valeur libre
     var $validation;
-    var $formula; // Formule associ�e � la cellule. La formule est stock�e en langage javascript
+
+    /** @var string */
+    var $type; // Type de cellule pour Appizy : text, in, out
+    /** @var string */
+    var $value;
+    /** @var string */
+    var $displayedValue;
     /** @var int */
     var $colspan;
     /** @var int */
     var $rowspan;
-    /** @var string[]  */
+    /** @var string[] */
     var $styles;
-    /** @var string  */
+    /** @var string */
     var $annotation;
+    /** @var bool */
+    var $collapse;
+    /** @var string */
+    var $valueType;
 
     function __construct($sheet, $row, $col, $options = array())
     {
@@ -28,26 +36,30 @@ class Cell extends TableElement
 
         $this->coord = array(
             'sheet' => $sheet,
-            'row'   => $row,
-            'col'   => $col
+            'row' => $row,
+            'col' => $col
         );
 
         if (isset($options['style'])) {
             $this->addStyle($options['style']);
         }
 
-        $this->value_disp = isset($options['value_disp']) ?
-            $options['value_disp'] : "";
-        $this->value_attr = isset($options['value_attr']) ?
-            $options['value_attr'] : "";
+        if (isset($options['value_disp'])) {
+            $this->setDisplayedValue($options['value_disp']);
+        }
+
+        if (isset($options['value_attr'])) {
+            $this->setValueAttr($options['value_attr']);
+        }
+
         $this->type = isset($options['type']) ?
             $options['type'] : "text";
         $this->value_type = isset($options['value_type']) ?
-            $options['value_type'] : "string";
+            $options['value_type'] : CellAttributes::VALUE_TYPE_STRING;
         $this->rowspan = (int)isset($options['rowspan']) ?
-            $options['rowspan'] : 1;
+            $options['rowspan'] : CellAttributes::DEFAULT_ROW_SPAN;
         $this->colspan = (int)isset($options['colspan']) ?
-            $options['colspan'] : 1;
+            $options['colspan'] : CellAttributes::DEFAULT_COL_SPAN;
         $this->validation = isset($options['validation']) ?
             $options['validation'] : null;
         $this->collapse = false;
@@ -57,7 +69,7 @@ class Cell extends TableElement
 
         if (isset($options['formula'])) {
             $this->formula = $options['formula'];
-            $this->type = "out";
+            $this->type = CellAttributes::TYPE_OUTPUT;
         }
     }
 
@@ -66,14 +78,14 @@ class Cell extends TableElement
         $this->valueType = $myValueType;
     }
 
-    function setValue($myValue)
+    function setDisplayedValue($myValue)
     {
-        $this->value_disp = $myValue;
+        $this->displayedValue = $myValue;
     }
 
     function setValueAttr($myValueAttr)
     {
-        $this->value_attr = $myValueAttr;
+        $this->value = $myValueAttr;
     }
 
     function cell_set_type($myType)
@@ -113,7 +125,7 @@ class Cell extends TableElement
 
     function getDisplayedValue()
     {
-        return $this->value_disp;
+        return $this->displayedValue;
     }
 
     /**
@@ -121,7 +133,7 @@ class Cell extends TableElement
      */
     function cell_get_value_disp()
     {
-        return $this->value_disp;
+        return $this->displayedValue;
     }
 
     /**
@@ -129,43 +141,22 @@ class Cell extends TableElement
      */
     function getValue()
     {
-        $cell_value = ($value_attr = $this->value_attr) ?
-            $value_attr : $this->value_disp;
-
-        if ($this->type == "in") {
-            $cell_value = strip_tags($cell_value);
+        if (isset($this->value)) {
+            $cellValue = $this->value;
+        } else {
+            $cellValue = $this->displayedValue;
         }
 
-        return $cell_value;
-    }
-
-    /**
-     * Return cell attribute value first or displayed value if not existent
-     */
-    function cell_get_value()
-    {
-
-        $cell_value = ($value_attr = $this->value_attr) ?
-            $value_attr : $this->value_disp;
-
-        if ($this->type == "in") {
-            $cell_value = strip_tags($cell_value);
+        if ($this->type === CellAttributes::TYPE_INPUT) {
+            $cellValue = strip_tags($cellValue);
         }
 
-        return $cell_value;
+        return $cellValue;
     }
 
     function getValueAttr()
     {
-        return $this->value_attr;
-    }
-
-    /**
-     * Return cell attributed value
-     */
-    function cell_get_value_attr()
-    {
-        return $this->value_attr;
+        return $this->value;
     }
 
     function getValueList()
@@ -200,31 +191,9 @@ class Cell extends TableElement
         $this->collapse = true;
     }
 
-    function guessType()
-    {
-        if ($this->getFormula() != null) {
-            $this->type = "out";
-            // Si formule dans la cellule, lexage de la formule pour deviner les interd�pendants
-
-            // On r�cup�re les cellules d�pendantes
-
-            // setType des d�pendants en input sauf si il y a d�j� une formule !
-        }
-    }
-
-    function getFormula()
-    {
-        return $this->formula;
-    }
-
-    function setFormula($myFormula)
-    {
-        $this->formula = $myFormula;
-    }
-
     function isFormula()
     {
-        return ($this->getType() == "out");
+        return ($this->getType() == CellAttributes::TYPE_OUTPUT);
     }
 
     function getType()
@@ -237,13 +206,13 @@ class Cell extends TableElement
         return $this->value_type;
     }
 
-    function cell_isempty()
+    function isEmpty()
     {
         $empty = (
             $this->get_styles_name() == '' &&
-            $this->cell_get_value() == '' &&
+            $this->getValue() == '' &&
             $this->cell_get_validation() == '' &&
-            $this->getType() != 'out'
+            $this->getType() != CellAttributes::TYPE_OUTPUT
         );
 
         return $empty;
