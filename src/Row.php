@@ -98,7 +98,7 @@ class Row extends TableElement
         /** @var Cell $tempCell */
         foreach ($reservedCells as $tempCell) {
             if (!$isFirstFilled) {
-                if ($tempCell->cell_isempty()) {
+                if ($tempCell->isEmpty()) {
                     $offset++;
                 } else {
                     $isFirstFilled = true;

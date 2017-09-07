@@ -68,7 +68,7 @@ define([
             } else {
                 returnedValue = 0;
             }
-        } else if (type === 'percentage') {
+        } else if (type === 'percentage' || type === 'currency') {
             if (rawInputValue.length > 0) {
                 returnedValue = numeral().unformat(rawInputValue);
             } else {

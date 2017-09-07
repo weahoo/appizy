@@ -115,6 +115,10 @@ define([
             it('should parse number string to float', function () {
                 expect(appizy.getInput('2.27180222782', 'number')).toEqual(2.27180222782);
             });
+
+            it('should parse currency string to float', function () {
+                expect(appizy.getInput('$42.2', 'currency')).toEqual(42.2);
+            });
         });
     });
 });

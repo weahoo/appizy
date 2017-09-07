@@ -135,7 +135,7 @@ class Tool
                             $tmp_cI);
 
                         if ($tempcell) {
-                            $values[] = $tempcell->cell_get_value();
+                            $values[] = $tempcell->getValue();
                         }
                     }
                 }
