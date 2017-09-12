@@ -32,12 +32,19 @@ class CellTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("42", $cell->getValue());
     }
 
-    function testGetValueWithValueAndDisplayedValue2()
+    function testGetValueWithValueBeing0AndDisplayedValue()
     {
         $cell = new Cell(0, 0, 0);
         $cell->setValueAttr("0");
         $cell->setDisplayedValue("<p>$0.00</p>");
 
         $this->assertEquals("0", $cell->getValue());
+    }
+
+    function testGetValueShouldReturnDecodedHTML(){
+        $cell = new Cell(0, 0, 0);
+        $cell->setValueAttr("you &amp; me");
+
+        $this->assertEquals("you & me", $cell->getValue());
     }
 }

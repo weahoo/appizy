@@ -151,7 +151,7 @@ class Cell extends TableElement
             $cellValue = strip_tags($cellValue);
         }
 
-        return $cellValue;
+        return html_entity_decode($cellValue);
     }
 
     function getValueAttr()
