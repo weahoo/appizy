@@ -43,16 +43,16 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testRowSpan()
     {
-        $this->assertEquals($this->crawler->filter('.s2r1c0')->attr('rowspan'), 2);
-        $this->assertEquals($this->crawler->filter('.s2r1c1')->attr('rowspan'), null);
-        $this->assertEquals($this->crawler->filter('.s2r1c3')->attr('rowspan'), 2);
+        $this->assertEquals($this->crawler->filter('.s1r1c0')->attr('rowspan'), 2);
+        $this->assertEquals($this->crawler->filter('.s1r1c1')->attr('rowspan'), null);
+        $this->assertEquals($this->crawler->filter('.s1r1c3')->attr('rowspan'), 2);
     }
 
     public function testColSpan()
     {
-        $this->assertEquals($this->crawler->filter('.s2r1c0')->attr('colspan'), null);
-        $this->assertEquals($this->crawler->filter('.s2r1c1')->attr('colspan'), 2);
-        $this->assertEquals($this->crawler->filter('.s2r1c3')->attr('colspan'), 2);
+        $this->assertEquals($this->crawler->filter('.s1r1c0')->attr('colspan'), null);
+        $this->assertEquals($this->crawler->filter('.s1r1c1')->attr('colspan'), 2);
+        $this->assertEquals($this->crawler->filter('.s1r1c3')->attr('colspan'), 2);
     }
 
     public function testDataFormatPresence()
@@ -65,7 +65,7 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
     public function testHiddenRowShouldHaveCSSClass()
     {
         $this->assertContains('hidden-row',
-            $this->crawler->filter('.s2r4')->attr('class'));
+            $this->crawler->filter('.s1r4')->attr('class'));
     }
 
     public function testValidationListAsSelectTag()
