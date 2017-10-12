@@ -86,6 +86,7 @@ class WebAppConfiguration
             'PMT'          => 'Formula.PMT',
             'POWER'        => 'Formula.POWER',
             'PRODUCT'      => 'Formula.PRODUCT',
+            'PROPER'       => 'Formula.PROPER',
             'QUOTIENT'     => 'Formula.QUOTIENT',
             'RADIANS'      => 'Formula.RADIANS',
             'RAND'         => 'Formula.RAND',
