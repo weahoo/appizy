@@ -1,8 +1,8 @@
 ## How to contribute?
 
-Foreword: please use the Docker environement to develop any patch or feature for Appizy.
+Before you start setup the Docker environement. You should be able to run the command ```./bin/docker/phpunit.sh```.
 
-Appizy contains a large chunk of legacy code... do not hesitate to ask any question about the functionality of the code.
+You should know that Appizy hasn't be always developed using best practices. It still contains a large chunk of legacy code... do not hesitate to ask any question about the functionality of the code.  Do not the code for granted. You can propose better code, rename file and modify organization as long as it's motivated.
 
 ### Propose a PR
 
