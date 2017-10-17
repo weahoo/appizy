@@ -17,12 +17,23 @@
                     {% if cellType == 'in' %}
                         {% set values = cell.getValueList() %}
                         {% if values is empty %}
-                            <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
+
+                            {% if (cell.getRowSpan() > 1) %}
+                                <textarea id="{{ cell.getName() }}" name="{{ cell.getName() }}"
+                                   data-value="{{ cell.getValue() | raw }}"
+                                   data-value-type="{{ cell.getValueType() }}"
+                                    {{ macro.dataFormat(cell, spreadSheet) }}>
+                                    {{ cell.getValue() | raw }}
+                                </textarea>
+                            {% else %}
+                                <input id="{{ cell.getName() }}" name="{{ cell.getName() }}"
                                    data-value="{{ cell.getValue() | raw }}"
                                    data-value-type="{{ cell.getValueType() }}"
                                    value="{{ cell.getValue() | raw }}"
                                     {{ macro.dataFormat(cell, spreadSheet) }}
-                            >
+                                >
+                            {% endif %}
+                            
                         {% else %}
                             <select id="{{ cell.getName() }}" name="{{ cell.getName() }}">
                                 {% for value in values %}
@@ -31,12 +42,22 @@
                             </select>
                         {% endif %}
                     {% elseif cellType == 'out' %}
-                        <input disabled="disabled" name="{{ cell.getName() | raw }}"
+
+                        {% if (cell.getRowSpan() > 1) %}
+                            <textarea disabled="disabled" name="{{ cell.getName() }}"
+                                data-value="{{ cell.getValue() | raw }}"
+                                data-value-type="{{ cell.getValueType() }}"
+                                {{ macro.dataFormat(cell, spreadSheet) }}>
+                            </textarea>
+                        {% else %}
+                             <input disabled="disabled" name="{{ cell.getName() | raw }}"
                                value="{{ cell.getValueAttr() | raw }}"
                                data-value="{{ cell.getValueAttr() | raw }}"
                                data-value-type="{{ cell.getValueType() }}"
                                 {{ macro.dataFormat(cell, spreadSheet) }}
-                        >
+                            >
+                        {% endif %}
+                        
                     {% else %}
                         {{ cell.getDisplayedValue() | raw }}
                     {% endif %}
