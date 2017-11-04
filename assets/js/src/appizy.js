@@ -19,6 +19,9 @@ define([
             'background-color': 'white',
             'color': '#000'
         });
+        $('textarea').css({
+            'width': '100%'
+        });
         run_calc();
     };
 
