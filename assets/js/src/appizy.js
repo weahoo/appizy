@@ -14,6 +14,11 @@ define([
         $('input:enabled, select, textarea').each(function () {
             $(this).setFormattedValue();
         });
+        
+        $('textarea:disabled').css({
+            'background-color': 'white',
+            'color': '#000'
+        });
         run_calc();
     };
 
