@@ -1,8 +1,5 @@
 <?php
 
-use Appizy\Command\ConvertCommand;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DomCrawler\Crawler;
 
 /*
