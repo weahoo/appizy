@@ -6,14 +6,15 @@ define([
     window.APY = window.APY || {};
 
     window.onload = function () {
-        $('input, select').on('change', function () {
+        $('input, select, textarea').on('change', function () {
             $(this).setFormattedValue();
             run_calc();
         });
 
-        $('input:enabled, select').each(function () {
+        $('input:enabled, select, textarea').each(function () {
             $(this).setFormattedValue();
         });
+        
         run_calc();
     };
 
