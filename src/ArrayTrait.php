@@ -4,27 +4,39 @@ namespace Appizy;
 
 trait ArrayTrait
 {
-
-    function array_flat($non_flat_array = array())
+    public function arrayFlat($non_flat_array = array())
     {
+        $flat_array = array();
+
         foreach ($non_flat_array as $content) {
-            $flat_array = array();
-            array_walk_recursive($content, function ($a) use (&$flat_array) {
-                $flat_array[] = $a;
-            });
+            array_walk_recursive(
+                $content,
+                function ($a) use (&$flat_array) {
+                    $flat_array[] = $a;
+                }
+            );
         }
 
         return $flat_array;
     }
 
-    function getArrayValueIfExists($array, $key)
+    /**
+     * @param array  $array
+     * @param string $key
+     * @return mixed
+     */
+    public function getArrayValueIfExists($array, $key)
     {
         if (isset($array[$key])) {
             return $array[$key];
         }
     }
 
-    function compact_code($some_code)
+    /**
+     * @param string $some_code
+     * @return string
+     */
+    public function compactCode($some_code)
     {
         $compact_code = $some_code;
 
@@ -40,5 +52,4 @@ trait ArrayTrait
 
         return $compact_code;
     }
-
 }

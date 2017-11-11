@@ -65,7 +65,7 @@ class Tool
                     $tempcell = $this->getCell($dep[0], $dep[1], $dep[2]);
                     if ($tempcell) {
                         if ($tempcell->getType() != 'out') {
-                            $tempcell->cell_set_type('in');
+                            $tempcell->setType('in');
                         }
                     } else {
                         $cell_coord = $formula->cell_coord;
@@ -306,10 +306,10 @@ class Tool
                 $used_styles[] = $row->getConcatStyleNames();
 
                 foreach ($row->getCells() as $cCI => $tempCell) {
-                    if ($tempCell->cell_get_validation() != '') {
-                        $this->render_validation($tempCell->cell_get_validation(),
+                    if ($tempCell->getValidation() != '') {
+                        $this->render_validation($tempCell->getValidation(),
                             array($key, $row_index, $cCI));
-                        $tempCell->cell_set_type("in");
+                        $tempCell->setType("in");
                     }
 
                     $used_styles[] = $tempCell->getConcatStyleNames();
