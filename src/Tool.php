@@ -10,24 +10,24 @@ class Tool
     use ArrayTrait;
 
     /** @var Sheet[] */
-    var $sheets;
+    protected $sheets;
     /** @var Style[] */
-    var $styles;
+    protected $styles;
     /** @var Formula[] */
-    var $formulas;
+    protected $formulas;
     /** @var Validation[] */
-    var $validations;
+    protected $validations;
     /** @var DataStyle[] */
-    var $formats;
+    protected $formats;
     /** @var string[] */
-    var $libraries;
+    protected $libraries;
     /** @var  string[} */
-    var $used_styles;
+    protected $used_styles;
 
     private $debug;
     private $error;
 
-    function __construct($debug = false)
+    public function __construct($debug = false)
     {
         $this->sheets = [];
         $this->styles = [];
@@ -41,7 +41,7 @@ class Tool
     /**
      * @param $formula Formula
      */
-    function addFormula($formula)
+    public function addFormula($formula)
     {
         $this->formulas[] = $formula;
     }
@@ -49,12 +49,12 @@ class Tool
     /**
      * @param $sheet Sheet
      */
-    function addSheet($sheet)
+    public function addSheet($sheet)
     {
         $this->sheets[] = $sheet;
     }
 
-    function setFormulaDependenciesAsInputCells()
+    public function setFormulaDependenciesAsInputCells()
     {
         /** @var Formula $formula */
         foreach ($this->formulas as $formula) {
@@ -79,7 +79,7 @@ class Tool
         }
     }
 
-    function sheets_name()
+    public function sheets_name()
     {
         $names = [];
         foreach ($this->sheets as $sheet) {
@@ -89,7 +89,7 @@ class Tool
         return $names;
     }
 
-    function render_validation($id, array $address = null)
+    public function render_validation($id, array $address = null)
     {
         $sheets_name = $this->sheets_name();
 
@@ -181,12 +181,12 @@ class Tool
         }
     }
 
-    function getSheets()
+    public function getSheets()
     {
         return $this->sheets;
     }
 
-    function getVisibleSheets()
+    public function getVisibleSheets()
     {
         return array_filter(
             $this->sheets,
@@ -208,7 +208,7 @@ class Tool
         );
     }
 
-    function getHiddenSheets()
+    public function getHiddenSheets()
     {
         return array_filter(
             $this->sheets,
@@ -230,7 +230,7 @@ class Tool
         );
     }
 
-    function getStyle($styleName)
+    public function getStyle($styleName)
     {
         return self::getArrayValueIfExists($this->styles, $styleName);
     }
@@ -239,7 +239,7 @@ class Tool
      * @param string $dataStyleName
      * @return mixed
      */
-    function getDataStyle($dataStyleName = '')
+    public function getDataStyle($dataStyleName = '')
     {
         return self::getArrayValueIfExists($this->formats, $dataStyleName);
     }
@@ -248,7 +248,7 @@ class Tool
      * @param $sheet_index
      * @return Sheet|bool
      */
-    function getSheet($sheet_index)
+    public function getSheet($sheet_index)
     {
         $sheet = false;
         if (array_key_exists($sheet_index, $this->sheets)) {
@@ -264,7 +264,7 @@ class Tool
      * @param $col_ind
      * @return Cell|bool
      */
-    function getCell($sheet_ind, $row_ind, $col_ind)
+    public function getCell($sheet_ind, $row_ind, $col_ind)
     {
         $cell = false;
 
@@ -280,7 +280,7 @@ class Tool
         return $cell;
     }
 
-    function clean()
+    public function clean()
     {
         $is_first_filled = false;
         $offset = 0;
@@ -308,7 +308,7 @@ class Tool
         $this->sheets = $sheets;
     }
 
-    function render()
+    public function render()
     {
         $htmlTable = '';
 
@@ -378,7 +378,7 @@ class Tool
      * @param string[] $stylesNames
      * @return string
      */
-    function getCss($stylesNames)
+    public function getCss($stylesNames)
     {
         $usedStyles = array_intersect_key($this->styles, array_flip($stylesNames));
 
