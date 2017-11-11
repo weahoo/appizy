@@ -12,15 +12,15 @@ class SpreadsheetRenderService
 {
     /** @var Tool */
     private $spreadsheet;
-    /** @var Theme  */
+    /** @var Theme */
     private $theme;
 
     /**
      * SpreadsheetRenderService constructor.
-     * @param Tool $spreadsheet
+     * @param Tool   $spreadsheet
      * @param string $themeName
      */
-    function __construct($spreadsheet, $themeName)
+    public function __construct($spreadsheet, $themeName)
     {
         $this->spreadsheet = $spreadsheet;
 
@@ -28,7 +28,8 @@ class SpreadsheetRenderService
         $this->theme = $themeReadService->getThemeByName($themeName);
     }
 
-    public function render($destinationPath, $themeOptions) {
+    public function render($destinationPath, $themeOptions)
+    {
         $this->spreadsheet->setFormulaDependenciesAsInputCells();
         $this->spreadsheet->cleanStyles();
         $this->spreadsheet->clean();
@@ -37,15 +38,15 @@ class SpreadsheetRenderService
 
         $this->renderAndSave(
             [
-                'meta' => [
-                  'conversionTime' => $conversionDate->format('Y-m-d H:i')
+                'meta'        => [
+                    'conversionTime' => $conversionDate->format('Y-m-d H:i')
                 ],
                 'spreadSheet' => $this->spreadsheet,
-                'content' => $elements['content'],
-                'style' => $elements['style'],
-                'script' => $elements['script'],
-                'options' => $themeOptions,
-                'libraries' => $elements['libraries']
+                'content'     => $elements['content'],
+                'style'       => $elements['style'],
+                'script'      => $elements['script'],
+                'options'     => $themeOptions,
+                'libraries'   => $elements['libraries']
             ],
             $destinationPath
         );
@@ -55,7 +56,7 @@ class SpreadsheetRenderService
 
 
     /**
-     * @param Theme $theme
+     * @param Theme  $theme
      * @param string $path
      */
     private function copyThemeIncludedFiles($theme, $path)
@@ -70,7 +71,7 @@ class SpreadsheetRenderService
 
     /**
      * @param \\Appizy\Model\Theme $theme
-     * @param array $data
+     * @param array  $data
      * @param string $path
      */
     private function renderAndSave($data, $path)
@@ -125,9 +126,9 @@ class SpreadsheetRenderService
     private function formatHTML($html)
     {
         $config = [
-            'indent' => true,
+            'indent'      => true,
             'output-html' => true,
-            'wrap' => '1000'
+            'wrap'        => '1000'
         ];
 
         $tidy = new tidy();
@@ -136,5 +137,4 @@ class SpreadsheetRenderService
 
         return tidy_get_output($tidy);
     }
-
 }
