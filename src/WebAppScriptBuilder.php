@@ -5,28 +5,34 @@ namespace Appizy;
 
 class WebAppScriptBuilder
 {
-    /** @var Tool */
+    /**
+     * @var Tool
+     */
     var $spreadSheet;
 
-    /** @var  string[] */
+    /**
+     * @var  string[]
+     */
     var $loadedFunction;
 
-    /** @var  string[] */
+    /**
+     * @var  string[]
+     */
     var $externalJsLibraries;
 
-    function __construct(Tool $spreadSheet)
+    public function __construct(Tool $spreadSheet)
     {
         $this->loadedFunction = [];
         $this->externalJsLibraries = [];
         $this->spreadSheet = $spreadSheet;
     }
 
-    function getExternalJsLibraries()
+    public function getExternalJsLibraries()
     {
         return $this->externalJsLibraries;
     }
 
-    function buildScript()
+    public function buildScript()
     {
         $formulas = "window.APY = window.APY || {};" . "\n";
         $formulas .= 'APY.formulas = {};' . "\n";
@@ -35,7 +41,9 @@ class WebAppScriptBuilder
         $steps = [];
         $ext_formulas = [];
 
-        /** @var Formula $formula */
+        /**
+         * @var Formula $formula
+         */
         foreach ($this->spreadSheet->formulas as $formula) {
             $dependances = array();
             foreach ($formula->getDependencies() as $dependance) {
@@ -45,7 +53,7 @@ class WebAppScriptBuilder
             $formulas .= $formula->getScript() . "\n";
             $formulaslist[$formula->getName()] = [
                 'call' => $formula->getCall(),
-                'dep' => $dependances,
+                'dep'  => $dependances,
             ];
 
             foreach ($formula->getExternalFormulas() as $ext_formula) {
@@ -58,8 +66,8 @@ class WebAppScriptBuilder
         $currentstep = 0; // Step de calcul en cours
         $fomulas_unclassified = count($formulaslist); // D�compte de formules qu'il reste � classer
 
-        $fomulas_unclassified_laststep = 0; // Variable de sortie de la boucle while. Si jamais la boucle n'�limine pas de formule � la step...
-
+        // Variable de sortie de la boucle while. Si jamais la boucle n'�limine pas de formule � la step...
+        $fomulas_unclassified_laststep = 0;
 
         while (($fomulas_unclassified > 0) && ($fomulas_unclassified_laststep != $fomulas_unclassified)) {
             // Pour �viter que la boucle ne tourne dans le vide
@@ -84,24 +92,19 @@ class WebAppScriptBuilder
                 $offsetdep = 0; // Variable locale; index de la d�pendance � enlever au besoin !
 
                 $nbdep = count($forminfo['dep']);
-                // appizy_logapp("J'ai $nbdep dep");
-                foreach ($forminfo['dep'] as $value) {
-                    // Pour chaque d�pendance de la formule
-                    if (!array_key_exists($value, $formulaslist_copy)) {
-                        /*
-                         *
-                         *
-                         */
 
-                        array_splice($formulaslist_copy[$formcell]['dep'],
-                            $offsetdep, 1);
-                        // appizy_logapp("Dep calculee $value");
+                foreach ($forminfo['dep'] as $value) {
+                    if (!array_key_exists($value, $formulaslist_copy)) {
+
+                        array_splice(
+                            $formulaslist_copy[$formcell]['dep'],
+                            $offsetdep, 1
+                        );
                     } else {
                         /*
                          * La formule d�pend d'une cellule qui fait partie de la liste des formules � calculer
                          * On incr�mente alors l'offset de d�pendance. La formule sera calcul�e � l'�tape n+1
                          */
-                        //echo $formcell."Offsetdep:".$offsetdep."-Maxdep:".$nbdep."<br>";
                         $offsetdep++;
                     }
                 }
@@ -118,8 +121,10 @@ class WebAppScriptBuilder
                     // S'il n'y a plus de cellule non calcul�e dont d�pend la formule
                     // elle entre dans la step de calcul
                     // on la retire de la liste de cellule
-                    array_push($steps[$currentstep]['formulas'],
-                        $temp_formula['call']);
+                    array_push(
+                        $steps[$currentstep]['formulas'],
+                        $temp_formula['call']
+                    );
 
                     foreach ($formulaslist[$formula_index]['dep'] as $temp_dep) {
                         // On charge grace � l'original de la liste des formules
@@ -129,9 +134,7 @@ class WebAppScriptBuilder
 
                     // La formule "libre" de tout d�pendance est supprim�e de la copie
                     array_splice($formulaslist_copy, $offsetform, 1);
-
                 } else {
-
                     $offsetform++;
                 }
             }
@@ -143,22 +146,17 @@ class WebAppScriptBuilder
             $fomulas_unclassified = count($formulaslist_copy);
 
             $currentstep++;
-
-            // appizy_logapp("Number of formulas left:".$fomulas_unclassified." - step:".($currentstep-1)); // On loggue avant la mise � jour.
-            foreach ($steps[$currentstep - 1]['formulas'] as $temp_formula) {
-                // appizy_logapp($temp_formula) ;
-            }
-
         }
-
 
         // L'Array des d�pendances est applanit avant d'�tre utilis� par la suite
         foreach ($steps as $currentstep) {
             $flat_stepdep = array();
-            array_walk_recursive($currentstep['dep'],
+            array_walk_recursive(
+                $currentstep['dep'],
                 function ($a) use (&$flat_stepdep) {
                     $flat_stepdep[] = $a;
-                });
+                }
+            );
         }
 
         // Impression des steps de calcul, uniquement s'il y a des �tapes de calcul
@@ -170,8 +168,11 @@ class WebAppScriptBuilder
             foreach ($steps as $currentstep_index => $currentstep) {
                 $stepdep = '';
 
-                if (!$isFirstInput) : $run_calc .= ";";
-                else : $isFirstInput = false; endif;
+                if (!$isFirstInput) :
+                    $run_calc .= ";";
+                else :
+                    $isFirstInput = false;
+                endif;
 
                 $run_calc .= 'step' . $currentstep_index . '()';
 
@@ -202,13 +203,17 @@ class WebAppScriptBuilder
 
 
             foreach ($accessFormulas as $formula) {
-                $formulasExt .= $this->getExtFunction($formula,
-                    __DIR__ . "/../assets/js/src/appizy.js");
+                $formulasExt .= $this->getExtFunction(
+                    $formula,
+                    __DIR__ . "/../assets/js/src/appizy.js"
+                );
             }
 
             foreach ($ext_formulas as $ext_formula) {
-                $formulasExt .= $this->getExtFunction($ext_formula,
-                    __DIR__ . "/../assets/js/src/formula-addons.js");
+                $formulasExt .= $this->getExtFunction(
+                    $ext_formula,
+                    __DIR__ . "/../assets/js/src/formula-addons.js"
+                );
             }
 
             $script .= $formulas;
@@ -235,7 +240,6 @@ class WebAppScriptBuilder
         $formulaRegex = '/' . $functionName . ' = function(.*?)\};/is';
 
         if (!in_array($functionName, $this->loadedFunction)) {
-
             if (preg_match_all($formulaRegex, file_get_contents($libraryPath), $match)) {
                 $function = $match[1][0];
                 $externalFormulaScript = $namu . " = function" . $function . "};" . "\n\n";
@@ -248,12 +252,13 @@ class WebAppScriptBuilder
                     $match = array_unique($match[1]);
                     $match = array_diff($match, $this->loadedFunction);
                     foreach ($match as $dep_name) {
-
                         $dep_name = "Formula." . $dep_name;
 
                         if (!in_array($dep_name, $this->loadedFunction)) {
-                            $externalFormulaScript .= $this->getExtFunction($dep_name,
-                                $libraryPath, $this->loadedFunction);
+                            $externalFormulaScript .= $this->getExtFunction(
+                                $dep_name,
+                                $libraryPath, $this->loadedFunction
+                            );
                         }
                     }
                 }

@@ -34,6 +34,6 @@
     </target>
 
     <target name="phpcs-temp">
-      <exec command="./vendor/bin/phpcs ./src" />
+      <exec command="./vendor/bin/phpcs ./src --standard=PSR2" />
     </target>
 </project>

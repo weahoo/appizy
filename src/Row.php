@@ -43,7 +43,7 @@ class Row extends TableElement
      */
     function addCell(Cell $newCell)
     {
-        $cell_id = $newCell->get_id();
+        $cell_id = $newCell->getId();
         $this->cells[$cell_id] = $newCell;
     }
 

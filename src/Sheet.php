@@ -22,7 +22,7 @@ class Sheet extends TableElement
 
     function addCol(Column $newCol)
     {
-        $col_ind = $newCol->get_id();
+        $col_ind = $newCol->getId();
         $this->col[$col_ind] = $newCol;
     }
 

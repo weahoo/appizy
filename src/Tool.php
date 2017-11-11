@@ -301,9 +301,9 @@ class Tool
 
         foreach ($this->sheets as $key => $sheet) {
             foreach ($sheet->row as $row_index => $row) {
-                $rowstyle = ' class="' . $row->getName() . ' ' . $row->get_styles_name() . '"';
+                $rowstyle = ' class="' . $row->getName() . ' ' . $row->getConcatStyleNames() . '"';
 
-                $used_styles[] = $row->get_styles_name();
+                $used_styles[] = $row->getConcatStyleNames();
 
                 foreach ($row->getCells() as $cCI => $tempCell) {
                     if ($tempCell->cell_get_validation() != '') {
@@ -312,7 +312,7 @@ class Tool
                         $tempCell->cell_set_type("in");
                     }
 
-                    $used_styles[] = $tempCell->get_styles_name();
+                    $used_styles[] = $tempCell->getConcatStyleNames();
 
                     // Adds current col styleName (if exists)
                     try {
@@ -320,7 +320,7 @@ class Tool
 
                         $currentColumnStyle = '';
                         if ($currentColumn) {
-                            $currentColumnStyle = $currentColumn->get_styles_name();
+                            $currentColumnStyle = $currentColumn->getConcatStyleNames();
 
                             $used_styles[] = $currentColumnStyle;
 

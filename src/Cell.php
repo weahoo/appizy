@@ -209,7 +209,7 @@ class Cell extends TableElement
     function isEmpty()
     {
         $empty = (
-            $this->get_styles_name() == '' &&
+            $this->getConcatStyleNames() == '' &&
             $this->getValue() == '' &&
             $this->cell_get_validation() == '' &&
             $this->getType() != CellAttributes::TYPE_OUTPUT

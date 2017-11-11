@@ -4,27 +4,27 @@ namespace Appizy;
 
 class TableElement
 {
-    /** @var integer */
-    var $eid;
-    /** @var string[] */
-    var $stylesNameList;
+    /**
+     * @var integer
+     */
+    protected $eid;
+    /**
+     * @var string[]
+     */
+    protected $stylesNameList;
 
-    function __construct($element_id)
+    public function __construct($element_id)
     {
-        $this->set_id($element_id);
+        $this->setId($element_id);
         $this->stylesNameList = [];
     }
 
-    function set_id($element_id)
+    public function setId($element_id)
     {
-        $this->eid = (int)$element_id;
+        $this->eid = (int) $element_id;
     }
 
-    function getId() {
-        return $this->eid;
-    }
-
-    function get_id()
+    public function getId()
     {
         return $this->eid;
     }
@@ -32,15 +32,17 @@ class TableElement
     /**
      * @param string $styleName
      */
-    function addStyle($styleName)
+    public function addStyle($styleName)
     {
         $this->stylesNameList[] = $styleName;
     }
 
     /**
-     * Returns styles name concatained with a $separator
+     * Returns style names concatenated
+     *
+     * @return string
      */
-    function get_styles_name($separator = " ")
+    public function getConcatStyleNames()
     {
         $styles_name = "";
         $is_first = true;
@@ -55,7 +57,7 @@ class TableElement
     /**
      * @return mixed
      */
-    function getStyleName()
+    public function getStyleName()
     {
         return array_shift($this->stylesNameList);
     }
@@ -63,12 +65,7 @@ class TableElement
     /**
      * @return array
      */
-    function getStyles()
-    {
-        return $this->stylesNameList;
-    }
-
-    function get_styles()
+    public function getStyles()
     {
         return $this->stylesNameList;
     }
