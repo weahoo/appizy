@@ -18,31 +18,31 @@ class OpenDocumentParser
 {
     use ArrayTrait;
 
-    var $fonts;
-    var $styles;
-    var $sheets;
-    var $lastElement;
-    var $currentSheet;
-    var $currentRow;
-    var $currentCell;
-    var $currentFrame;
-    var $lastRowAtt;
-    var $repeatCell;
-    var $repeatRow;
-    var $validation;
-    var $currentValidation;
+    protected $fonts;
+    protected $styles;
+    protected $sheets;
+    protected $lastElement;
+    protected $currentSheet;
+    protected $currentRow;
+    protected $currentCell;
+    protected $currentFrame;
+    protected $lastRowAtt;
+    protected $repeatCell;
+    protected $repeatRow;
+    protected $validation;
+    protected $currentValidation;
     /** @var Style */
-    var $currentStyle;
+    protected $currentStyle;
     /** @var DataStyle */
-    var $currentDataStyle;
+    protected $currentDataStyle;
 
-    var $contenttag_stack;
+    protected $contenttag_stack;
     //public $globaldata;
 
-    var $used_styles;
-    var $debug;
+    protected $used_styles;
+    protected $debug;
     /** @var Tool */
-    var $spreadsheet;
+    protected $spreadsheet;
     /** @var int */
     private $totalCell;
     /** @var int */
@@ -55,7 +55,7 @@ class OpenDocumentParser
     /**
      * @param int $maxCellsNumber
      */
-    function __construct($maxCellsNumber = -1)
+    public function __construct($maxCellsNumber = -1)
     {
         $this->spreadsheet = new Tool();
         $this->styles = array();
@@ -75,34 +75,34 @@ class OpenDocumentParser
         $this->maxCellsNumber = $maxCellsNumber;
     }
 
-    function addRow($sheet_ind, $row_ind, $options)
+    private function addRow($sheet_ind, $row_ind, $options)
     {
         $new_row = new Row($sheet_ind, $row_ind, $options);
 
-        /** @var Sheet $sheet */
+        /** @protected Sheet $sheet */
         $sheet = $this->spreadsheet->sheets[$sheet_ind];
         $sheet->addRow($new_row);
     }
 
-    function addCell($sheet_ind, $row_ind, $col_ind, $options)
+    private function addCell($sheet_ind, $row_ind, $col_ind, $options)
     {
         $new_cell = new Cell($sheet_ind, $row_ind, $col_ind, $options);
         // Get selected row in the selected sheet
-        /** @var Sheet $sheet */
+        /** @protected Sheet $sheet */
         $sheet = $this->spreadsheet->sheets[$sheet_ind];
-        /** @var Row $row */
+        /** @protected Row $row */
         $row = $sheet->getRow($row_ind);
 
         $row->addCell($new_cell);
     }
 
-    function addCol($sheet_ind, $new_col)
+    private function addCol($sheet_ind, $new_col)
     {
         $sheet = $this->spreadsheet->sheets[$sheet_ind];
         $sheet->addCol($new_col);
     }
 
-    function orderData()
+    private function orderData()
     {
         $sheetsNames = [];
 
@@ -139,8 +139,10 @@ class OpenDocumentParser
                             }
                         }
 
-                        if (array_key_exists('TABLE:DEFAULT-CELL-STYLE-NAME',
-                            $col['attrs'])) {
+                        if (array_key_exists(
+                            'TABLE:DEFAULT-CELL-STYLE-NAME',
+                            $col['attrs']
+                        )) {
                             $tempcol->setDefaultCellStyle($col['attrs']['TABLE:DEFAULT-CELL-STYLE-NAME']);
                         }
                     }
@@ -150,12 +152,14 @@ class OpenDocumentParser
 
             if (array_key_exists('rows', $sheet)) {
                 foreach ($sheet['rows'] as $cR => $row) {
-
                     $row_options = array();
                     if (array_key_exists('attrs', $row)) {
                         if (array_key_exists('TABLE:STYLE-NAME', $row['attrs'])) {
-                            $row_options['style'] = htmlentities($row['attrs']['TABLE:STYLE-NAME'],
-                                ENT_QUOTES, "UTF-8");
+                            $row_options['style'] = htmlentities(
+                                $row['attrs']['TABLE:STYLE-NAME'],
+                                ENT_QUOTES,
+                                "UTF-8"
+                            );
                         }
 
                         if (array_key_exists('TABLE:VISIBILITY', $row['attrs'])) {
@@ -171,7 +175,6 @@ class OpenDocumentParser
                     if (array_key_exists('cells', $row)) {
                         // If there are cells in the row
                         foreach ($row['cells'] as $cC => $cell) {
-
                             $cell_options = array();
 
                             if (array_key_exists('attrs', $cell)) {
@@ -191,13 +194,19 @@ class OpenDocumentParser
                                     }
                                 }
                                 if (array_key_exists('OFFICE:VALUE', $cell['attrs'])) {
-                                    $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:VALUE'],
-                                        ENT_QUOTES, "UTF-8");
+                                    $cell_options['value_attr'] = htmlentities(
+                                        $cell['attrs']['OFFICE:VALUE'],
+                                        ENT_QUOTES,
+                                        "UTF-8"
+                                    );
                                 }
 
                                 if (array_key_exists('OFFICE:BOOLEAN-VALUE', $cell['attrs'])) {
-                                    $cell_options['value_attr'] = htmlentities($cell['attrs']['OFFICE:BOOLEAN-VALUE'],
-                                        ENT_QUOTES, "UTF-8");
+                                    $cell_options['value_attr'] = htmlentities(
+                                        $cell['attrs']['OFFICE:BOOLEAN-VALUE'],
+                                        ENT_QUOTES,
+                                        "UTF-8"
+                                    );
                                 }
 
                                 if (array_key_exists("OFFICE:VALUE-TYPE", $cell['attrs'])) {
@@ -211,8 +220,12 @@ class OpenDocumentParser
                                 if (array_key_exists("TABLE:FORMULA", $cell['attrs'])) {
                                     $openFormula = $cell['attrs']['TABLE:FORMULA'];
                                     $cellCoordinates = [$currentSheetIndex, $cR, $cC];
-                                    $formula = OpenFormulaParser::parse($openFormula, $currentSheetIndex, $sheetsNames,
-                                        $cellCoordinates);
+                                    $formula = OpenFormulaParser::parse(
+                                        $openFormula,
+                                        $currentSheetIndex,
+                                        $sheetsNames,
+                                        $cellCoordinates
+                                    );
 
                                     if ($formula->isPrintable()) {
                                         $this->spreadsheet->addFormula($formula);
@@ -237,7 +250,7 @@ class OpenDocumentParser
         }
     }
 
-    function parse($file)
+    private function parse($file)
     {
         $tmp = self::getTmpDir();
         copy($file, $tmp . '/' . basename($file));
@@ -257,7 +270,6 @@ class OpenDocumentParser
         ];
 
         foreach ($fileNames as $filename) {
-
             $xmlContent = file_get_contents($filename);
             $xml_parser = xml_parser_create();
             xml_set_object($xml_parser, $this);
@@ -276,12 +288,12 @@ class OpenDocumentParser
     /**
      * @return string
      */
-    static function getTmpDir()
+    private static function getTmpDir()
     {
         return sys_get_temp_dir();
     }
 
-    function startElement($parser, $tagName, $attrs)
+    private function startElement($parser, $tagName, $attrs)
     {
         $cTagName = strtolower($tagName);
 
@@ -300,11 +312,10 @@ class OpenDocumentParser
 
             $new_style->setParentStyleName(strtolower(self::getArrayValueIfExists(
                 $attrs,
-                'STYLE:PARENT-STYLE-NAME')
-            ));
+                'STYLE:PARENT-STYLE-NAME'
+            )));
 
             $this->currentStyle = $new_style;
-
         } elseif ($cTagName == 'style:table-column-properties'
             || $cTagName == 'style:table-row-properties'
             || $cTagName == 'style:table-properties'
@@ -313,16 +324,13 @@ class OpenDocumentParser
             || $cTagName == 'style:paragraph-properties'
             && isset($this->currentStyle)
         ) {
-
             if (isset($this->currentStyle)) {
-
                 $current_style = $this->currentStyle;
 
                 $current_style->addOdsStyles($attrs);
 
                 $this->currentStyle = $current_style;
             }
-
         } elseif ($cTagName == 'table:covered-table-cell') {
             $this->lastElement = $cTagName;
 
@@ -336,7 +344,6 @@ class OpenDocumentParser
              * XML tags related to cell-content
              */
         } elseif ($cTagName == 'table:table-cell') {
-
             // on vide $globaldata pour la prochaine cellule
             global $globaldata;
             $globaldata = "";
@@ -368,19 +375,15 @@ class OpenDocumentParser
         } elseif ($cTagName == 'office:annotation') {
             $this->lastElement = $cTagName;
             $this->contenttag_stack[] = $cTagName;
-
         } elseif ($cTagName == 'draw:frame') {
             $this->lastElement = $cTagName;
             $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['frame'][$this->currentFrame]['attrs'] = $attrs;
-
         } elseif ($cTagName == 'draw:image') {
             $this->lastElement = $cTagName;
             $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['frame'][$this->currentFrame]['image'] = $attrs;
-
         } elseif ($cTagName == 'draw:object') {
             $this->lastElement = $cTagName;
             $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['frame'][$this->currentFrame]['objet'] = $attrs;
-
         } elseif ($cTagName == 'table:table-row') {
             $this->lastElement = $cTagName;
 
@@ -393,7 +396,6 @@ class OpenDocumentParser
                 // Si la ligne est répétée moins de 100 fois
                 //logapp(LOGAPPPATH,'Row repeated '.$this->currentRow.' '.$row_repeated.' fois');
                 for ($i = 0; $i < $row_repeated; $i++) {
-
                     $current_row_ind = $this->currentRow + $i;
                     //logapp(LOGAPPPATH,'Ajout row '.$current_row_ind.' Row-repeated de '.$this->currentRow);
                     $this->sheets[$this->currentSheet]['rows'][$current_row_ind]['attrs'] = $attrs;
@@ -404,12 +406,10 @@ class OpenDocumentParser
         } elseif ($cTagName == 'table:table') {
             $this->lastElement = $cTagName;
             $this->sheets[$this->currentSheet]['attrs'] = $attrs;
-
         } elseif ($cTagName == 'table:content-validation') {
             $this->lastElement = $cTagName;
             $id = $attrs['TABLE:NAME'];
             $this->spreadsheet->validations[$id]['attrs'] = $attrs;
-
         } elseif ($cTagName == 'table:table-column') {
             $this->lastElement = $cTagName;
             $col_repeated = 1;
@@ -429,31 +429,32 @@ class OpenDocumentParser
                 $col_repeated = 1;
             }
             $this->currentColumn += $col_repeated - 1;
-
         } elseif ($cTagName == 'text:tab') {
             global $globaldata;
 
             $globaldata .= "&nbsp;";
-
         } elseif ($cTagName == 'text:p') {
             global $globaldata;
 
             $class = "";
-            if ($style_name = strtolower(self::getArrayValueIfExists($attrs,
-                'TEXT:STYLE-NAME'))
+            if ($style_name = strtolower(self::getArrayValueIfExists(
+                $attrs,
+                'TEXT:STYLE-NAME'
+            ))
             ) {
                 $class = ' class="' . $style_name . '" ';
                 $this->spreadsheet->used_styles[] = $style_name;
             }
 
             $globaldata .= "<p$class>";
-
         } elseif ($cTagName == 'text:span') {
             global $globaldata;
 
             $class = "";
-            if ($style_name = strtolower(self::getArrayValueIfExists($attrs,
-                'TEXT:STYLE-NAME'))
+            if ($style_name = strtolower(self::getArrayValueIfExists(
+                $attrs,
+                'TEXT:STYLE-NAME'
+            ))
             ) {
                 $class = ' class="' . strtolower($style_name) . '" ';
                 $this->spreadsheet->used_styles[] = $style_name;
@@ -466,12 +467,11 @@ class OpenDocumentParser
             $this->lastElement = $cTagName;
 
             // Contenttag to prefix
-            $this->new_contenttag('data-style-prefix');
+            $this->newContentTag('data-style-prefix');
 
             $id = self::getArrayValueIfExists($attrs, 'STYLE:NAME');
 
             $this->currentDataStyle = new DataStyle($id);
-
         } elseif (isset($this->currentDataStyle)) {
             /**
              * Search for tagname only if DataStyle set
@@ -491,7 +491,7 @@ class OpenDocumentParser
                 $this->currentDataStyle = $data_style;
 
                 // Change contenttag to suffix
-                $this->new_contenttag('data-style-suffix');
+                $this->newContentTag('data-style-suffix');
             } elseif ($cTagName == 'style:map') {
                 // Mapping of the DataStyle
                 $condition = self::getArrayValueIfExists($attrs, 'STYLE:CONDITION');
@@ -507,7 +507,7 @@ class OpenDocumentParser
         }
     }
 
-    function endElement($parser, $tagName)
+    private function endElement($parser, $tagName)
     {
         global $globaldata;
 
@@ -534,23 +534,19 @@ class OpenDocumentParser
             $this->currentFrame = 0;
 
             array_pop($this->contenttag_stack);
-
         } elseif ($cTagName == 'office:annotation') {
             array_pop($this->contenttag_stack);
 
             global $globaldata;
             $globaldata = "";
-
         } elseif ($cTagName == 'draw:frame') {
             $this->currentFrame++;
         } elseif ($cTagName == 'style:style') {
-
             $current_style = $this->currentStyle;
 
             $this->spreadsheet->styles[$current_style->getName()] = $current_style;
 
             unset($this->currentStyle);
-
         } elseif ($cTagName == 'number:number-style' ||
             $cTagName == 'number:currency-style' ||
             $cTagName == 'number:percentage-style'
@@ -566,14 +562,12 @@ class OpenDocumentParser
             array_pop($this->contenttag_stack);
         } elseif ($cTagName == 'text:p') {
             $this->characterData($parser, '</p>');
-
         } elseif ($cTagName == 'text:span') {
             $this->characterData($parser, '</span>');
-
         }
     }
 
-    function characterData($parser, $data)
+    private function characterData($parser, $data)
     {
         // Permet de prendre en charge les chaines de caracètres coupées par le parser
         global $globaldata;
@@ -585,7 +579,7 @@ class OpenDocumentParser
 
         // Filters HTML tags
         $escape_tags = array('<hr>', '&nbsp;', "</span>", "</p>");
-        $data = self::html_filter($data, $escape_tags);
+        $data = self::htmlFilter($data, $escape_tags);
 
         if ($globaldata != "") {
             $globaldata = $globaldata . $data;
@@ -597,26 +591,20 @@ class OpenDocumentParser
             $c_container = self::endc($this->contenttag_stack) : "";
 
         if ($c_container == 'table:table-cell') {
-
             for ($i = 0; $i < $this->repeatCell; $i++) {
                 // La cellule courante et toutes les n-1 cellules précédentes si répétition de n on affecte la valeur
                 $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell - $i]['value'] = $globaldata;
             }
-
         } elseif ($c_container == "office:annotation") {
-
             $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['annotation'] = $globaldata;
-
         } elseif ($c_container == 'data-style-prefix') {
-
             $this->currentDataStyle->setPrefix($globaldata);
         } elseif ($c_container == 'data-style-suffix') {
-
             $this->currentDataStyle->setSuffix($globaldata);
         }
     }
 
-    function new_contenttag($content_tag)
+    private function newContentTag($content_tag)
     {
         // Add the new tag to the stack
         $this->contenttag_stack[] = $content_tag;
@@ -625,7 +613,7 @@ class OpenDocumentParser
         $globaldata = "";
     }
 
-    function getColDefaultCellStyle($sheet, $col)
+    private function getColDefaultCellStyle($sheet, $col)
     {
         /*
         if (array_key_exists($sheet, $this->sheets))
@@ -635,7 +623,7 @@ class OpenDocumentParser
         */
     }
 
-    static function html_filter($str_in, $escape_tags = array())
+    private static function htmlFilter($str_in, $escape_tags = array())
     {
 
         $tag = array_shift($escape_tags);
@@ -643,7 +631,7 @@ class OpenDocumentParser
         if ($tag) {
             $peaces = explode($tag, $str_in);
             foreach ($peaces as $key => $peace) {
-                $peaces[$key] = self::html_filter($peace, $escape_tags);
+                $peaces[$key] = self::htmlFilter($peace, $escape_tags);
             }
             $str_out = implode($tag, $peaces);
         } else {
@@ -653,7 +641,7 @@ class OpenDocumentParser
         return $str_out;
     }
 
-    static function endc($array)
+    private static function endc($array)
     {
         return end($array);
     }

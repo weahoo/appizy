@@ -7,10 +7,10 @@ use Symfony\Component\Yaml\Yaml;
 class Theme
 {
     /** @var array $rawConfig */
-    var $rawConfig;
+    protected $rawConfig;
 
     /** @var string $directory */
-    var $directory;
+    protected $directory;
 
     public function __construct()
     {
@@ -53,4 +53,4 @@ class Theme
 
         return $includedFiles;
     }
-} 
+}

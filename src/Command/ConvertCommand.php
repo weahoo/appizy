@@ -59,7 +59,7 @@ class ConvertCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        register_shutdown_function('\Appizy\ErrorHandler::fatalHandler' );
+        register_shutdown_function('\Appizy\ErrorHandler::fatalHandler');
         set_error_handler('\Appizy\ErrorHandler::handle');
 
         $filePath = $input->getArgument('source');
