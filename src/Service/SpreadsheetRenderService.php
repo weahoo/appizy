@@ -33,9 +33,13 @@ class SpreadsheetRenderService
         $this->spreadsheet->cleanStyles();
         $this->spreadsheet->clean();
         $elements = $this->spreadsheet->render();
+        $conversionDate = new \DateTime('NOW');
 
         $this->renderAndSave(
             [
+                'meta' => [
+                  'conversionTime' => $conversionDate->format('Y-m-d H:i')
+                ],
                 'spreadSheet' => $this->spreadsheet,
                 'content' => $elements['content'],
                 'style' => $elements['style'],

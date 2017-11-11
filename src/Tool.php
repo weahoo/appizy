@@ -369,7 +369,7 @@ class Tool
         $css_code = '';
         /** @var Style $style */
         foreach ($usedStyles as $style) {
-            $css_code .= $style->style_print();
+            $css_code .= $style->getCssCode();
         }
 
         return $css_code;
@@ -378,11 +378,11 @@ class Tool
     public function cleanStyles()
     {
         foreach ($this->styles as $id => $style) {
-            $parent_style_name = $style->parent_style_name;
+            $parent_style_name = $style->getParentStyleName();
 
             if ($parent_style_name != '') {
                 $parent_style = $this->styles[$parent_style_name];
-                $style->style_merge($parent_style);
+                $style->styleMerge($parent_style);
                 $this->styles[$id] = $style;
             }
         }

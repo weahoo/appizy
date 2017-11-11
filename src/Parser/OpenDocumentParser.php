@@ -31,6 +31,7 @@ class OpenDocumentParser
     var $repeatRow;
     var $validation;
     var $currentValidation;
+    /** @var Style */
     var $currentStyle;
     /** @var DataStyle */
     var $currentDataStyle;
@@ -292,10 +293,15 @@ class OpenDocumentParser
             $id = self::getArrayValueIfExists($attrs, 'STYLE:NAME');
 
             $new_style = new Style(strtolower($id));
-            $new_style->data_style_name = self::getArrayValueIfExists($attrs,
-                'STYLE:DATA-STYLE-NAME');
-            $new_style->parent_style_name = strtolower(self::getArrayValueIfExists($attrs,
-                'STYLE:PARENT-STYLE-NAME'));
+            $new_style->setDataStyleName(self::getArrayValueIfExists(
+                $attrs,
+                'STYLE:DATA-STYLE-NAME'
+            ));
+
+            $new_style->setParentStyleName(strtolower(self::getArrayValueIfExists(
+                $attrs,
+                'STYLE:PARENT-STYLE-NAME')
+            ));
 
             $this->currentStyle = $new_style;
 
@@ -540,7 +546,7 @@ class OpenDocumentParser
 
             $current_style = $this->currentStyle;
 
-            $this->spreadsheet->styles[$current_style->name] = $current_style;
+            $this->spreadsheet->styles[$current_style->getName()] = $current_style;
 
             unset($this->currentStyle);
 
