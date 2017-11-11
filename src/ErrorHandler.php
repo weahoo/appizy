@@ -4,7 +4,7 @@ namespace Appizy;
 
 class ErrorHandler
 {
-    static function handle($errno, $errstr, $errfile, $errline)
+    public static function handle($errno, $errstr, $errfile, $errline)
     {
         if (!(error_reporting() & $errno)) {
             // This error code is not included in error_reporting
@@ -34,10 +34,11 @@ class ErrorHandler
         return true;
     }
 
-    static function fatalHandler() {
+    public static function fatalHandler()
+    {
         $error = error_get_last();
 
-        if( $error['type'] === E_ERROR) {
+        if ($error['type'] === E_ERROR) {
             echo "FATAL ERROR: we are really sorry for the inconvenience. Please report us the problem, sending if 
             possible the spreadsheet you are trying to convert.\n";
         }

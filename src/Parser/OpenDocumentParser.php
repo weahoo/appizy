@@ -463,7 +463,6 @@ class OpenDocumentParser
         } elseif ($cTagName == 'number:number-style' || $cTagName == 'number:currency-style' ||
             $cTagName == 'number:percentage-style'
         ) {
-
             $this->lastElement = $cTagName;
 
             // Contenttag to prefix
@@ -478,27 +477,29 @@ class OpenDocumentParser
              * Search for tagname only if DataStyle set
              */
             if ($cTagName == 'number:number') {
-
                 $data_style = $this->currentDataStyle;
-                $data_style->minIntDigit = intval(self::getArrayValueIfExists($attrs, 'NUMBER:MIN-INTEGER-DIGITS'));
-                $data_style->decimalPlaces = intval(self::getArrayValueIfExists($attrs, 'NUMBER:DECIMAL-PLACES'));
-                $data_style->grouping = self::getArrayValueIfExists($attrs, 'NUMBER:GROUPING') === 'true';
+                $data_style->setMinIntDigit(
+                    intval(self::getArrayValueIfExists($attrs, 'NUMBER:MIN-INTEGER-DIGITS'))
+                );
+                $data_style->setDecimalPlaces(
+                    intval(self::getArrayValueIfExists($attrs, 'NUMBER:DECIMAL-PLACES'))
+                );
+                $data_style->setGrouping(
+                    self::getArrayValueIfExists($attrs, 'NUMBER:GROUPING') === 'true'
+                );
 
                 $this->currentDataStyle = $data_style;
 
                 // Change contenttag to suffix
                 $this->new_contenttag('data-style-suffix');
-
             } elseif ($cTagName == 'style:map') {
                 // Mapping of the DataStyle
                 $condition = self::getArrayValueIfExists($attrs, 'STYLE:CONDITION');
-                $apply_style_name = self::getArrayValueIfExists($attrs,
-                    'STYLE:APPLY-STYLE-NAME');
+                $apply_style_name = self::getArrayValueIfExists($attrs, 'STYLE:APPLY-STYLE-NAME');
 
                 $data_style = $this->currentDataStyle;
 
-                $data_style->maps[$condition] = $apply_style_name;
-
+                $data_style->setMap($condition, $apply_style_name);
             } elseif ($cTagName == 'number:currency-symbol') {
                 // Helps to escape currency symbo different from "$"
                 $this->lastElement = $cTagName;
@@ -556,7 +557,7 @@ class OpenDocumentParser
         ) {
             $data_style = $this->currentDataStyle;
 
-            $this->spreadsheet->formats[$data_style->id] = $data_style;
+            $this->spreadsheet->formats[$data_style->getId()] = $data_style;
 
             unset($this->currentDataStyle);
 
