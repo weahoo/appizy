@@ -250,7 +250,7 @@ class OpenDocumentParser
         }
     }
 
-    private function parse($file)
+    public function parse($file)
     {
         $tmp = self::getTmpDir();
         copy($file, $tmp . '/' . basename($file));
