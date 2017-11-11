@@ -5,33 +5,33 @@ namespace Appizy;
 class Column extends TableElement
 {
     /** @var bool */
-    var $collapse;
+    protected $collapse;
     /** @var string */
-    var $default_cell_style;
+    protected $default_cell_style;
 
-    function __construct($colid)
+    public function __construct($colid)
     {
         parent::__construct($colid);
         $this->default_cell_style = "";
         $this->collapse = false;
     }
 
-    function setDefaultCellStyle($newStyle)
+    public function setDefaultCellStyle($newStyle)
     {
         $this->default_cell_style = $newStyle;
     }
 
-    function collapse()
+    public function collapse()
     {
         $this->collapse = true;
     }
 
-    function isCollapsed()
+    public function isCollapsed()
     {
         return $this->collapse == true;
     }
 
-    function getDefaultCellStyle()
+    public function getDefaultCellStyle()
     {
         return $this->default_cell_style;
     }
