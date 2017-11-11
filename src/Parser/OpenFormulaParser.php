@@ -93,13 +93,13 @@ class OpenFormulaParser
         }
 
         $formula->setElements($formulaElements);
-//        $formula->dependances = array_unique($cellDependencies);
-        $formula->dependances = $cellDependencies;
-        $formula->ext_formula_dependances = array_intersect(
+        // $formula->dependances = array_unique($cellDependencies);
+        $formula->setDependances($cellDependencies);
+        $formula->setExtFormulaDependances(array_intersect(
             $formulaElements,
             WebAppConfiguration::externalFunctionDictionary()
-        );
-        $formula->cell_coord = $cellCoordinates;
+        ));
+        $formula->setCellCoord($cellCoordinates);
 
         return $formula;
     }

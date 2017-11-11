@@ -131,11 +131,11 @@ class Tool
                         $tmp_rI = $head[1] + $i;
                         $tmp_cI = $head[2] + $j;
 
-                        $tempcell = $this->getCell($tmp_sI, $tmp_rI,
+                        $tempCell = $this->getCell($tmp_sI, $tmp_rI,
                             $tmp_cI);
 
-                        if ($tempcell) {
-                            $values[] = $tempcell->getValue();
+                        if ($tempCell) {
+                            $values[] = $tempCell->getValue();
                         }
                     }
                 }
@@ -162,8 +162,8 @@ class Tool
                 $tmp_rI = $head[1];
                 $tmp_cI = $head[2];
             }
-            $tempcell = $this->sheets[$tmp_sI]->row[$tmp_rI]->cells[$tmp_cI];
-            $tempcell->setValueInList($values);
+            $tempCell = $this->getCell($tmp_sI, $tmp_rI, $tmp_cI);
+            $tempCell->setValueInList($values);
         }
     }
 
@@ -300,7 +300,7 @@ class Tool
         $used_styles = array(); // Contains styles used by the table elements.
 
         foreach ($this->sheets as $key => $sheet) {
-            foreach ($sheet->row as $row_index => $row) {
+            foreach ($sheet->getRows() as $row_index => $row) {
                 $rowstyle = ' class="' . $row->getName() . ' ' . $row->getConcatStyleNames() . '"';
 
                 $used_styles[] = $row->getConcatStyleNames();

@@ -4,14 +4,20 @@ namespace Appizy;
 
 class Sheet extends TableElement
 {
-    /** @var  string */
-    var $name;
-    /** @var Column[] */
-    var $col;
-    /** @var Row[] */
-    var $row;
+    /**
+     * @var string
+     */
+    protected $name;
+    /**
+     * @var Column[]
+     */
+    protected $col;
+    /**
+     * @var Row[]
+     */
+    protected $row;
 
-    function __construct($sheetId, $sheetName)
+    public function __construct($sheetId, $sheetName)
     {
         parent::__construct($sheetId);
 
@@ -20,7 +26,7 @@ class Sheet extends TableElement
         $this->row = [];
     }
 
-    function addCol(Column $newCol)
+    public function addCol(Column $newCol)
     {
         $col_ind = $newCol->getId();
         $this->col[$col_ind] = $newCol;
@@ -29,7 +35,7 @@ class Sheet extends TableElement
     /**
      * @param Row $newRow
      */
-    function addRow(Row $newRow)
+    public function addRow(Row $newRow)
     {
         $rowId = $newRow->getId();
         $this->row[$rowId] = $newRow;
@@ -40,7 +46,7 @@ class Sheet extends TableElement
      * @return Column
      * @throws \Exception
      */
-    function getCol($columnId)
+    public function getCol($columnId)
     {
         if (array_key_exists($columnId, $this->col)) {
             $column = $this->col[$columnId];
@@ -54,7 +60,7 @@ class Sheet extends TableElement
     /**
      * @return Column[]
      */
-    function getColumns()
+    public function getColumns()
     {
         return $this->col;
     }
@@ -62,7 +68,7 @@ class Sheet extends TableElement
     /**
      * @return Row[]
      */
-    function getRows()
+    public function getRows()
     {
         return $this->row;
     }
@@ -71,7 +77,7 @@ class Sheet extends TableElement
      * @param $rowId
      * @return Row|bool
      */
-    function getRow($rowId)
+    public function getRow($rowId)
     {
         $row = false;
 
@@ -85,7 +91,7 @@ class Sheet extends TableElement
     /**
      * @param Row[] $newRows
      */
-    function setRows($newRows)
+    public function setRows($newRows)
     {
         $this->row = $newRows;
     }
@@ -93,12 +99,12 @@ class Sheet extends TableElement
     /**
      * @return string
      */
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function removeEmptyRows()
+    public function removeEmptyRows()
     {
         $isFirstFilled = false;
         $offset = 0;
@@ -108,7 +114,6 @@ class Sheet extends TableElement
 
         /** @var Row $tempRow */
         foreach ($reversedRows as $tempRow) {
-
             $tempRow->cleanRow();
 
             if (!$isFirstFilled) {
@@ -118,7 +123,6 @@ class Sheet extends TableElement
                     $isFirstFilled = true;
                 }
             }
-
         }
 
         // On supprime les $offset premi�res $sheet vides
@@ -129,7 +133,7 @@ class Sheet extends TableElement
         $this->setRows($rows);
     }
 
-    function isEmpty()
+    public function isEmpty()
     {
         $rows = $this->getRows();
 
