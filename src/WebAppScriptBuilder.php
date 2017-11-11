@@ -2,7 +2,6 @@
 
 namespace Appizy;
 
-
 class WebAppScriptBuilder
 {
     /**
@@ -95,10 +94,10 @@ class WebAppScriptBuilder
 
                 foreach ($forminfo['dep'] as $value) {
                     if (!array_key_exists($value, $formulaslist_copy)) {
-
                         array_splice(
                             $formulaslist_copy[$formcell]['dep'],
-                            $offsetdep, 1
+                            $offsetdep,
+                            1
                         );
                     } else {
                         /*
@@ -257,7 +256,8 @@ class WebAppScriptBuilder
                         if (!in_array($dep_name, $this->loadedFunction)) {
                             $externalFormulaScript .= $this->getExtFunction(
                                 $dep_name,
-                                $libraryPath, $this->loadedFunction
+                                $libraryPath,
+                                $this->loadedFunction
                             );
                         }
                     }

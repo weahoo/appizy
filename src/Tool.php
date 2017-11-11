@@ -96,8 +96,11 @@ class Tool
         $validation = $this->validations[$id];
 
         if (array_key_exists('TABLE:CONDITION', $validation['attrs'])) {
-            $temp_validation = str_replace('$', '',
-                $validation['attrs']['TABLE:CONDITION']);
+            $temp_validation = str_replace(
+                '$',
+                '',
+                $validation['attrs']['TABLE:CONDITION']
+            );
             $temp_validation_pieces = explode(":", $temp_validation, 2);
             $temp_validation = $temp_validation_pieces[1];
         } else {
@@ -107,8 +110,11 @@ class Tool
         if (preg_match('/cell-content-is-in-list/', $temp_validation)) {
             // si validation de type "list de valeurs"
 
-            preg_match_all("/cell-content-is-in-list\((.*)\)/",
-                $temp_validation, $matches);
+            preg_match_all(
+                "/cell-content-is-in-list\((.*)\)/",
+                $temp_validation,
+                $matches
+            );
             $values = $matches[1][0];
 
             $temp_car = str_split($values);
@@ -120,19 +126,24 @@ class Tool
 
                 $head = OpenFormulaParser::referenceToCoordinates($values[0], 0, $sheets_name);
 
-                $tail = OpenFormulaParser::referenceToCoordinates($values[1], $head[0],
-                    $sheets_name);
+                $tail = OpenFormulaParser::referenceToCoordinates(
+                    $values[1],
+                    $head[0],
+                    $sheets_name
+                );
 
                 $values = array();
                 for ($i = 0; $i <= $tail[1] - $head[1]; $i++) {
                     for ($j = 0; $j <= $tail[2] - $head[2]; $j++) {
-
                         $tmp_sI = $head[0];
                         $tmp_rI = $head[1] + $i;
                         $tmp_cI = $head[2] + $j;
 
-                        $tempCell = $this->getCell($tmp_sI, $tmp_rI,
-                            $tmp_cI);
+                        $tempCell = $this->getCell(
+                            $tmp_sI,
+                            $tmp_rI,
+                            $tmp_cI
+                        );
 
                         if ($tempCell) {
                             $values[] = $tempCell->getValue();
@@ -156,8 +167,11 @@ class Tool
                 $tmp_rI = $address[1];
                 $tmp_cI = $address[2];
             } else {
-                $head = OpenFormulaParser::referenceToCoordinates($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
-                    0, $sheets_name);
+                $head = OpenFormulaParser::referenceToCoordinates(
+                    $validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
+                    0,
+                    $sheets_name
+                );
                 $tmp_sI = $head[0];
                 $tmp_rI = $head[1];
                 $tmp_cI = $head[2];
@@ -175,41 +189,45 @@ class Tool
     function getVisibleSheets()
     {
         return array_filter(
-            $this->sheets, function ($sheet) {
+            $this->sheets,
+            function ($sheet) {
 
             /** var $sheet Sheet */
-            $isVisible = array_reduce(
-                $sheet->getStyles(),
-                function ($accumulator, $styleName) {
-                    $style = $this->getStyle($styleName);
+                $isVisible = array_reduce(
+                    $sheet->getStyles(),
+                    function ($accumulator, $styleName) {
+                        $style = $this->getStyle($styleName);
 
-                    return $accumulator && $style->isShown();
-                },
-                true
-            );
+                        return $accumulator && $style->isShown();
+                    },
+                    true
+                );
 
-            return $isVisible;
-        });
+                return $isVisible;
+            }
+        );
     }
 
     function getHiddenSheets()
     {
         return array_filter(
-            $this->sheets, function ($sheet) {
+            $this->sheets,
+            function ($sheet) {
 
             /** var $sheet Sheet */
-            $isHidden = array_reduce(
-                $sheet->getStyles(),
-                function ($accumulator, $styleName) {
-                    $style = $this->getStyle($styleName);
+                $isHidden = array_reduce(
+                    $sheet->getStyles(),
+                    function ($accumulator, $styleName) {
+                        $style = $this->getStyle($styleName);
 
-                    return $accumulator || !$style->isShown();
-                },
-                false
-            );
+                        return $accumulator || !$style->isShown();
+                    },
+                    false
+                );
 
-            return $isHidden;
-        });
+                return $isHidden;
+            }
+        );
     }
 
     function getStyle($styleName)
@@ -271,7 +289,6 @@ class Tool
 
         /** @var Sheet $temp_sheet */
         foreach ($reversedSheets as $temp_sheet) {
-
             $temp_sheet->removeEmptyRows();
 
             if (!$is_first_filled) :
@@ -281,7 +298,6 @@ class Tool
                     $is_first_filled = true;
                 }
             endif;
-
         }
         // On supprime les $offset premi�res $sheet vides
         if ($offset > 0) {
@@ -290,7 +306,6 @@ class Tool
         // On inverse a nouveau et on affecte les sheets du tableau
         $sheets = array_reverse($reversedSheets, true);
         $this->sheets = $sheets;
-
     }
 
     function render()
@@ -307,8 +322,10 @@ class Tool
 
                 foreach ($row->getCells() as $cCI => $tempCell) {
                     if ($tempCell->getValidation() != '') {
-                        $this->render_validation($tempCell->getValidation(),
-                            array($key, $row_index, $cCI));
+                        $this->render_validation(
+                            $tempCell->getValidation(),
+                            array($key, $row_index, $cCI)
+                        );
                         $tempCell->setType("in");
                     }
 
@@ -335,7 +352,6 @@ class Tool
                             }
                         }
                     } catch (\Exception $exception) {
-
                     }
                 }
             }
