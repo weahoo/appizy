@@ -7,17 +7,17 @@ class WebAppScriptBuilder
     /**
      * @var Tool
      */
-    var $spreadSheet;
+    protected $spreadSheet;
 
     /**
      * @var  string[]
      */
-    var $loadedFunction;
+    protected $loadedFunction;
 
     /**
      * @var  string[]
      */
-    var $externalJsLibraries;
+    protected $externalJsLibraries;
 
     public function __construct(Tool $spreadSheet)
     {
@@ -40,10 +40,7 @@ class WebAppScriptBuilder
         $steps = [];
         $ext_formulas = [];
 
-        /**
-         * @var Formula $formula
-         */
-        foreach ($this->spreadSheet->formulas as $formula) {
+        foreach ($this->spreadSheet->getFormulas() as $formula) {
             $dependances = array();
             foreach ($formula->getDependencies() as $dependance) {
                 $dependances[] = 's' . $dependance[0] . 'r' . $dependance[1] . 'c' . $dependance[2];

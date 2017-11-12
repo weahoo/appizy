@@ -79,27 +79,29 @@ class OpenDocumentParser
     {
         $new_row = new Row($sheet_ind, $row_ind, $options);
 
-        /** @protected Sheet $sheet */
-        $sheet = $this->spreadsheet->sheets[$sheet_ind];
+        $sheet = $this->spreadsheet->getSheet($sheet_ind);
         $sheet->addRow($new_row);
     }
 
     private function addCell($sheet_ind, $row_ind, $col_ind, $options)
     {
         $new_cell = new Cell($sheet_ind, $row_ind, $col_ind, $options);
+
         // Get selected row in the selected sheet
-        /** @protected Sheet $sheet */
-        $sheet = $this->spreadsheet->sheets[$sheet_ind];
-        /** @protected Row $row */
+        $sheet = $this->spreadsheet->getSheet($sheet_ind);
         $row = $sheet->getRow($row_ind);
 
         $row->addCell($new_cell);
     }
 
-    private function addCol($sheet_ind, $new_col)
+    /**
+     * @param integer $sheetIndex
+     * @param Column  $column
+     */
+    private function addCol($sheetIndex, $column)
     {
-        $sheet = $this->spreadsheet->sheets[$sheet_ind];
-        $sheet->addCol($new_col);
+        $sheet = $this->spreadsheet->getSheet($sheetIndex);
+        $sheet->addCol($column);
     }
 
     private function orderData()
@@ -117,7 +119,10 @@ class OpenDocumentParser
         }
 
         foreach ($this->sheets as $currentSheetIndex => $sheet) {
-            $newSheet = new Sheet($currentSheetIndex, htmlentities($sheet['attrs']['TABLE:NAME'], ENT_QUOTES, "UTF-8"));
+            $newSheet = new Sheet(
+                $currentSheetIndex,
+                htmlentities($sheet['attrs']['TABLE:NAME'], ENT_QUOTES, "UTF-8")
+            );
 
             if (array_key_exists('TABLE:STYLE-NAME', $sheet['attrs'])) {
                 $newSheet->addStyle($sheet['attrs']['TABLE:STYLE-NAME']);
@@ -409,7 +414,9 @@ class OpenDocumentParser
         } elseif ($cTagName == 'table:content-validation') {
             $this->lastElement = $cTagName;
             $id = $attrs['TABLE:NAME'];
-            $this->spreadsheet->validations[$id]['attrs'] = $attrs;
+            $this->spreadsheet->addValidation($id, [
+                'attrs' => $attrs
+            ]);
         } elseif ($cTagName == 'table:table-column') {
             $this->lastElement = $cTagName;
             $col_repeated = 1;
@@ -443,7 +450,7 @@ class OpenDocumentParser
             ))
             ) {
                 $class = ' class="' . $style_name . '" ';
-                $this->spreadsheet->used_styles[] = $style_name;
+                $this->spreadsheet->addUsedStyle($style_name);
             }
 
             $globaldata .= "<p$class>";
@@ -451,13 +458,9 @@ class OpenDocumentParser
             global $globaldata;
 
             $class = "";
-            if ($style_name = strtolower(self::getArrayValueIfExists(
-                $attrs,
-                'TEXT:STYLE-NAME'
-            ))
-            ) {
+            if ($style_name = strtolower(self::getArrayValueIfExists($attrs, 'TEXT:STYLE-NAME'))) {
                 $class = ' class="' . strtolower($style_name) . '" ';
-                $this->spreadsheet->used_styles[] = $style_name;
+                $this->spreadsheet->addUsedStyle($style_name);
             }
 
             $globaldata .= "<span$class>";
@@ -544,7 +547,7 @@ class OpenDocumentParser
         } elseif ($cTagName == 'style:style') {
             $current_style = $this->currentStyle;
 
-            $this->spreadsheet->styles[$current_style->getName()] = $current_style;
+            $this->spreadsheet->addStyles($current_style->getName(), $current_style);
 
             unset($this->currentStyle);
         } elseif ($cTagName == 'number:number-style' ||
@@ -553,7 +556,7 @@ class OpenDocumentParser
         ) {
             $data_style = $this->currentDataStyle;
 
-            $this->spreadsheet->formats[$data_style->getId()] = $data_style;
+            $this->spreadsheet->addFormat($data_style->getId(), $data_style);
 
             unset($this->currentDataStyle);
 

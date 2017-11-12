@@ -15,7 +15,7 @@ class Tool
     protected $styles;
     /** @var Formula[] */
     protected $formulas;
-    /** @var Validation[] */
+    /** @var string[][] */
     protected $validations;
     /** @var DataStyle[] */
     protected $formats;
@@ -25,7 +25,6 @@ class Tool
     protected $used_styles;
 
     private $debug;
-    private $error;
 
     public function __construct($debug = false)
     {
@@ -39,11 +38,89 @@ class Tool
     }
 
     /**
+     * @return Formula[]
+     */
+    public function getFormulas()
+    {
+        return $this->formulas;
+    }
+
+    /**
+     * @param Formula[] $formulas
+     */
+    public function setFormulas($formulas)
+    {
+        $this->formulas = $formulas;
+    }
+
+    /**
      * @param $formula Formula
      */
     public function addFormula($formula)
     {
         $this->formulas[] = $formula;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getUsedStyles()
+    {
+        return $this->used_styles;
+    }
+
+    /**
+     * @param string $styleName
+     */
+    public function addUsedStyle($styleName)
+    {
+        $this->used_styles[] = $styleName;
+    }
+
+
+    /**
+     * @return Style[]
+     */
+    public function getStyles()
+    {
+        return $this->styles;
+    }
+
+    /**
+     * @param string $styleName
+     * @param Style  $style
+     */
+    public function addStyles($styleName, $style)
+    {
+        $this->styles[$styleName] = $style;
+    }
+
+    /**
+     * @return DataStyle[]
+     */
+    public function getFormats()
+    {
+        return $this->formats;
+    }
+
+    /**
+     * @param string    $formatName
+     * @param DataStyle $format
+     */
+    public function addFormat($formatName, $format)
+    {
+        $this->formats[$formatName] = $format;
+    }
+
+    public function getValidations()
+    {
+        return $this->validations;
+    }
+
+    public function addValidation($validationName, $validation)
+    {
+        $this->validations[$validationName] = $validation;
     }
 
     /**
@@ -68,7 +145,7 @@ class Tool
                             $tempcell->setType('in');
                         }
                     } else {
-                        $cell_coord = $formula->cell_coord;
+                        $cell_coord = $formula->getCellCoord();
                         $referencedCellName = $this->getHumanizedCellName($dep[0], $dep[1], $dep[2]);
                         $formulaCellName = $this->getHumanizedCellName($cell_coord[0], $cell_coord[1], $cell_coord[2]);
                         trigger_error(ErrorMessage::NON_EXISTING_CELL . " The formula in cell $formulaCellName" .
@@ -79,7 +156,10 @@ class Tool
         }
     }
 
-    public function sheets_name()
+    /**
+     * @return string[]
+     */
+    public function sheetNames()
     {
         $names = [];
         foreach ($this->sheets as $sheet) {
@@ -89,9 +169,9 @@ class Tool
         return $names;
     }
 
-    public function render_validation($id, array $address = null)
+    public function renderValidation($id, array $address = null)
     {
-        $sheets_name = $this->sheets_name();
+        $sheets_name = $this->sheetNames();
 
         $validation = $this->validations[$id];
 
@@ -181,18 +261,24 @@ class Tool
         }
     }
 
+    /**
+     * @return Sheet[]
+     */
     public function getSheets()
     {
         return $this->sheets;
     }
 
+    /**
+     * @return Sheet[]
+     */
     public function getVisibleSheets()
     {
         return array_filter(
             $this->sheets,
             function ($sheet) {
 
-            /** var $sheet Sheet */
+                /** var $sheet Sheet */
                 $isVisible = array_reduce(
                     $sheet->getStyles(),
                     function ($accumulator, $styleName) {
@@ -208,13 +294,16 @@ class Tool
         );
     }
 
+    /**
+     * @return Sheet[]
+     */
     public function getHiddenSheets()
     {
         return array_filter(
             $this->sheets,
             function ($sheet) {
 
-            /** var $sheet Sheet */
+                /** var $sheet Sheet */
                 $isHidden = array_reduce(
                     $sheet->getStyles(),
                     function ($accumulator, $styleName) {
@@ -322,7 +411,7 @@ class Tool
 
                 foreach ($row->getCells() as $cCI => $tempCell) {
                     if ($tempCell->getValidation() != '') {
-                        $this->render_validation(
+                        $this->renderValidation(
                             $tempCell->getValidation(),
                             array($key, $row_index, $cCI)
                         );
@@ -367,9 +456,9 @@ class Tool
         $cssTable = $this->getCss($used_styles);
 
         return [
-            'content' => $htmlTable,
-            'style' => $cssTable,
-            'script' => $script,
+            'content'   => $htmlTable,
+            'style'     => $cssTable,
+            'script'    => $script,
             'libraries' => array_unique($libraries)
         ];
     }
