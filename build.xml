@@ -1,39 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="Appizy" default="test">
-    <target name="prepare">
-        <echo msg="Making directory ./build" />
-        <mkdir dir="./build" />
-    </target>
-
-    <target name="build" depends="prepare">
-        <echo msg="Copying files to build directory..." />
-
-        <echo msg="Copying ./about.php to ./build directory..." />
-        <copy file="./about.php" tofile="./build/about.php" />
-
-        <echo msg="Copying ./browsers.php to ./build directory..." />
-        <copy file="./browsers.php" tofile="./build/browsers.php" />
-
-        <echo msg="Copying ./contact.php to ./build directory..." />
-        <copy file="./contact.php" tofile="./build/contact.php" />
-    </target>
-
     <target name="test">
-        <echo msg="Creating archive..." />
-
-        <echo msg="Files copied and compressed in build directory OK!" />
-    </target>
-
-    <target name="phpcs">
-        <phpcodesniffer
-          standard="PEAR"
-          format="summary"
-          file="./"
-          allowedFileExtensions="php php5 inc"/>
-    </target>
-
-    <target name="phpcs-temp">
-      <exec command="./vendor/bin/phpcs ./src --standard=PSR2" />
+      <exec command="./vendor/bin/phpcs ./src ./tests --standard=PSR2" checkreturn="true"/>
     </target>
 </project>
