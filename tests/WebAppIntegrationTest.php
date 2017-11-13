@@ -1,11 +1,14 @@
 <?php
 
+namespace Appizy;
+
 use Appizy\Command\ConvertCommand;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DomCrawler\Crawler;
 
-class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
+class WebAppIntegrationTest extends TestCase
 {
     /** @var  Crawler */
     protected $crawler;
@@ -64,8 +67,10 @@ class WebAppIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testHiddenRowShouldHaveCSSClass()
     {
-        $this->assertContains('hidden-row',
-            $this->crawler->filter('.s1r4')->attr('class'));
+        $this->assertContains(
+            'hidden-row',
+            $this->crawler->filter('.s1r4')->attr('class')
+        );
     }
 
     public function testValidationListAsSelectTag()

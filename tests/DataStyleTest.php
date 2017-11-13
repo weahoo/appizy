@@ -1,9 +1,11 @@
 <?php
 
+namespace Appizy;
+
 use Appizy\DataStyle;
+use PHPUnit\Framework\TestCase;
 
-
-class DataStyleTest extends PHPUnit_Framework_TestCase
+class DataStyleTest extends TestCase
 {
     public function testStringFormatterDoesNotTakeMinDigitIntoAccount()
     {

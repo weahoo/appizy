@@ -12,8 +12,6 @@ use Appizy\Style;
 use Appizy\Tool;
 use ZipArchive;
 
-$globaldata = "";
-
 class OpenDocumentParser
 {
     use ArrayTrait;
@@ -37,7 +35,6 @@ class OpenDocumentParser
     protected $currentDataStyle;
 
     protected $contenttag_stack;
-    //public $globaldata;
 
     protected $used_styles;
     protected $debug;
@@ -73,6 +70,9 @@ class OpenDocumentParser
         $this->contenttag_stack = array(); // Stack of tags that can have "Content"
         $this->totalCell = 0;
         $this->maxCellsNumber = $maxCellsNumber;
+
+        global $globaldata;
+        $globaldata = "";
     }
 
     private function addRow($sheet_ind, $row_ind, $options)
@@ -372,23 +372,31 @@ class OpenDocumentParser
 
                     for ($j = 0; $j < $cell_repeated; $j++) {
                         $current_cell_ind = $this->currentCell + $j;
-                        $this->sheets[$this->currentSheet]['rows'][$current_row_ind]['cells'][$current_cell_ind]['attrs'] = $attrs;
+                        $this->sheets[$this->currentSheet]['rows'][$current_row_ind]
+                        ['cells'][$current_cell_ind]['attrs'] = $attrs;
                     }
                 }
                 $this->currentCell += $cell_repeated - 1;
             }
         } elseif ($cTagName == 'office:annotation') {
             $this->lastElement = $cTagName;
+
             $this->contenttag_stack[] = $cTagName;
         } elseif ($cTagName == 'draw:frame') {
             $this->lastElement = $cTagName;
-            $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['frame'][$this->currentFrame]['attrs'] = $attrs;
+
+            $this->sheets[$this->currentSheet]['rows'][$this->currentRow]
+            ['cells'][$this->currentCell]['frame'][$this->currentFrame]['attrs'] = $attrs;
         } elseif ($cTagName == 'draw:image') {
             $this->lastElement = $cTagName;
-            $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['frame'][$this->currentFrame]['image'] = $attrs;
+
+            $this->sheets[$this->currentSheet]['rows'][$this->currentRow]
+            ['cells'][$this->currentCell]['frame'][$this->currentFrame]['image'] = $attrs;
         } elseif ($cTagName == 'draw:object') {
             $this->lastElement = $cTagName;
-            $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['frame'][$this->currentFrame]['objet'] = $attrs;
+
+            $this->sheets[$this->currentSheet]['rows'][$this->currentRow]
+            ['cells'][$this->currentCell]['frame'][$this->currentFrame]['objet'] = $attrs;
         } elseif ($cTagName == 'table:table-row') {
             $this->lastElement = $cTagName;
 
@@ -405,7 +413,8 @@ class OpenDocumentParser
                     //logapp(LOGAPPPATH,'Ajout row '.$current_row_ind.' Row-repeated de '.$this->currentRow);
                     $this->sheets[$this->currentSheet]['rows'][$current_row_ind]['attrs'] = $attrs;
                 }
-                // $this->currentRow = $row; // Pas besoin de mettre à jour ici, c'est dans le tag cellule que ça se passe
+                // Pas besoin de mettre à jour ici, c'est dans le tag cellule que ça se passe
+                // $this->currentRow = $row;
                 $this->repeatRow = $row_repeated;
             }
         } elseif ($cTagName == 'table:table') {
@@ -596,10 +605,12 @@ class OpenDocumentParser
         if ($c_container == 'table:table-cell') {
             for ($i = 0; $i < $this->repeatCell; $i++) {
                 // La cellule courante et toutes les n-1 cellules précédentes si répétition de n on affecte la valeur
-                $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell - $i]['value'] = $globaldata;
+                $this->sheets[$this->currentSheet]['rows']
+                [$this->currentRow]['cells'][$this->currentCell - $i]['value'] = $globaldata;
             }
         } elseif ($c_container == "office:annotation") {
-            $this->sheets[$this->currentSheet]['rows'][$this->currentRow]['cells'][$this->currentCell]['annotation'] = $globaldata;
+            $this->sheets[$this->currentSheet]['rows'][$this->currentRow]
+            ['cells'][$this->currentCell]['annotation'] = $globaldata;
         } elseif ($c_container == 'data-style-prefix') {
             $this->currentDataStyle->setPrefix($globaldata);
         } elseif ($c_container == 'data-style-suffix') {

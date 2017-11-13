@@ -1,10 +1,13 @@
 <?php
 
-use Appizy\Cell;
+namespace Appizy;
 
-class CellTest extends PHPUnit_Framework_TestCase
+use Appizy\Cell;
+use PHPUnit\Framework\TestCase;
+
+class CellTest extends TestCase
 {
-    function testGetValueWithValue()
+    public function testGetValueWithValue()
     {
         $cell = new Cell(0, 0, 0);
         $cell->setValueAttr(42);
@@ -12,7 +15,7 @@ class CellTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(42, $cell->getValue());
     }
 
-    function testGetValueWithDisplayedValue()
+    public function testGetValueWithDisplayedValue()
     {
         $cell = new Cell(0, 0, 0);
         $cell->setDisplayedValue("42");
@@ -20,7 +23,7 @@ class CellTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("42", $cell->getValue());
     }
 
-    function testGetValueWithValueAndDisplayedValue()
+    public function testGetValueWithValueAndDisplayedValue()
     {
         $cell = new Cell(0, 0, 0);
         $cell->setValueAttr("42");
@@ -29,7 +32,7 @@ class CellTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("42", $cell->getValue());
     }
 
-    function testGetValueWithValueBeing0AndDisplayedValue()
+    public function testGetValueWithValueBeing0AndDisplayedValue()
     {
         $cell = new Cell(0, 0, 0);
         $cell->setValueAttr("0");
@@ -38,7 +41,8 @@ class CellTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("0", $cell->getValue());
     }
 
-    function testGetValueShouldReturnDecodedHTML(){
+    public function testGetValueShouldReturnDecodedHTML()
+    {
         $cell = new Cell(0, 0, 0);
         $cell->setValueAttr("you &amp; me");
 
