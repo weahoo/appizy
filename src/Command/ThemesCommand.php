@@ -16,7 +16,7 @@ class ThemesCommand extends Command
         $this
           ->setName('themes')
           ->setDescription(
-            'Show which themes are available and their options'
+              'Show which themes are available and their options'
           );
     }
 
@@ -34,9 +34,9 @@ class ThemesCommand extends Command
         /** @var SplFileInfo $themeInfoFile */
         foreach ($finder as $themeInfoFile) {
             $themesInfo[] = Yaml::parse(
-              file_get_contents(
-                $themeInfoFile->getPathname()
-              )
+                file_get_contents(
+                    $themeInfoFile->getPathname()
+                )
             );
         }
 

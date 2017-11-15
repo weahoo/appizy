@@ -23,6 +23,8 @@ use Symfony\Component\Console\Application;
 
 define('APPIZY_BASE_DIR', __DIR__ . '/..');
 
+ini_set('date.timezone', 'UTC');
+
 $application = new Application();
 $application->add(new ConvertCommand());
 $application->add(new ThemesCommand());

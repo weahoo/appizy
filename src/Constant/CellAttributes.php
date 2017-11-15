@@ -2,7 +2,6 @@
 
 namespace Appizy\Constant;
 
-
 class CellAttributes
 {
     const TYPE_INPUT = 'in';

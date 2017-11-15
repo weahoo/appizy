@@ -4,24 +4,35 @@ namespace Appizy;
 
 class Row extends TableElement
 {
-    /** @var string */
-    var $name;
-    /** @var  int */
-    var $sheet_ind;
-    /** @var  int */
-    var $row_ind;
-    /** @var  boolean */
-    var $collapse;
-    /** @var Cell[] */
-    var $cells;
+    /**
+     * @var string
+     */
+    protected $name;
+    /**
+     * @var  int
+     */
+    protected $sheet_ind;
+    /**
+     * @var  int
+     */
+    protected $row_ind;
+    /**
+     * @var  boolean
+     */
+    protected $collapse;
+    /**
+     * @var Cell[]
+     */
+    protected $cells;
 
     /**
      * Row constructor.
-     * @param int $sheet_ind
-     * @param int $row_ind
+     *
+     * @param int   $sheet_ind
+     * @param int   $row_ind
      * @param array $options
      */
-    function __construct($sheet_ind, $row_ind, $options)
+    public function __construct($sheet_ind, $row_ind, $options)
     {
         parent::__construct($row_ind);
 
@@ -41,16 +52,16 @@ class Row extends TableElement
     /**
      * @param Cell $newCell
      */
-    function addCell(Cell $newCell)
+    public function addCell(Cell $newCell)
     {
-        $cell_id = $newCell->get_id();
+        $cell_id = $newCell->getId();
         $this->cells[$cell_id] = $newCell;
     }
 
     /**
      * @return array
      */
-    function getStyles()
+    public function getStyles()
     {
         $styles = parent::getStyles();
         if ($this->isHidden()) {
@@ -63,7 +74,7 @@ class Row extends TableElement
     /**
      * @return bool
      */
-    function isHidden()
+    public function isHidden()
     {
         return $this->collapse === true;
     }
@@ -72,7 +83,7 @@ class Row extends TableElement
      * @param $cellId
      * @return Cell|Bool
      */
-    function getCell($cellId)
+    public function getCell($cellId)
     {
         if (array_key_exists($cellId, $this->cells)) {
             return $this->cells[$cellId];
@@ -84,12 +95,12 @@ class Row extends TableElement
     /**
      * @return string
      */
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function cleanRow()
+    public function cleanRow()
     {
         $isFirstFilled = false;
         $offset = 0;
@@ -117,7 +128,7 @@ class Row extends TableElement
     /**
      * @return Cell[]
      */
-    function getCells()
+    public function getCells()
     {
         return $this->cells;
     }
@@ -125,21 +136,20 @@ class Row extends TableElement
     /**
      * @param Cell[] $newCells
      */
-    function setCells($newCells)
+    public function setCells($newCells)
     {
         $this->cells = $newCells;
     }
 
-    function isEmptyRow()
+    public function isEmptyRow()
     {
         $cells = $this->getCells();
 
         return empty($cells);
     }
 
-    function collapseRow()
+    public function collapseRow()
     {
         $this->collapse = true;
     }
 }
-

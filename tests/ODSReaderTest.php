@@ -1,6 +1,10 @@
 <?php
 
-class ODSReaderTest extends PHPUnit_Framework_TestCase
+namespace Appizy;
+
+use PHPUnit\Framework\TestCase;
+
+class ODSReaderTest extends TestCase
 {
     public function testODS()
     {
@@ -11,7 +15,8 @@ class ODSReaderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(10, $tables->length);
     }
 
-    public function testGetRows() {
+    public function testGetRows()
+    {
         $ods = new \Appizy\ODSReader();
         $ods->load(__DIR__ . '/fixtures/demo-appizy.ods');
 
@@ -21,7 +26,8 @@ class ODSReaderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(30, $firstTabRows->length);
     }
 
-    public function testGetCells() {
+    public function testGetCells()
+    {
         $ods = new \Appizy\ODSReader();
         $ods->load(__DIR__ . '/fixtures/demo-appizy.ods');
 

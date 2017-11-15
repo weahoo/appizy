@@ -1,14 +1,16 @@
 <?php
 
+namespace Appizy;
+
 use Appizy\DataStyle;
+use PHPUnit\Framework\TestCase;
 
-
-class DataStyleTest extends PHPUnit_Framework_TestCase
+class DataStyleTest extends TestCase
 {
     public function testStringFormatterDoesNotTakeMinDigitIntoAccount()
     {
         $dataStyle = new DataStyle(0);
-        $dataStyle->minIntDigit = 1;
+        $dataStyle->setMinIntDigit(1);
         $this->assertEquals($dataStyle->toNumeralStringFormat(), '');
     }
 
@@ -21,30 +23,30 @@ class DataStyleTest extends PHPUnit_Framework_TestCase
     public function testFormatWithSuffixOnly()
     {
         $dataStyle = new DataStyle(0);
-        $dataStyle->suffix = '%';
+        $dataStyle->setSuffix('%');
         $this->assertEquals($dataStyle->toNumeralStringFormat(), '0%');
     }
 
     public function testFormatWithMinIntDigit()
     {
         $dataStyle = new DataStyle(0);
-        $dataStyle->minIntDigit = 2;
-        $dataStyle->decimalPlaces = 2;
+        $dataStyle->setMinIntDigit(2);
+        $dataStyle->setDecimalPlaces(2);
         $this->assertEquals($dataStyle->toNumeralStringFormat(), '0.00');
     }
 
     public function testFormatCodeWithEmptyMinIntDigit()
     {
         $dataStyle = new DataStyle(0);
-        $dataStyle->decimalPlaces = 3;
+        $dataStyle->setDecimalPlaces(3);
         $this->assertEquals($dataStyle->toNumeralStringFormat(), '0.000');
     }
 
     public function testFormatCodeWithGrouping()
     {
         $dataStyle = new DataStyle(0);
-        $dataStyle->grouping = true;
-        $dataStyle->decimalPlaces = 2;
+        $dataStyle->setGrouping(true);
+        $dataStyle->setDecimalPlaces(2);
         $this->assertEquals($dataStyle->toNumeralStringFormat(), '0,0.00');
     }
 }

@@ -6,31 +6,49 @@ use Appizy\Constant\CellAttributes;
 
 class Cell extends TableElement
 {
-    var $coord; // Coordonn�es de la cellule sheet,row,col - identifie de fa�on unique la cellule
-    var $value_type; // Type de valeur de la cellule : string, float, boolean
-    var $value_inlist; // Liste de l'ensemble des valeurs de la cellule, si vide valeur libre
-    var $validation;
+    protected $coord; // Coordonn�es de la cellule sheet,row,col - identifie de fa�on unique la cellule
+    protected $value_type; // Type de valeur de la cellule : string, float, boolean
+    protected $value_inlist; // Liste de l'ensemble des valeurs de la cellule, si vide valeur libre
+    protected $validation;
 
-    /** @var string */
-    var $type; // Type de cellule pour Appizy : text, in, out
-    /** @var string */
-    var $value;
-    /** @var string */
-    var $displayedValue;
-    /** @var int */
-    var $colspan;
-    /** @var int */
-    var $rowspan;
-    /** @var string[] */
-    var $styles;
-    /** @var string */
-    var $annotation;
-    /** @var bool */
-    var $collapse;
-    /** @var string */
-    var $valueType;
+    /**
+     * @var string
+     */
+    protected $type; // Type de cellule pour Appizy : text, in, out
+    /**
+     * @var string
+     */
+    protected $value;
+    /**
+     * @var string
+     */
+    protected $displayedValue;
+    /**
+     * @var int
+     */
+    protected $colspan;
+    /**
+     * @var int
+     */
+    protected $rowspan;
+    /**
+     * @var string[]
+     */
+    protected $styles;
+    /**
+     * @var string
+     */
+    protected $annotation;
+    /**
+     * @var bool
+     */
+    protected $collapse;
+    /**
+     * @var string
+     */
+    protected $valueType;
 
-    function __construct($sheet, $row, $col, $options = array())
+    public function __construct($sheet, $row, $col, $options = array())
     {
         parent::__construct($col);
 
@@ -73,32 +91,35 @@ class Cell extends TableElement
         }
     }
 
-    function setValueType($myValueType)
+    public function setValueType($myValueType)
     {
         $this->valueType = $myValueType;
     }
 
-    function setDisplayedValue($myValue)
+    public function setDisplayedValue($myValue)
     {
         $this->displayedValue = $myValue;
     }
 
-    function setValueAttr($myValueAttr)
+    public function setValueAttr($myValueAttr)
     {
         $this->value = $myValueAttr;
     }
 
-    function cell_set_type($myType)
+    /**
+     * @param string $myType
+     */
+    public function setType($myType)
     {
         $this->type = $myType;
     }
 
-    function setValueInList($myList)
+    public function setValueInList($myList)
     {
         $this->value_inlist = $myList;
     }
 
-    function cell_get_annotation()
+    public function getAnnotation()
     {
         $annotation = $this->annotation;
 
@@ -111,27 +132,20 @@ class Cell extends TableElement
         return $annotation;
     }
 
-    function getName()
+    /**
+     * @return string
+     */
+    public function getName()
     {
         $name = 's' . $this->coord['sheet'] . 'r' . $this->coord['row'] . 'c' . $this->coord['col'];
 
         return $name;
     }
 
-    function cell_value_type()
-    {
-        return $this->value_type;
-    }
-
-    function getDisplayedValue()
-    {
-        return $this->displayedValue;
-    }
-
     /**
      * Return cell displayed value
      */
-    function cell_get_value_disp()
+    public function getDisplayedValue()
     {
         return $this->displayedValue;
     }
@@ -139,7 +153,7 @@ class Cell extends TableElement
     /**
      * Return cell attribute value first or displayed value if not existent
      */
-    function getValue()
+    public function getValue()
     {
         if (isset($this->value)) {
             $cellValue = $this->value;
@@ -154,27 +168,27 @@ class Cell extends TableElement
         return html_entity_decode($cellValue);
     }
 
-    function getValueAttr()
+    public function getValueAttr()
     {
         return $this->value;
     }
 
-    function getValueList()
+    public function getValueList()
     {
         return $this->value_inlist;
     }
 
-    function getColSpan()
+    public function getColSpan()
     {
         return $this->colspan;
     }
 
-    function getRowSpan()
+    public function getRowSpan()
     {
         return $this->rowspan;
     }
 
-    function getStyle()
+    public function getStyle()
     {
         $style = "";
         $is_first = true;
@@ -186,39 +200,39 @@ class Cell extends TableElement
         return $style;
     }
 
-    function collapseCell()
+    public function collapseCell()
     {
         $this->collapse = true;
     }
 
-    function isFormula()
+    public function isFormula()
     {
         return ($this->getType() == CellAttributes::TYPE_OUTPUT);
     }
 
-    function getType()
+    public function getType()
     {
         return $this->type;
     }
 
-    function getValueType()
+    public function getValueType()
     {
         return $this->value_type;
     }
 
-    function isEmpty()
+    public function isEmpty()
     {
         $empty = (
-            $this->get_styles_name() == '' &&
+            $this->getConcatStyleNames() == '' &&
             $this->getValue() == '' &&
-            $this->cell_get_validation() == '' &&
+            $this->getValidation() == '' &&
             $this->getType() != CellAttributes::TYPE_OUTPUT
         );
 
         return $empty;
     }
 
-    function cell_get_validation()
+    public function getValidation()
     {
         return $this->validation;
     }

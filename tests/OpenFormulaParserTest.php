@@ -1,8 +1,11 @@
 <?php
 
-use Appizy\Parser\OpenFormulaParser;
+namespace Appizy;
 
-class OpenFormulaParserTest extends PHPUnit_Framework_TestCase
+use Appizy\Parser\OpenFormulaParser;
+use PHPUnit\Framework\TestCase;
+
+class OpenFormulaParserTest extends TestCase
 {
 
     public function testFormulaWithLegacyFunction()
@@ -19,7 +22,8 @@ class OpenFormulaParserTest extends PHPUnit_Framework_TestCase
         ]);
     }
 
-    public function testDictionaryInGrowingTokenSize(){
+    public function testDictionaryInGrowingTokenSize()
+    {
         $formula = OpenFormulaParser::parse('of:=ROUND(ROUNDUP(ROUND(3.123)))', 0, ['test'], [0, 0, 0]);
         $this->assertEquals($formula->getElements(), [
             'Formula.ROUND',

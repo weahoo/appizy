@@ -37,20 +37,30 @@ class OpenFormulaParser
                 $external_ref = "file:";
 
                 if (stripos($formula_element, $external_ref) === false) {
-
-                    $formula_element = str_replace(array('[', ']'), '',
-                        $formula_element);
+                    $formula_element = str_replace(
+                        array('[', ']'),
+                        '',
+                        $formula_element
+                    );
                     $range_element = explode(":", $formula_element, 2);
 
                     if (count($range_element) == 2) {
                         // If RANGE of dimension 2 (more than 1 cell)
-                        $head = self::referenceToCoordinates($range_element[0],
-                            $currentSheetIndex, $sheetsNames);
-                        $tail = self::referenceToCoordinates($range_element[1],
-                            $currentSheetIndex, $sheetsNames);
+                        $head = self::referenceToCoordinates(
+                            $range_element[0],
+                            $currentSheetIndex,
+                            $sheetsNames
+                        );
+                        $tail = self::referenceToCoordinates(
+                            $range_element[1],
+                            $currentSheetIndex,
+                            $sheetsNames
+                        );
 
-                        $range_token = "[" . implode(',',
-                                $head) . "],[" . implode(',', $tail) . "]";
+                        $range_token = "[" . implode(
+                            ',',
+                            $head
+                        ) . "],[" . implode(',', $tail) . "]";
 
                         for ($i = 0; $i <= $tail[1] - $head[1]; $i++) {
                             for ($j = 0; $j <= $tail[2] - $head[2]; $j++) {
@@ -61,11 +71,13 @@ class OpenFormulaParser
                                 $cellDependencies[] = array($cS, $cR, $cC);
                             }
                         }
-
                     } else {
                         // Simple RANGE, i.e one cell
-                        $element = self::referenceToCoordinates($range_element[0],
-                            $currentSheetIndex, $sheetsNames);
+                        $element = self::referenceToCoordinates(
+                            $range_element[0],
+                            $currentSheetIndex,
+                            $sheetsNames
+                        );
                         $dep_sheet = intval($element[0]);
                         $dep_row = intval($element[1]);
                         $dep_col = intval($element[2]);
@@ -75,7 +87,6 @@ class OpenFormulaParser
                             $dep_col
                         );
                         $range_token = "[" . implode(',', $element) . "]";
-
                     }
 
                     $replacement = array("RANGE", "(", $range_token, ")");
@@ -93,13 +104,13 @@ class OpenFormulaParser
         }
 
         $formula->setElements($formulaElements);
-//        $formula->dependances = array_unique($cellDependencies);
-        $formula->dependances = $cellDependencies;
-        $formula->ext_formula_dependances = array_intersect(
+        // $formula->dependances = array_unique($cellDependencies);
+        $formula->setDependances($cellDependencies);
+        $formula->setExtFormulaDependances(array_intersect(
             $formulaElements,
             WebAppConfiguration::externalFunctionDictionary()
-        );
-        $formula->cell_coord = $cellCoordinates;
+        ));
+        $formula->setCellCoord($cellCoordinates);
 
         return $formula;
     }
@@ -145,7 +156,6 @@ class OpenFormulaParser
                         }
                     }
                     $newStack = array_merge($newStack, $localStack);
-
                 } else {
                     $newStack[] = $element;
                 }
@@ -162,7 +172,7 @@ class OpenFormulaParser
                 if (is_numeric($element['content'])) {
                     $parsedFormula[] = $element['content'];
                 } else {
-                    if (strpos($element['content'], '^') !== FALSE) {
+                    if (strpos($element['content'], '^') !== false) {
                         trigger_error(ErrorMessage::USER_POWER_FUNCTION, E_USER_WARNING);
                     } else {
                         trigger_error(ErrorMessage::UNKNOWN_TOKEN . ': "' . $element['content'] . '"', E_USER_WARNING);
@@ -184,8 +194,7 @@ class OpenFormulaParser
         $reference,
         $referenceSheetIndex,
         $sheetsNames
-    )
-    {
+    ) {
         // Sorts sheets' name by length to avoid inclusion issue
         uasort($sheetsNames, function ($a, $b) {
             return strlen($b) - strlen($a);
@@ -210,8 +219,11 @@ class OpenFormulaParser
         $col_alpha = implode($matches[0]);
         $col_num = self::alphaToNumeric(implode($matches[0]));
 
-        $coord_in_string = str_replace($col_alpha, $col_num . ",",
-            $coord_in_string);
+        $coord_in_string = str_replace(
+            $col_alpha,
+            $col_num . ",",
+            $coord_in_string
+        );
 
         $coord_in_string = str_replace(".", ",", $coord_in_string);
 
@@ -223,7 +235,6 @@ class OpenFormulaParser
                 intval($coord[2]) - 1,
                 intval($coord[1])
             );
-
         } else {
             trigger_error("Unable to get coord out of: $reference ");
 
@@ -280,7 +291,10 @@ class OpenFormulaParser
         $referenceDictionary = self::generateReferenceDictionary($openFormula);
         $stringDictionary = self::generateStringDictionary($openFormula);
 
-        $lexicon = array_merge($stringDictionary, $operatorDictionary, $externalFunctionDictionary,
+        $lexicon = array_merge(
+            $stringDictionary,
+            $operatorDictionary,
+            $externalFunctionDictionary,
             $referenceDictionary
         );
 
@@ -306,7 +320,6 @@ class OpenFormulaParser
             foreach ($out[0] as $string_informula) {
                 $strings_lex[$string_informula] = $string_informula;
             }
-
         }
 
         return $strings_lex;

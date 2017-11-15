@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Appizy" default="test">
+    <target name="test">
+      <exec command="./vendor/bin/phpcs ./src ./tests --standard=PSR2" checkreturn="true"/>
+    </target>
+</project>

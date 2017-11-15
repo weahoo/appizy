@@ -1,19 +1,17 @@
 <?php
 
+namespace Appizy;
+
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of MultilineIntegrationTest
+ * Description of MultiLineIntegrationTest
  *
  * @author Usama Ahmed Khan
  */
-class MultilineIntegrationTest extends PHPUnit_Framework_TestCase {
+class MultilineIntegrationTest extends TestCase
+{
     
     public static function setUpBeforeClass()
     {
@@ -21,7 +19,8 @@ class MultilineIntegrationTest extends PHPUnit_Framework_TestCase {
         exec('bin/appizy convert tests/fixtures2/multiline-input.ods');
     }
     
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         $generatedApp = file_get_contents('tests/fixtures2/index.html');
         $this->crawler = new Crawler($generatedApp);

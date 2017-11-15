@@ -6,7 +6,6 @@ use Appizy\Model\Theme;
 
 class ThemeReadService
 {
-
     public function getThemeByName($themeName)
     {
         $theme = new Theme();

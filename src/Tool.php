@@ -10,24 +10,23 @@ class Tool
     use ArrayTrait;
 
     /** @var Sheet[] */
-    var $sheets;
+    protected $sheets;
     /** @var Style[] */
-    var $styles;
+    protected $styles;
     /** @var Formula[] */
-    var $formulas;
-    /** @var Validation[] */
-    var $validations;
+    protected $formulas;
+    /** @var string[][] */
+    protected $validations;
     /** @var DataStyle[] */
-    var $formats;
+    protected $formats;
     /** @var string[] */
-    var $libraries;
+    protected $libraries;
     /** @var  string[} */
-    var $used_styles;
+    protected $used_styles;
 
     private $debug;
-    private $error;
 
-    function __construct($debug = false)
+    public function __construct($debug = false)
     {
         $this->sheets = [];
         $this->styles = [];
@@ -39,22 +38,100 @@ class Tool
     }
 
     /**
+     * @return Formula[]
+     */
+    public function getFormulas()
+    {
+        return $this->formulas;
+    }
+
+    /**
+     * @param Formula[] $formulas
+     */
+    public function setFormulas($formulas)
+    {
+        $this->formulas = $formulas;
+    }
+
+    /**
      * @param $formula Formula
      */
-    function addFormula($formula)
+    public function addFormula($formula)
     {
         $this->formulas[] = $formula;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getUsedStyles()
+    {
+        return $this->used_styles;
+    }
+
+    /**
+     * @param string $styleName
+     */
+    public function addUsedStyle($styleName)
+    {
+        $this->used_styles[] = $styleName;
+    }
+
+
+    /**
+     * @return Style[]
+     */
+    public function getStyles()
+    {
+        return $this->styles;
+    }
+
+    /**
+     * @param string $styleName
+     * @param Style  $style
+     */
+    public function addStyles($styleName, $style)
+    {
+        $this->styles[$styleName] = $style;
+    }
+
+    /**
+     * @return DataStyle[]
+     */
+    public function getFormats()
+    {
+        return $this->formats;
+    }
+
+    /**
+     * @param string    $formatName
+     * @param DataStyle $format
+     */
+    public function addFormat($formatName, $format)
+    {
+        $this->formats[$formatName] = $format;
+    }
+
+    public function getValidations()
+    {
+        return $this->validations;
+    }
+
+    public function addValidation($validationName, $validation)
+    {
+        $this->validations[$validationName] = $validation;
     }
 
     /**
      * @param $sheet Sheet
      */
-    function addSheet($sheet)
+    public function addSheet($sheet)
     {
         $this->sheets[] = $sheet;
     }
 
-    function setFormulaDependenciesAsInputCells()
+    public function setFormulaDependenciesAsInputCells()
     {
         /** @var Formula $formula */
         foreach ($this->formulas as $formula) {
@@ -65,10 +142,10 @@ class Tool
                     $tempcell = $this->getCell($dep[0], $dep[1], $dep[2]);
                     if ($tempcell) {
                         if ($tempcell->getType() != 'out') {
-                            $tempcell->cell_set_type('in');
+                            $tempcell->setType('in');
                         }
                     } else {
-                        $cell_coord = $formula->cell_coord;
+                        $cell_coord = $formula->getCellCoord();
                         $referencedCellName = $this->getHumanizedCellName($dep[0], $dep[1], $dep[2]);
                         $formulaCellName = $this->getHumanizedCellName($cell_coord[0], $cell_coord[1], $cell_coord[2]);
                         trigger_error(ErrorMessage::NON_EXISTING_CELL . " The formula in cell $formulaCellName" .
@@ -79,7 +156,10 @@ class Tool
         }
     }
 
-    function sheets_name()
+    /**
+     * @return string[]
+     */
+    public function sheetNames()
     {
         $names = [];
         foreach ($this->sheets as $sheet) {
@@ -89,15 +169,18 @@ class Tool
         return $names;
     }
 
-    function render_validation($id, array $address = null)
+    public function renderValidation($id, array $address = null)
     {
-        $sheets_name = $this->sheets_name();
+        $sheets_name = $this->sheetNames();
 
         $validation = $this->validations[$id];
 
         if (array_key_exists('TABLE:CONDITION', $validation['attrs'])) {
-            $temp_validation = str_replace('$', '',
-                $validation['attrs']['TABLE:CONDITION']);
+            $temp_validation = str_replace(
+                '$',
+                '',
+                $validation['attrs']['TABLE:CONDITION']
+            );
             $temp_validation_pieces = explode(":", $temp_validation, 2);
             $temp_validation = $temp_validation_pieces[1];
         } else {
@@ -107,8 +190,11 @@ class Tool
         if (preg_match('/cell-content-is-in-list/', $temp_validation)) {
             // si validation de type "list de valeurs"
 
-            preg_match_all("/cell-content-is-in-list\((.*)\)/",
-                $temp_validation, $matches);
+            preg_match_all(
+                "/cell-content-is-in-list\((.*)\)/",
+                $temp_validation,
+                $matches
+            );
             $values = $matches[1][0];
 
             $temp_car = str_split($values);
@@ -120,22 +206,27 @@ class Tool
 
                 $head = OpenFormulaParser::referenceToCoordinates($values[0], 0, $sheets_name);
 
-                $tail = OpenFormulaParser::referenceToCoordinates($values[1], $head[0],
-                    $sheets_name);
+                $tail = OpenFormulaParser::referenceToCoordinates(
+                    $values[1],
+                    $head[0],
+                    $sheets_name
+                );
 
                 $values = array();
                 for ($i = 0; $i <= $tail[1] - $head[1]; $i++) {
                     for ($j = 0; $j <= $tail[2] - $head[2]; $j++) {
-
                         $tmp_sI = $head[0];
                         $tmp_rI = $head[1] + $i;
                         $tmp_cI = $head[2] + $j;
 
-                        $tempcell = $this->getCell($tmp_sI, $tmp_rI,
-                            $tmp_cI);
+                        $tempCell = $this->getCell(
+                            $tmp_sI,
+                            $tmp_rI,
+                            $tmp_cI
+                        );
 
-                        if ($tempcell) {
-                            $values[] = $tempcell->getValue();
+                        if ($tempCell) {
+                            $values[] = $tempCell->getValue();
                         }
                     }
                 }
@@ -156,63 +247,79 @@ class Tool
                 $tmp_rI = $address[1];
                 $tmp_cI = $address[2];
             } else {
-                $head = OpenFormulaParser::referenceToCoordinates($validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
-                    0, $sheets_name);
+                $head = OpenFormulaParser::referenceToCoordinates(
+                    $validation['attrs']['TABLE:BASE-CELL-ADDRESS'],
+                    0,
+                    $sheets_name
+                );
                 $tmp_sI = $head[0];
                 $tmp_rI = $head[1];
                 $tmp_cI = $head[2];
             }
-            $tempcell = $this->sheets[$tmp_sI]->row[$tmp_rI]->cells[$tmp_cI];
-            $tempcell->setValueInList($values);
+            $tempCell = $this->getCell($tmp_sI, $tmp_rI, $tmp_cI);
+            $tempCell->setValueInList($values);
         }
     }
 
-    function getSheets()
+    /**
+     * @return Sheet[]
+     */
+    public function getSheets()
     {
         return $this->sheets;
     }
 
-    function getVisibleSheets()
+    /**
+     * @return Sheet[]
+     */
+    public function getVisibleSheets()
     {
         return array_filter(
-            $this->sheets, function ($sheet) {
+            $this->sheets,
+            function ($sheet) {
 
-            /** var $sheet Sheet */
-            $isVisible = array_reduce(
-                $sheet->getStyles(),
-                function ($accumulator, $styleName) {
-                    $style = $this->getStyle($styleName);
+                /** var $sheet Sheet */
+                $isVisible = array_reduce(
+                    $sheet->getStyles(),
+                    function ($accumulator, $styleName) {
+                        $style = $this->getStyle($styleName);
 
-                    return $accumulator && $style->isShown();
-                },
-                true
-            );
+                        return $accumulator && $style->isShown();
+                    },
+                    true
+                );
 
-            return $isVisible;
-        });
+                return $isVisible;
+            }
+        );
     }
 
-    function getHiddenSheets()
+    /**
+     * @return Sheet[]
+     */
+    public function getHiddenSheets()
     {
         return array_filter(
-            $this->sheets, function ($sheet) {
+            $this->sheets,
+            function ($sheet) {
 
-            /** var $sheet Sheet */
-            $isHidden = array_reduce(
-                $sheet->getStyles(),
-                function ($accumulator, $styleName) {
-                    $style = $this->getStyle($styleName);
+                /** var $sheet Sheet */
+                $isHidden = array_reduce(
+                    $sheet->getStyles(),
+                    function ($accumulator, $styleName) {
+                        $style = $this->getStyle($styleName);
 
-                    return $accumulator || !$style->isShown();
-                },
-                false
-            );
+                        return $accumulator || !$style->isShown();
+                    },
+                    false
+                );
 
-            return $isHidden;
-        });
+                return $isHidden;
+            }
+        );
     }
 
-    function getStyle($styleName)
+    public function getStyle($styleName)
     {
         return self::getArrayValueIfExists($this->styles, $styleName);
     }
@@ -221,7 +328,7 @@ class Tool
      * @param string $dataStyleName
      * @return mixed
      */
-    function getDataStyle($dataStyleName = '')
+    public function getDataStyle($dataStyleName = '')
     {
         return self::getArrayValueIfExists($this->formats, $dataStyleName);
     }
@@ -230,7 +337,7 @@ class Tool
      * @param $sheet_index
      * @return Sheet|bool
      */
-    function getSheet($sheet_index)
+    public function getSheet($sheet_index)
     {
         $sheet = false;
         if (array_key_exists($sheet_index, $this->sheets)) {
@@ -246,7 +353,7 @@ class Tool
      * @param $col_ind
      * @return Cell|bool
      */
-    function getCell($sheet_ind, $row_ind, $col_ind)
+    public function getCell($sheet_ind, $row_ind, $col_ind)
     {
         $cell = false;
 
@@ -262,7 +369,7 @@ class Tool
         return $cell;
     }
 
-    function clean()
+    public function clean()
     {
         $is_first_filled = false;
         $offset = 0;
@@ -271,7 +378,6 @@ class Tool
 
         /** @var Sheet $temp_sheet */
         foreach ($reversedSheets as $temp_sheet) {
-
             $temp_sheet->removeEmptyRows();
 
             if (!$is_first_filled) :
@@ -281,7 +387,6 @@ class Tool
                     $is_first_filled = true;
                 }
             endif;
-
         }
         // On supprime les $offset premi�res $sheet vides
         if ($offset > 0) {
@@ -290,29 +395,30 @@ class Tool
         // On inverse a nouveau et on affecte les sheets du tableau
         $sheets = array_reverse($reversedSheets, true);
         $this->sheets = $sheets;
-
     }
 
-    function render()
+    public function render()
     {
         $htmlTable = '';
 
         $used_styles = array(); // Contains styles used by the table elements.
 
         foreach ($this->sheets as $key => $sheet) {
-            foreach ($sheet->row as $row_index => $row) {
-                $rowstyle = ' class="' . $row->getName() . ' ' . $row->get_styles_name() . '"';
+            foreach ($sheet->getRows() as $row_index => $row) {
+                $rowstyle = ' class="' . $row->getName() . ' ' . $row->getConcatStyleNames() . '"';
 
-                $used_styles[] = $row->get_styles_name();
+                $used_styles[] = $row->getConcatStyleNames();
 
                 foreach ($row->getCells() as $cCI => $tempCell) {
-                    if ($tempCell->cell_get_validation() != '') {
-                        $this->render_validation($tempCell->cell_get_validation(),
-                            array($key, $row_index, $cCI));
-                        $tempCell->cell_set_type("in");
+                    if ($tempCell->getValidation() != '') {
+                        $this->renderValidation(
+                            $tempCell->getValidation(),
+                            array($key, $row_index, $cCI)
+                        );
+                        $tempCell->setType("in");
                     }
 
-                    $used_styles[] = $tempCell->get_styles_name();
+                    $used_styles[] = $tempCell->getConcatStyleNames();
 
                     // Adds current col styleName (if exists)
                     try {
@@ -320,7 +426,7 @@ class Tool
 
                         $currentColumnStyle = '';
                         if ($currentColumn) {
-                            $currentColumnStyle = $currentColumn->get_styles_name();
+                            $currentColumnStyle = $currentColumn->getConcatStyleNames();
 
                             $used_styles[] = $currentColumnStyle;
 
@@ -335,7 +441,6 @@ class Tool
                             }
                         }
                     } catch (\Exception $exception) {
-
                     }
                 }
             }
@@ -351,9 +456,9 @@ class Tool
         $cssTable = $this->getCss($used_styles);
 
         return [
-            'content' => $htmlTable,
-            'style' => $cssTable,
-            'script' => $script,
+            'content'   => $htmlTable,
+            'style'     => $cssTable,
+            'script'    => $script,
             'libraries' => array_unique($libraries)
         ];
     }
@@ -362,14 +467,14 @@ class Tool
      * @param string[] $stylesNames
      * @return string
      */
-    function getCss($stylesNames)
+    public function getCss($stylesNames)
     {
         $usedStyles = array_intersect_key($this->styles, array_flip($stylesNames));
 
         $css_code = '';
         /** @var Style $style */
         foreach ($usedStyles as $style) {
-            $css_code .= $style->style_print();
+            $css_code .= $style->getCssCode();
         }
 
         return $css_code;
@@ -378,11 +483,11 @@ class Tool
     public function cleanStyles()
     {
         foreach ($this->styles as $id => $style) {
-            $parent_style_name = $style->parent_style_name;
+            $parent_style_name = $style->getParentStyleName();
 
             if ($parent_style_name != '') {
                 $parent_style = $this->styles[$parent_style_name];
-                $style->style_merge($parent_style);
+                $style->styleMerge($parent_style);
                 $this->styles[$id] = $style;
             }
         }
