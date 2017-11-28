@@ -10,6 +10,7 @@
  * Warn user in case of #REF or DIV/0 in the converted Spreadsheet, escape those formula.
  * Support ISNUMBER function
  * Support ISTEXT function
+ * Add setup of assets with a Docker Node
  
 ## Issues and limitations
 
