@@ -14,10 +14,10 @@ class ThemesCommand extends Command
     protected function configure()
     {
         $this
-          ->setName('themes')
-          ->setDescription(
-              'Show which themes are available and their options'
-          );
+            ->setName('themes')
+            ->setDescription(
+                'Show which themes are available and their options'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -25,9 +25,9 @@ class ThemesCommand extends Command
         $finder = new Finder();
 
         $finder->files()
-          ->in(__DIR__ . '/../../../../theme')
-          ->depth(1)
-          ->name('*.info.yml');
+            ->in(__DIR__ . '/../../../../theme')
+            ->depth(1)
+            ->name('*.info.yml');
 
         $themesInfo = [];
 

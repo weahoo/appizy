@@ -4,4 +4,4 @@ workdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../../" && pwd )
 
 docker run \
     --rm -v "$workdir:/usr/src/myapp" \
-    appizy/appizy-cli ./vendor/bin/phing $@
+    appizy/appizy-cli ./vendor/bin/phpcs ./src ./tests --standard=phpcs.xml

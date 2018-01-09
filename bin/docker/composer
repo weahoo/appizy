@@ -2,6 +2,9 @@
 
 workdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../../" && pwd )
 
+cmd=$@
+
 docker run \
-    --rm -v "$workdir:/usr/src/myapp" \
-    appizy/appizy-cli ./vendor/bin/phing $@
+  --rm \
+  -v "$workdir:/usr/src/myapp" \
+  appizy/appizy-cli php composer.phar $cmd
